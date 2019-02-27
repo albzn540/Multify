@@ -1,6 +1,9 @@
 # Multify
 Share the music queue with your friends!
 
+## .env variables
+To get the app proparly working, copy .env.example and paste it as .env, after that you just add the required variables. 
+
 ## Frameworks
 
 ### Styled Components

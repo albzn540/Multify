@@ -9,7 +9,9 @@ class Login extends Component {
 
   render() {
     return (
-
+      <div />
     );
   }
 }
+
+export default Login;

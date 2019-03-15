@@ -1,11 +1,14 @@
 import React from 'react';
 import { Router } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
-import Landing from '../Landing';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core';
+import Landing from '../Landing';
 
 const theme = createMuiTheme({
   palette: {
+    primary: {
+      main: '#1DB954',
+    },
     green: {
       main: '#1DB954',
     },
@@ -14,6 +17,9 @@ const theme = createMuiTheme({
     },
     black: {
       main: '#191414',
+    },
+    textPrimary: {
+      main: '#FFFFFF',
     },
   },
 });

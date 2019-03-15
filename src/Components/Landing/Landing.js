@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose } from 'recompose';
-import { withStyles, Grid } from '@material-ui/core';
+import { withStyles, Grid, Button, Typography } from '@material-ui/core';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 
 const styles = theme => ({
@@ -10,8 +10,17 @@ const styles = theme => ({
   },
   logo: {
     color: theme.palette.green.main,
-    paddingBottom: '50px',
+    paddingBottom: '80px',
     fontSize: '160px',
+  },
+  button: {
+    borderRadius: '50px',
+    marginBottom: '10px',
+  },
+  buttonText: {
+    color: theme.palette.textPrimary.main,
+    fontWeight: '500',
+    fontSize: '0.9375rem',
   },
 });
 
@@ -33,10 +42,34 @@ const Landing = (props) => {
         />
       </Grid>
       <Grid item>
-        Create
-      </Grid>
-      <Grid item>
-        Join
+        <Button
+          id="create-party-button"
+          variant="contained"
+          color="primary"
+          size="large"
+          className={classes.button}
+          fullWidth
+        >
+          <Typography
+            className={classes.buttonText}
+          >
+            Create a party
+          </Typography>
+        </Button>
+        <Button
+          id="create-party-button"
+          variant="contained"
+          color="primary"
+          size="large"
+          className={classes.button}
+          fullWidth
+        >
+          <Typography
+            className={classes.buttonText}
+          >
+            Join a party
+          </Typography>
+        </Button>
       </Grid>
     </Grid>
   );

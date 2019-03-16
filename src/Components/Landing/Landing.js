@@ -1,6 +1,7 @@
 import React from 'react';
 import { compose } from 'recompose';
 import { withStyles, Grid, Button, Typography } from '@material-ui/core';
+import * as oauth2 from 'simple-oauth2';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 
 const styles = theme => ({
@@ -27,6 +28,20 @@ const styles = theme => ({
 const Landing = (props) => {
   const { classes } = props;
 
+  const credentials = {
+    client: {
+      id: process.env.REACT_APP_SPOTIFY_ID,
+      secret: process.env.REACT_APP_SPOTIFY_SECRET,
+    },
+    auth: {
+      tokenHost: 'https://accounts.spotify.com',
+      authorizePath: '/authorize',
+      tokenPath: '/api/token',
+    },
+  };
+
+  const auth = oauth2.create(credentials);
+
   return (
     <Grid
       container
@@ -49,6 +64,12 @@ const Landing = (props) => {
           size="large"
           className={classes.button}
           fullWidth
+          onClick={() => {
+            window.location.assign(auth.authorizationCode.authorizeURL({
+              redirect_uri: 'http://localhost:3000/',
+              scope: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email'],
+            }));
+          }}
         >
           <Typography
             className={classes.buttonText}

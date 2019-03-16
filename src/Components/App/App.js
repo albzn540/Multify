@@ -1,8 +1,9 @@
 import React from 'react';
-import { Router } from 'react-router-dom';
+import { Router, Route } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core';
 import Landing from '../Landing';
+import Auth from '../Auth';
 
 const theme = createMuiTheme({
   palette: {
@@ -28,11 +29,14 @@ const history = createBrowserHistory();
 
 const App = () => (
   <div>
-    {/* <Router history={history}> */}
-    <MuiThemeProvider theme={theme}>
-      <Landing theme={theme} />
-    </MuiThemeProvider>
-    {/* </Router> */}
+    <Router history={history}>
+      {/* Could put header here */}
+
+      <MuiThemeProvider theme={theme}>
+        <Route exact path="/" component={Landing} />
+        <Route path="/auth" component={Auth} />
+      </MuiThemeProvider>
+    </Router>
   </div>
 );
 

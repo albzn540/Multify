@@ -66,7 +66,7 @@ const Landing = (props) => {
           fullWidth
           onClick={() => {
             window.location.assign(auth.authorizationCode.authorizeURL({
-              redirect_uri: 'http://localhost:3000/',
+              redirect_uri: 'http://localhost:3000/auth/',
               scope: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email'],
             }));
           }}

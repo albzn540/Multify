@@ -3,28 +3,6 @@ import * as oauth2 from 'simple-oauth2';
 import { withStyles } from '@material-ui/core';
 import { compose } from 'recompose';
 
-// Do we even need this here?
-const styles = theme => ({
-  root: {
-    height: '100vh',
-    backgroundColor: theme.palette.black.main,
-  },
-  logo: {
-    color: theme.palette.green.main,
-    paddingBottom: '80px',
-    fontSize: '160px',
-  },
-  button: {
-    borderRadius: '50px',
-    marginBottom: '10px',
-  },
-  buttonText: {
-    color: theme.palette.textPrimary.main,
-    fontWeight: '500',
-    fontSize: '0.9375rem',
-  },
-});
-
 const Auth = (props) => {
   console.log(props);
   let query = props.location.search.substring(1);
@@ -59,6 +37,4 @@ const Auth = (props) => {
   }
 };
 
-export default compose(
-  withStyles(styles),
-)(Auth);
+export default Auth;

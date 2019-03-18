@@ -3,7 +3,7 @@ import * as oauth2 from 'simple-oauth2';
 import { withStyles } from '@material-ui/core';
 import { compose } from 'recompose';
 
-const Auth = (props) => {
+const Auth = async (props) => {
   console.log(props);
   let query = props.location.search.substring(1);
   let vars = query.split('&');

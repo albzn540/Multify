@@ -31,7 +31,6 @@ const App = () => (
   <div>
     <Router history={history}>
       {/* Could put header here */}
-
       <MuiThemeProvider theme={theme}>
         <Route exact path="/" component={Landing} />
         <Route path="/auth" component={Auth} />

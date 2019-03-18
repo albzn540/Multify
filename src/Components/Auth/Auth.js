@@ -51,8 +51,10 @@ const Auth = (props) => {
     };
 
     try {
-      const result = await oauth2.authorizationCode.getToken(tokenConfig)
-      const accessToken = oauth2.accessToken.create(result);
+      // Need to pass the auth variable through props (compose?) from Landing
+      const result = await auth.authorizationCode.getToken(tokenConfig)
+      const accessToken = auth.accessToken.create(result);
+      console.log(accessToken);
     } catch (error) {
       console.log('Access Token Error', error.message);
     }

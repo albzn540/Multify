@@ -3,7 +3,7 @@ import { Router, Route } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core';
 import Landing from '../Landing';
-import Auth from '../Auth';
+import Auth from '../../Auth';
 import JoinParty from '../JoinParty';
 
 const theme = createMuiTheme({

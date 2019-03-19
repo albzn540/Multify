@@ -5,6 +5,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core';
 import Landing from '../Landing';
 import Auth from '../../Auth';
 import JoinParty from '../JoinParty';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 const theme = createMuiTheme({
   palette: {
@@ -23,6 +24,9 @@ const theme = createMuiTheme({
     textPrimary: {
       main: '#FFFFFF',
     },
+    background: {
+      default: '#191414',
+    }
   },
 });
 
@@ -30,10 +34,11 @@ const history = createBrowserHistory();
 
 const App = () => (
   <div>
+    <CssBaseline />
     <Router history={history}>
       {/* Could put header here */}
       <MuiThemeProvider theme={theme}>
-        <Route exact path="/" component={Landing2} />
+        <Route exact path="/" component={Landing} />
         <Route path="/auth" component={Auth} />
         <Route path="/joinparty" component={JoinParty} />
       </MuiThemeProvider>

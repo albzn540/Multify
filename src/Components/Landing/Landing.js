@@ -43,6 +43,8 @@ const Landing = (props) => {
 
   const auth = oauth2.create(credentials);
 
+  const JoinPartyLink = props => <Link to="/joinparty" {...props} />
+
   return (
     <Grid
       container
@@ -78,22 +80,21 @@ const Landing = (props) => {
             Create a party
           </Typography>
         </Button>
-        <Link to="/joinparty">
-          <Button
-            id="create-party-button"
-            variant="contained"
-            color="primary"
-            size="large"
-            className={classes.button}
-            fullWidth
+        <Button
+          id="create-party-button"
+          variant="contained"
+          color="primary"
+          size="large"
+          className={classes.button}
+          fullWidth
+          component={JoinPartyLink}
+        >
+          <Typography
+            className={classes.buttonText}
           >
-            <Typography
-              className={classes.buttonText}
-            >
-              Join a party
+            Join a party
             </Typography>
-          </Button>
-        </Link>
+        </Button>
       </Grid>
     </Grid>
   );

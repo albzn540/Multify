@@ -13,7 +13,7 @@ const styles = theme => ({
   logo: {
     color: theme.palette.green.main,
     paddingBottom: '80px',
-    fontSize: '160px',
+    fontSize: '260px',
   },
   button: {
     borderRadius: '50px',
@@ -52,7 +52,6 @@ const Landing = (props) => {
       alignItems="center"
       justify="center"
       className={classes.root}
-      spacing={16}
     >
       <Grid item>
         <SpotifyLogo

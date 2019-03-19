@@ -1,10 +1,10 @@
 import React from 'react';
 import { compose } from 'recompose';
-import { withStyles, Grid, Button, Typography } from '@material-ui/core';
-import * as oauth2 from 'simple-oauth2';
+import { withStyles, Grid } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 import SpotifyButton from '../SpotifyButton';
+import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
   root: {
@@ -19,21 +19,7 @@ const styles = theme => ({
 });
 
 const Landing = (props) => {
-  const { classes } = props;
-
-  const credentials = {
-    client: {
-      id: process.env.REACT_APP_SPOTIFY_ID,
-      secret: process.env.REACT_APP_SPOTIFY_SECRET,
-    },
-    auth: {
-      tokenHost: 'https://accounts.spotify.com',
-      authorizePath: '/authorize',
-      tokenPath: '/api/token',
-    },
-  };
-
-  const auth = oauth2.create(credentials);
+  const { classes, spotify } = props;
 
   const JoinPartyLink = props => <Link to="/joinparty" {...props} />
 
@@ -54,15 +40,10 @@ const Landing = (props) => {
         <SpotifyButton
           id="create-party-button"
           value="Create a party"
-          onClick={() => {
-            window.location.assign(auth.authorizationCode.authorizeURL({
-              redirect_uri: 'http://localhost:3000/auth/',
-              scope: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email'],
-            }));
-          }}
+          onClick={() => spotify.authorizeWithSignIn()}
         />
         <SpotifyButton
-          id="create-party-button"
+          id="join-party-button"
           value="Join party"
           component={JoinPartyLink}
         />
@@ -73,4 +54,5 @@ const Landing = (props) => {
 
 export default compose(
   withStyles(styles),
+  withSpotify,
 )(Landing);

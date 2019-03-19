@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { compose } from 'recompose';
-import { withStyles, Grid, Button, Typography, TextField } from '@material-ui/core';
+import { withStyles, Grid, TextField } from '@material-ui/core';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 import SpotifyButton from '../SpotifyButton';
 

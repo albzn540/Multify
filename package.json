@@ -12,7 +12,8 @@
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.5",
     "recompose": "^0.30.0",
-    "simple-oauth2": "^2.2.1"
+    "simple-oauth2": "^2.2.1",
+    "spotify-web-api-js": "^1.2.0"
   },
   "scripts": {
     "start": "react-scripts start",

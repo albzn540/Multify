@@ -39,25 +39,24 @@ const Auth = (props) => {
   }
   /* console.log('Query variable %s not found', variable); */
 
-  if ('error' in params || !'code' in params) {
+  if ('error' in params || !('code' in params)) {
     // TODO: Handle error
-  }
-  else {
-    const tokenConfig = {
+  } else {
+    /* const tokenConfig = {
       code: params.code,
       // Create new component to be directed to, and remove this in spotify app as allowed
       redirect_uri: 'http://localhost:3000/',
       scope: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email'],
-    };
+    }; */
 
-    try {
+    /* try {
       // Need to pass the auth variable through props (compose?) from Landing
       const result = await auth.authorizationCode.getToken(tokenConfig)
       const accessToken = auth.accessToken.create(result);
       console.log(accessToken);
     } catch (error) {
       console.log('Access Token Error', error.message);
-    }
+    } */
   }
 };
 

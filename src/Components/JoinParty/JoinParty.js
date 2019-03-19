@@ -25,7 +25,7 @@ const styles = theme => ({
   textField: {},
 
   cssLabel: {
-    color: 'white',
+    color: theme.palette.white.main,
   },
   cssOutlinedInput: {
     '&$cssFocused $notchedOutline': {
@@ -35,10 +35,10 @@ const styles = theme => ({
   cssFocused: {},
   notchedOutline: {
     borderWidth: '1px',
-    borderColor: 'white !important',
+    borderColor: `${theme.palette.white.main} !important`,
   },
   multilineColor: {
-    color: 'white',
+    color: theme.palette.white.main,
   },
 });
 

@@ -33,7 +33,7 @@ const App = () => (
     <Router history={history}>
       {/* Could put header here */}
       <MuiThemeProvider theme={theme}>
-        <Route exact path="/" component={Landing} />
+        <Route exact path="/" component={Landing2} />
         <Route path="/auth" component={Auth} />
         <Route path="/joinparty" component={JoinParty} />
       </MuiThemeProvider>

@@ -28,6 +28,7 @@ const theme = createMuiTheme({
       default: '#191414',
     }
   },
+  typography: { useNextVariants: true },
 });
 
 const history = createBrowserHistory();

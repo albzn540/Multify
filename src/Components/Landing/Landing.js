@@ -4,6 +4,7 @@ import { withStyles, Grid, Button, Typography } from '@material-ui/core';
 import * as oauth2 from 'simple-oauth2';
 import { Link } from 'react-router-dom';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
+import SpotifyButton from '../SpotifyButton';
 
 const styles = theme => ({
   root: {
@@ -14,15 +15,6 @@ const styles = theme => ({
     color: theme.palette.green.main,
     paddingBottom: '80px',
     fontSize: '260px',
-  },
-  button: {
-    borderRadius: '50px',
-    marginBottom: '10px',
-  },
-  buttonText: {
-    color: theme.palette.textPrimary.main,
-    fontWeight: '500',
-    fontSize: '0.9375rem',
   },
 });
 
@@ -59,43 +51,23 @@ const Landing = (props) => {
         />
       </Grid>
       <Grid item>
-        <Button
+        <SpotifyButton
           id="create-party-button"
-          variant="contained"
-          color="primary"
-          size="large"
-          className={classes.button}
-          fullWidth
+          value="Create a party"
           onClick={() => {
             window.location.assign(auth.authorizationCode.authorizeURL({
               redirect_uri: 'http://localhost:3000/auth/',
               scope: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email'],
             }));
           }}
-        >
-          <Typography
-            className={classes.buttonText}
-          >
-            Create a party
-          </Typography>
-        </Button>
-        <Button
+        />
+        <SpotifyButton
           id="create-party-button"
-          variant="contained"
-          color="primary"
-          size="large"
-          className={classes.button}
-          fullWidth
+          value="Join party"
           component={JoinPartyLink}
-        >
-          <Typography
-            className={classes.buttonText}
-          >
-            Join a party
-            </Typography>
-        </Button>
+        />
       </Grid>
-    </Grid>
+    </Grid >
   );
 };
 

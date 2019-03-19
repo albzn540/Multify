@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { compose } from 'recompose';
 import { withStyles, Grid, Button, Typography, TextField } from '@material-ui/core';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
+import SpotifyButton from '../SpotifyButton';
 
 const styles = theme => ({
   root: {
@@ -11,19 +12,11 @@ const styles = theme => ({
   logo: {
     color: theme.palette.green.main,
     paddingBottom: '80px',
-    fontSize: '160px',
+    fontSize: '260px',
   },
-  button: {
-    borderRadius: '50px',
-    marginBottom: '10px',
+  textField: {
+    margin: theme.spacing.unit,
   },
-  buttonText: {
-    color: theme.palette.textPrimary.main,
-    fontWeight: '500',
-    fontSize: '0.9375rem',
-  },
-  textField: {},
-
   cssLabel: {
     color: 'white',
   },
@@ -44,6 +37,13 @@ const styles = theme => ({
 
 const JoinParty = (props) => {
   const { classes } = props;
+  
+  const [partyCode, setPartyCode] = useState('');
+
+  const formSubmit = e => {
+    e.preventDefault(); // prevents page refreshing
+    console.log(partyCode);
+  };
 
   return (
     <Grid
@@ -52,49 +52,47 @@ const JoinParty = (props) => {
       alignItems="center"
       justify="center"
       className={classes.root}
-      spacing={16}
     >
       <Grid item>
         <SpotifyLogo
           className={classes.logo}
         />
       </Grid>
-      <Grid item>
-        <TextField
-          id="standard-name"
-          label="Enter room code"
-          variant="outlined"
-          className={classes.textField}
-          InputLabelProps={{
-            classes: {
-              root: classes.cssLabel,
-              focused: classes.cssFocused,
-            },
-          }}
-          InputProps={{
-            classes: {
-              root: classes.cssOutlinedInput,
-              focused: classes.cssFocused,
-              notchedOutline: classes.notchedOutline,
-              input: classes.multilineColor,
-            },
-          }}
-        />
 
-        <Button
-          id="join-party-button"
-          variant="contained"
-          color="primary"
-          size="large"
-          className={classes.button}
-          fullWidth
-        >
-          <Typography
-            className={classes.buttonText}
-          >
-            Enter the party
-          </Typography>
-        </Button>
+      <Grid container direction="column" alignItems="center">
+        <form onSubmit={e => formSubmit(e)}>
+          <Grid item>
+            <TextField
+              id="party-code-field"
+              label="Enter room code"
+              value={partyCode}
+              onChange={e => setPartyCode(e.target.value)}
+              variant="outlined"
+              className={classes.textField}
+              InputLabelProps={{
+                classes: {
+                  root: classes.cssLabel,
+                  focused: classes.cssFocused,
+                },
+              }}
+              InputProps={{
+                classes: {
+                  root: classes.cssOutlinedInput,
+                  focused: classes.cssFocused,
+                  notchedOutline: classes.notchedOutline,
+                  input: classes.multilineColor,
+                },
+              }}
+            />
+          </Grid>
+          <Grid item>
+            <SpotifyButton
+              id="join-party-button"
+              value="Enter the party"
+              type="submit"
+            />
+          </Grid>
+        </form>
       </Grid>
     </Grid>
   );

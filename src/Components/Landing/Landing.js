@@ -2,6 +2,7 @@ import React from 'react';
 import { compose } from 'recompose';
 import { withStyles, Grid, Button, Typography } from '@material-ui/core';
 import * as oauth2 from 'simple-oauth2';
+import { Link } from 'react-router-dom';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 
 const styles = theme => ({
@@ -77,20 +78,22 @@ const Landing = (props) => {
             Create a party
           </Typography>
         </Button>
-        <Button
-          id="create-party-button"
-          variant="contained"
-          color="primary"
-          size="large"
-          className={classes.button}
-          fullWidth
-        >
-          <Typography
-            className={classes.buttonText}
+        <Link to="/joinparty">
+          <Button
+            id="create-party-button"
+            variant="contained"
+            color="primary"
+            size="large"
+            className={classes.button}
+            fullWidth
           >
-            Join a party
-          </Typography>
-        </Button>
+            <Typography
+              className={classes.buttonText}
+            >
+              Join a party
+            </Typography>
+          </Button>
+        </Link>
       </Grid>
     </Grid>
   );

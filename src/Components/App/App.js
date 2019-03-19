@@ -4,6 +4,7 @@ import { createBrowserHistory } from 'history';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core';
 import Landing from '../Landing';
 import Auth from '../Auth';
+import JoinParty from '../JoinParty';
 
 const theme = createMuiTheme({
   palette: {
@@ -34,6 +35,7 @@ const App = () => (
       <MuiThemeProvider theme={theme}>
         <Route exact path="/" component={Landing} />
         <Route path="/auth" component={Auth} />
+        <Route path="/joinparty" component={JoinParty} />
       </MuiThemeProvider>
     </Router>
   </div>

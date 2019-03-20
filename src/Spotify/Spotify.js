@@ -1,24 +1,12 @@
 import SpotifyWebApi from 'spotify-web-api-js';
-import oauth2 from 'simple-oauth2';
+import oauth2 from 'client-oauth2';
 
 const config = {
   redirectUri: 'http://localhost:3000/redirectauth/',
   scope: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email'],
 };
 
-const credentials = {
-  client: {
-    id: process.env.REACT_APP_SPOTIFY_ID,
-    secret: process.env.REACT_APP_SPOTIFY_SECRET,
-  },
-  auth: {
-    tokenHost: 'https://accounts.spotify.com',
-    authorizePath: '/authorize',
-    tokenPath: '/api/token/',
-  },
-};
-
-const authClient = oauth2.create(credentials);
+const authClient = new oauth2(config);
 
 class Spotify {
   constructor() {
@@ -27,30 +15,16 @@ class Spotify {
 
   authorizeWithSignIn() {
     console.log('[Spotify] Signing in?');
-    window.location.assign(authClient.authorizationCode.authorizeURL({
-      redirect_uri: config.redirectUri,
-      scope: config.scope,
-    }));
+    const url = "";
+    window.location.assign(url);
   };
 
   async codeCallback(params) {
     console.log('[Spotify] Answer from Spotify', params);
-    if (params.error || !params.code) {
-      console.error('[Spotify] Something went wrong', params);
-    } else {
-      const tokenConfig = {
-        code: params.code,
-        // redirect_uri: 'http://localhost:3000/callback',
-        // scope: config.scope,
-      };
-      try {
-        const result = await authClient.authorizationCode.getToken(tokenConfig);
-        const accessToken = authClient.accessToken.create(result);
-        this.client.setAccessToken(accessToken);
-        console.log('[Spotify] Access granted!', accessToken);
-      } catch (error) {
-        console.error('[Spotify] Access Token Error', error);
-      }
+    try {
+      console.log('[Spotify] Access granted!');
+    } catch (error) {
+      console.error('[Spotify] Access Token Error', error);
     }
   };
 

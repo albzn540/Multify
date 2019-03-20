@@ -49,7 +49,7 @@ const Landing = (props) => {
           component={JoinPartyLink}
         />
       </Grid>
-    </Grid >
+    </Grid>
   );
 };
 

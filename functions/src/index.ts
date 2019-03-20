@@ -21,12 +21,12 @@ export const helloWorld = functions.https.onRequest((request, response) => {
  response.send("Hello from Firebase!");
 });
 
-export const authenticateSpotifyUser = functions.https.onCall((data, context) => {
-  console.log("Version 1.0");
-  const { url } = data;
-  return oauthClient.code.getToken(url).then(cool => {
-    return cool;
-  }).catch((e) => {
-    return e;
-  })
+export const authenticateSpotifyUser = functions.https.onCall((req, context) => {
+  console.log("Version 1.1");
+  const { url } = req;
+  return oauthClient.code.getToken(url).then(token => {
+    console.log(token);
+    const { data } = token;
+    return data;
+  });
 });

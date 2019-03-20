@@ -13,6 +13,7 @@ import {
   IconButton,
   TextField,
 } from '@material-ui/core';
+import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
   root: {
@@ -51,7 +52,9 @@ const styles = theme => ({
 });
 
 const Search = (props) => {
-  const { classes } = props;
+  const { classes, spotify } = props;
+
+  let songs = [];
 
   return (
     <Grid
@@ -81,6 +84,18 @@ const Search = (props) => {
               notchedOutline: classes.notchedOutline,
               input: classes.multilineColor,
             },
+          }}
+          onKeyPress={(ev) => {
+            if (ev.key === 'Enter') {
+              spotify.client.searchTracks(ev.target.value)
+                .then((data) => {
+                  console.log('[Search] Search result:', data);
+                  //songs = Object.keys(data).map(k => data[k]);
+                }, (err) => {
+                  console.error('[Search] error message:', err);
+                });
+              ev.preventDefault();
+            }
           }}
         />
       </Grid>
@@ -117,4 +132,5 @@ const Search = (props) => {
 
 export default compose(
   withStyles(styles),
+  withSpotify,
 )(Search);

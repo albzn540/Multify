@@ -21,7 +21,7 @@ const styles = theme => ({
 const Landing = (props) => {
   const { classes, spotify } = props;
 
-  const JoinPartyLink = props => <Link to="/joinparty" {...props} />
+  const JoinPartyLink = props => <Link to="/joinparty" {...props} />;
 
   return (
     <Grid

@@ -9,6 +9,7 @@ import Spotify, { SpotifyContext } from '../../Spotify';
 import JoinParty from '../JoinParty';
 import Landing from '../Landing';
 import RedirectAuth from '../../RedirectAuth/RedirectAuth';
+import Search from '../Search';
 
 const theme = createMuiTheme({
   palette: {

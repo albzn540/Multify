@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import * as clientOauth2 from 'client-oauth2';
+import * as oauthClient from 'client-oauth2';
+import * as firebase from 'firebase';
 
 const config = {
   clientId: functions.config().spotify.id,
@@ -14,19 +15,29 @@ const config = {
 // Admin SDK to access firstore
 admin.initializeApp();
 
-// Authentication client for oauth requests
-const oauthClient = new clientOauth2(config);
-
 export const helloWorld = functions.https.onRequest((request, response) => {
  response.send("Hello from Firebase!");
 });
 
 export const authenticateSpotifyUser = functions.https.onCall((data, context) => {
-  console.log("Version 1.0");
-  const { url } = data;
-  return oauthClient.code.getToken(url).then(cool => {
-    return cool;
-  }).catch((e) => {
-    return e;
-  })
+
+});
+
+export const loginAnon = firebase.auth().signInAnonymously().catch(function(error) {
+  // Handle Errors here.
+  let errorCode = error.code;
+  let errorMessage = error.message;
+});
+
+export const getUserInfo = firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    // User is signed in.
+    var isAnonymous = user.isAnonymous;
+    var uid = user.uid;
+    // ...
+  } else {
+    // User is signed out.
+    // ...
+  }
+  // ...
 });

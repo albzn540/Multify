@@ -3,7 +3,7 @@ import oauth2 from 'client-oauth2';
 
 declare class Firebase {
   db: firebase.firestore.Firestore;
-  func: firebase.functions.Functions;
+  functions: firebase.functions.Functions;
 }
 
 const config = {
@@ -20,7 +20,13 @@ class Spotify {
   constructor(firebase: Firebase) {
     this.client = new SpotifyWebApi();
     fb = firebase;
+
+    const lel = fb.functions.httpsCallable('authenticateSpotifyUser');
+    lel({data: 'test'}).then(res => {
+      console.log("Run succ", res);
+    });
   }
+
 
   authorizeWithSignIn() {
     console.log('[Spotify] Signing in?');

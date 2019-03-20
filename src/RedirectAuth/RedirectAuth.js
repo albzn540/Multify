@@ -1,29 +1,29 @@
 import React from 'react';
 import { withSpotify } from '../Spotify';
 
-
-const RedirectAuth = props => {
+const RedirectAuth = (props) => {
   console.log('[RedirectAuth] Redirect Auth page');
   console.log(props);
 
-  const { spotify } = props;
+  const { spotify, location } = props;
 
-  const query = props.location.search.substring(1);
+  const query = location.search.substring(1);
   const vars = query.split('&');
   const params = {};
 
-  vars.forEach(value => {
+  vars.forEach((value) => {
     const pair = value.split('=');
     params[pair[0]] = pair[1];
-  })
-  
-  spotify.codeCallback(params);
+  });
+
+  const url = location.pathname + location.search;
+  spotify.codeCallback(params, url);
 
   return (
     <div>
       Redirect auth page
     </div>
-  )
+  );
 };
 
 export default withSpotify(RedirectAuth);

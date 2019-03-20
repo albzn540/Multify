@@ -14,11 +14,11 @@ const config = {
 // Admin SDK to access firstore
 admin.initializeApp();
 
-// Authentication client for oauth requests
+// Oauth2 client
 const oauthClient = new clientOauth2(config);
 
 export const helloWorld = functions.https.onRequest((request, response) => {
- response.send("Hello from Firebase!");
+  response.send("Hello from Firebase!");
 });
 
 export const authenticateSpotifyUser = functions.https.onCall((req, context) => {

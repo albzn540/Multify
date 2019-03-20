@@ -9,6 +9,8 @@ import Spotify, { SpotifyContext } from '../../Spotify';
 import JoinParty from '../JoinParty';
 import Landing from '../Landing';
 import RedirectAuth from '../../RedirectAuth/RedirectAuth';
+import Search from '../Search';
+import Queue from '../Queue';
 
 const theme = createMuiTheme({
   palette: {
@@ -29,7 +31,7 @@ const theme = createMuiTheme({
     },
     background: {
       default: '#191414',
-    }
+    },
   },
   typography: { useNextVariants: true },
 });
@@ -49,6 +51,8 @@ const App = () => (
             <Route exact path="/" component={Landing} />
             <Route path="/redirectauth" component={RedirectAuth} />
             <Route path="/joinparty" component={JoinParty} />
+            <Route path="/search" component={Search} />
+            <Route path="/queue" component={Queue} />
           </SpotifyContext.Provider>
         </FirebaseContext.Provider>
       </MuiThemeProvider>

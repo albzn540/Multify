@@ -12,9 +12,9 @@ import {
   ListItemSecondaryAction,
   SvgIcon,
   IconButton,
-  AddIcon,
   Fab,
 } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 
 const styles = theme => ({
   root: {

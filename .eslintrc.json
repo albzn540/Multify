@@ -21,6 +21,9 @@
     ],
     "rules": {
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-        "react/jsx-one-expression-per-line": 0
+        "react/jsx-one-expression-per-line": 0,
+        "no-console": 0,
+        "prefer-destructuring": 0,
+        "react/prop-types": 0
     }
 }

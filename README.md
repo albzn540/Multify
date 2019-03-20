@@ -12,7 +12,7 @@ Styled components is used where we need to do some minor styling, seems to be th
 eg. Login page background styling.
 
 ### Material-UI
-Might use, might not.
+Is used for design and layouting.
 
 ## Available Scripts
 
@@ -40,6 +40,11 @@ The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run deploy`
+
+First it runs the `npm run build` command and then `firebase deploy --only hosting` to deploy it to firebase.
+Make sure you've installed and logged in with firebase-tools
 
 ### `npm run eject`
 

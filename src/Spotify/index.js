@@ -1,4 +1,4 @@
-import Spotify from './Spotify';
+import Spotify from './Spotify.ts';
 import SpotifyContext, { withSpotify } from './context';
 
 export default Spotify;

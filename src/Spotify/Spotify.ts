@@ -1,16 +1,25 @@
 import SpotifyWebApi from 'spotify-web-api-js';
 import oauth2 from 'client-oauth2';
 
+declare class Firebase {
+  db: firebase.firestore.Firestore;
+  func: firebase.functions.Functions;
+}
+
 const config = {
   redirectUri: 'http://localhost:3000/redirectauth/',
   scope: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email'],
 };
 
 const authClient = new oauth2(config);
+let fb: Firebase;
 
 class Spotify {
-  constructor() {
+  client: SpotifyWebApi.SpotifyWebApiJs;
+
+  constructor(firebase: Firebase) {
     this.client = new SpotifyWebApi();
+    fb = firebase;
   }
 
   authorizeWithSignIn() {

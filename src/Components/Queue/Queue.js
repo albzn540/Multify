@@ -43,27 +43,25 @@ const Queue = (props) => {
   let songs = [];
 
   return (
-    <div>
-      <Grid
-        container
-        direction="column"
-        alignItems="center"
-        justify="center"
-        className={classes.root}
-        spacing={16}
-      >
-        <Grid item>
-          <Typography
-            className={classes.textTitle}
-          >
-            Now playing
-          </Typography>
-          <Typography
-            className={classes.textBody}
-          >
-            {}
-          </Typography>
-        </Grid>
+    <Grid
+      container
+      direction="column"
+      alignItems="center"
+      justify="center"
+      className={classes.root}
+      spacing={16}
+    >
+      <Grid item>
+        <Typography
+          className={classes.textTitle}
+        >
+          Now playing
+        </Typography>
+        <Typography
+          className={classes.textBody}
+        >
+          {}
+        </Typography>
       </Grid>
       <Grid item>
         <List dense={false}>
@@ -113,7 +111,7 @@ const Queue = (props) => {
           <AddIcon />
         </Fab>
       </Grid>
-    </div>
+    </Grid>
   );
 };
 

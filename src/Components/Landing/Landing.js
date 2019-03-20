@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 import SpotifyButton from '../SpotifyButton';
 import { withSpotify } from '../../Spotify';
+import Spotify from '../../Spotify/Spotify';
 
 const styles = theme => ({
   root: {

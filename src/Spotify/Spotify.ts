@@ -28,7 +28,7 @@ class Spotify {
     window.location.assign(url);
   };
 
-  async codeCallback(params) {
+  async codeCallback(params: any) {
     console.log('[Spotify] Answer from Spotify', params);
     try {
       console.log('[Spotify] Access granted!');

@@ -102,7 +102,7 @@ const Search = (props) => {
                   <SvgIcon>
                     <path
                       fill="#FFFFFF"
-                      d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z"
+                      d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
                     />
                   </SvgIcon>
                 </IconButton>

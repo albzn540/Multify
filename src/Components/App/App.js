@@ -3,8 +3,8 @@ import { Router, Route } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Spotify, { SpotifyContext } from '../../Spotify';
 import Firebase, { FirebaseContext } from '../../Firebase';
+import Spotify, { SpotifyContext } from '../../Spotify';
 
 import JoinParty from '../JoinParty';
 import Landing from '../Landing';
@@ -35,8 +35,8 @@ const theme = createMuiTheme({
 });
 
 const history = createBrowserHistory();
-const spotify = new Spotify();
 const firebase = new Firebase();
+const spotify = new Spotify(firebase);
 
 const App = () => (
   <div>

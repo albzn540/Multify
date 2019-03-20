@@ -19,7 +19,13 @@ class Firebase {
   constructor() {
     firebase.initializeApp(config);
     this.db = firebase.firestore();
+
     this.functions = firebase.functions();
+    
+    if(process.env.NODE_ENV === 'development') {
+      console.log('[Firebase] Running in dev mode, setting firebase functions address to localhost:3001');
+      this.functions.useFunctionsEmulator('http://localhost:3001');
+    }
   }
 }
 

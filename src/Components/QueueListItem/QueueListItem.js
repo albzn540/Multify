@@ -10,7 +10,12 @@ import {
 } from '@material-ui/core';
 
 const QueueListItem = (props) => {
-  const { artist, title, album, picture } = props;
+  const {
+    artist,
+    title,
+    album,
+    picture,
+  } = props;
 
   return (
     <ListItem>

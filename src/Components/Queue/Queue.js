@@ -33,6 +33,7 @@ const styles = theme => ({
   },
   fab: {
     margin: theme.spacing.unit,
+    color: theme.palette.green.main,
   },
 });
 
@@ -102,12 +103,15 @@ const Queue = (props) => {
         <IconButton aria-label="Delete">
           <SvgIcon>
             <path
-              fill="#000000"
+              fill="#FFFFFF"
               d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z"
             />
           </SvgIcon>
         </IconButton>
-        <Fab color="primary" aria-label="Add" className={classes.fab}>
+        <Fab
+          aria-label="Add"
+          className={classes.fab}
+        >
           <AddIcon />
         </Fab>
       </Grid>

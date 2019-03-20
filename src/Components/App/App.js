@@ -50,6 +50,7 @@ const App = () => (
             <Route exact path="/" component={Landing} />
             <Route path="/redirectauth" component={RedirectAuth} />
             <Route path="/joinparty" component={JoinParty} />
+            <Route path="/search" component={Search} />
           </SpotifyContext.Provider>
         </FirebaseContext.Provider>
       </MuiThemeProvider>

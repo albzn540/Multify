@@ -52,7 +52,7 @@ const App = () => (
             <Route path="/redirectauth" component={RedirectAuth} />
             <Route path="/joinparty" component={JoinParty} />
             <Route path="/search" component={Search} />
-            <Route path="/search" component={Queue} />
+            <Route path="/queue" component={Queue} />
           </SpotifyContext.Provider>
         </FirebaseContext.Provider>
       </MuiThemeProvider>

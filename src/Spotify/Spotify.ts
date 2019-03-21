@@ -63,7 +63,7 @@ class Spotify {
     if (!this.spotifyUser()) {
       const authenticate = fb.functions.httpsCallable('authenticateSpotifyUser');
       return authenticate({ url }).then(async response => {
-        console.log('[Spotify] Authorized! Now authenticating...');
+        console.log('[Spotify][authorizeWithSpotify] Authorized! Now authenticating...');
         const { data: { access_token, refresh_token, expires_in } } = response;
         tokenExpiresIn = expires_in;
         refreshToken = refresh_token;
@@ -71,7 +71,7 @@ class Spotify {
         this.client.setAccessToken(access_token);
       }).catch(e => {
         console.error(e);
-        console.info('[Spotify] Not yet authorizing. Now autorizing...');
+        console.info('[Spotify][authorizeWithSpotify] Not yet authorizing. Now autorizing...');
         const uri = authClient.code.getUri();
         window.location.assign(uri);
       });

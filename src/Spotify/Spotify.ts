@@ -86,7 +86,6 @@ class Spotify {
   loginUser = async (url: string = '') => {
     // Check if we're already logged in
     if (!fb.user) {
-
       // Check if we already have an access token
       if (!this.spotifyUser()) {
         // Retrieve Spotify code
@@ -104,7 +103,7 @@ class Spotify {
         this.setUser(user);
         return user;
       }).catch(error => {
-        // user does not exist
+        // User does not exist
         console.error(error.message);
         console.log("Creating new user");
         return fb.auth.createUserWithEmailAndPassword(email, id).then(user => {
@@ -113,6 +112,8 @@ class Spotify {
         });
       });
     }
+
+    return Promise.resolve(fb.user);
   }
 
   setUser = (user: firebase.auth.UserCredential) => {

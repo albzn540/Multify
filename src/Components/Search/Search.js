@@ -7,6 +7,8 @@ import {
 
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
+import { withSpotify } from '../../Spotify';
+import { withFirebase } from '../../Firebase';
 
 const styles = theme => ({
   root: {
@@ -15,23 +17,74 @@ const styles = theme => ({
   },
 });
 
+const keyPress = (event, onChange) => {
+  if (event.key === 'Enter') {
+    onChange(event.target);
+    event.preventDefault();
+  }
+};
+
 class Search extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchString: 'The',
+      tracks: [],
     };
 
     this.handleChange = this.handleChange.bind(this);
+    this.addTrack = this.addTrack.bind(this);
   }
 
   handleChange(event) {
-    this.setState({ searchString: event.value });
+    const searchStr = event.value;
+    const { spotify } = this.props;
+    const items = [];
+    spotify.client.searchTracks(searchStr)
+      .then((data) => {
+        console.info('[SearchList] Found tracks', data);
+        data.tracks.items.forEach((track) => {
+          const item = {
+            album: track.album,
+            artists: track.artists,
+            id: track.id,
+            name: track.name,
+            uri: track.uri,
+          };
+          items.push(item);
+        });
+        this.setState({
+          tracks: items,
+        });
+      }, (err) => {
+        console.error('[SearchList] Search error:', err);
+      });
+  }
+
+  addTrack(track, uri) {
+    const reducedTrack = {
+      id: track.id,
+      artists: track.artists.map(artist => artist.name),
+      name: track.name,
+      album: {
+        images: track.album.images,
+        name: track.album.name,
+      },
+    };
+    const { firebase } = this.props;
+    firebase.db.collection('parties').doc('BAQcvjUE6ongzcsSw7fX')
+      .collection('songs').doc(uri)
+      .set(reducedTrack)
+      .then(() => {
+        console.log('[Search] Track added!');
+      })
+      .catch((err) => {
+        console.error('[Search] Error adding track!', err);
+      });
   }
 
   render() {
     const { classes } = this.props;
-    const { searchString } = this.state;
+    const { tracks } = this.state;
 
     return (
       <Grid
@@ -42,8 +95,8 @@ class Search extends React.Component {
         className={classes.root}
         spacing={16}
       >
-        <SearchBar onChange={this.handleChange} />
-        <SearchList searchString={searchString} />
+        <SearchBar onChange={this.handleChange} keyPress={keyPress} />
+        <SearchList tracks={tracks} addTrack={this.addTrack} />
       </Grid>
     );
   }
@@ -51,4 +104,6 @@ class Search extends React.Component {
 
 export default compose(
   withStyles(styles),
+  withSpotify,
+  withFirebase,
 )(Search);

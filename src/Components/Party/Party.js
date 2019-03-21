@@ -1,10 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { compose } from 'recompose';
 import classNames from 'classnames';
 import {
   withStyles, AppBar, Toolbar, IconButton, Typography, Drawer,
-  Divider, List, ListItem, ListItemText, Grid,
+  Divider, List, ListItem, ListItemText, Grid, Fab,
 } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import { Link } from 'react-router-dom';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
@@ -80,6 +82,12 @@ const styles = theme => ({
     },
   },
 
+  fab: {
+    margin: theme.spacing.unit,
+    color: theme.palette.common.lightBlack,
+    backgroundColor: theme.palette.common.green,
+  },
+
 });
 
 class Party extends Component {
@@ -101,6 +109,33 @@ class Party extends Component {
     };
 
     // TODO: Retrieve party from firestore IN CASE OF CODE
+    // Fells like this should be in comp. did update/mount
+    /* const { partyId } = this.state;
+    const [party, setParty] = useState({});
+    useEffect(() => {
+      const handleNewSongs = (songs) => {
+        const newItems = [];
+        songs.forEach((song) => {
+          console.log('[QueueList] Found song: ', song.data().spotifyUri);
+          const item = {
+            artist: song.data().artist,
+            title: song.data().title,
+            album: song.data().album,
+            picture: song.data().picture,
+            spotifyUri: song.data().spotifyUri,
+          };
+          newItems.push(item);
+        });
+        setItems(newItems);
+      };
+
+      const unsubscribe = firebase.db.collection('parties').doc(partyId)
+        .onSnapshot(handleNewSongs);
+
+      return () => {
+        unsubscribe();
+      };
+    }, []); */
   }
 
   /*
@@ -109,7 +144,7 @@ class Party extends Component {
 
     Drawer      - ish done
     Queue list  - ish done
-    TODO: Fab button (add tracks, search for tracks)
+    Fab button (add tracks, search for tracks) - done
     TODO: Add button in search so we can go back to queue
 
     // later
@@ -130,6 +165,8 @@ class Party extends Component {
   render() {
     const { classes, theme } = this.props;
     const { drawerOpen } = this.state;
+
+    const SearchLink = props => <Link to="/search" {...props} />;
 
     return (
       <div className={classes.root}>
@@ -194,6 +231,20 @@ class Party extends Component {
           >
             <Grid item xs={12} sm={8} md={6}>
               <Queue />
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="flex-end"
+              >
+                <Fab
+                  aria-label="Add"
+                  className={classes.fab}
+                  component={SearchLink}
+                >
+                  <AddIcon />
+                </Fab>
+              </Grid>
             </Grid>
           </Grid>
         </main>

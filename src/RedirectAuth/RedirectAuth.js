@@ -3,8 +3,6 @@ import { withSpotify } from '../Spotify';
 
 const RedirectAuth = (props) => {
   console.log('[RedirectAuth] Redirect Auth page');
-  console.log(props);
-
   const { spotify, location } = props;
 
   const query = location.search.substring(1);
@@ -17,11 +15,25 @@ const RedirectAuth = (props) => {
   });
 
   const url = location.pathname + location.search;
-  spotify.codeCallback(params, url);
+
+  const codeCallback = () => {
+    spotify.codeCallback(params, url).then(() => {
+      console.log('Awesome');
+    }).catch((e) => {
+      console.log(e);
+    });
+  };
 
   return (
     <div>
       Redirect auth page
+
+      <button onClick={() => codeCallback()}>
+        Get tokn
+      </button>
+      <button onClick={() => spotify.test()}>
+        REFRESH THAT SHIT
+      </button>
     </div>
   );
 };

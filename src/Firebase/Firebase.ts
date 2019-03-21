@@ -1,6 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/functions';
+import 'firebase/auth';
 
 // Initialize Firebase
 var config = {
@@ -15,18 +16,23 @@ var config = {
 class Firebase {
   db: firebase.firestore.Firestore;
   functions: firebase.functions.Functions;
+  auth: firebase.auth.Auth;
 
   constructor() {
     firebase.initializeApp(config);
     this.db = firebase.firestore();
-
     this.functions = firebase.functions();
+    this.auth = firebase.auth();
     
     if(process.env.NODE_ENV === 'development') {
       console.log('[Firebase] Running in dev mode, setting firebase functions address to localhost:3001');
       this.functions.useFunctionsEmulator('http://localhost:3001');
     }
   }
+
+  test = () => {
+    
+  };
 }
 
 export default Firebase;

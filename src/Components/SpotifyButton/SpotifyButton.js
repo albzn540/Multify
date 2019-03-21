@@ -32,9 +32,9 @@ const SpotifyButton = (props) => {
         {value}
       </Typography>
     </Button>
-  )
-}
+  );
+};
 
 export default compose(
-  withStyles(styles)
+  withStyles(styles),
 )(SpotifyButton);

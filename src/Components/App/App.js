@@ -8,7 +8,7 @@ import Spotify, { SpotifyContext } from '../../Spotify';
 
 import JoinParty from '../JoinParty';
 import Landing from '../Landing';
-import RedirectAuth from '../../RedirectAuth/RedirectAuth';
+import Login from '../Login';
 import Search from '../Search';
 import Queue from '../Queue';
 
@@ -49,7 +49,7 @@ const App = () => (
         <FirebaseContext.Provider value={firebase}>
           <SpotifyContext.Provider value={spotify}>
             <Route exact path="/" component={Landing} />
-            <Route path="/redirectauth" component={RedirectAuth} />
+            <Route path="/login" component={Login} />
             <Route path="/joinparty" component={JoinParty} />
             <Route path="/search" component={Search} />
             <Route path="/queue" component={Queue} />

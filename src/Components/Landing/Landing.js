@@ -22,6 +22,7 @@ const Landing = (props) => {
   const { classes, spotify } = props;
 
   const JoinPartyLink = props => <Link to="/joinparty" {...props} />;
+  const LoginLink = props => <Link to="/login" {...props} />;
 
   return (
     <Grid
@@ -40,7 +41,7 @@ const Landing = (props) => {
         <SpotifyButton
           id="create-party-button"
           value="Create a party"
-          onClick={() => spotify.authorizeWithSignIn()}
+          component={LoginLink}
         />
         <SpotifyButton
           id="join-party-button"

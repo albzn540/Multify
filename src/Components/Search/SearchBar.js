@@ -4,28 +4,24 @@ import { withStyles, TextField, Grid } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
-  root: {
-    height: '100vh',
-    backgroundColor: theme.palette.black.main,
-  },
   textField: {
     margin: theme.spacing.unit,
   },
   cssLabel: {
-    color: theme.palette.white.main,
+    color: theme.palette.secondary.main,
   },
   cssOutlinedInput: {
     '&$cssFocused $notchedOutline': {
-      borderColor: `${theme.palette.green.main} !important`,
+      borderColor: `${theme.palette.common.green} !important`,
     },
   },
   cssFocused: {},
   notchedOutline: {
     borderWidth: '1px',
-    borderColor: `${theme.palette.white.main} !important`,
+    borderColor: `${theme.palette.secondary.main} !important`,
   },
   multilineColor: {
-    color: theme.palette.white.main,
+    color: theme.palette.secondary.main,
   },
 });
 

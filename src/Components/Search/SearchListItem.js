@@ -12,10 +12,10 @@ import { compose } from 'recompose';
 
 const styles = theme => ({
   listText: {
-    color: theme.palette.white.main,
+    color: theme.palette.secondary.main,
   },
   listSubText: {
-    color: theme.palette.lightGrey.main,
+    color: theme.palette.common.lightGrey,
   },
 });
 

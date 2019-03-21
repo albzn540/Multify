@@ -109,7 +109,7 @@ class Party extends Component {
       hideQueue: false,
       hideSearch: true,
       partyId,
-      partyName: 'default name',
+      partyName: '',
     };
 
     // TODO: Retrieve party from firestore IN CASE OF CODE
@@ -123,7 +123,7 @@ class Party extends Component {
       .get()
       .then((doc) => {
         this.setState({
-          partyName: doc.name,
+          partyName: doc.data().name,
         });
       })
       .catch((err) => {
@@ -166,7 +166,7 @@ class Party extends Component {
 
   render() {
     const { classes, theme } = this.props;
-    const { drawerOpen, hideQueue, hideSearch, partyId } = this.state;
+    const { drawerOpen, hideQueue, hideSearch, partyId, partyName } = this.state;
 
     return (
       <div className={classes.root}>
@@ -188,7 +188,7 @@ class Party extends Component {
               <MenuIcon />
             </IconButton>
             <Typography variant="h5">
-              Party {/* TODO: Take name from party */}
+              {partyName}
             </Typography>
           </Toolbar>
         </AppBar>

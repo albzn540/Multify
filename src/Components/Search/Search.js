@@ -8,6 +8,7 @@ import {
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
 import { withSpotify } from '../../Spotify';
+import { withFirebase } from '../../Firebase';
 
 const styles = theme => ({
   root: {
@@ -31,6 +32,7 @@ class Search extends React.Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
+    this.addTrack = this.addTrack.bind(this);
   }
 
   handleChange(event) {
@@ -58,6 +60,28 @@ class Search extends React.Component {
       });
   }
 
+  addTrack(track, uri) {
+    const reducedTrack = {
+      id: track.id,
+      artists: track.artists.map(artist => artist.name),
+      name: track.name,
+      album: {
+        images: track.album.images,
+        name: track.album.name,
+      },
+    };
+    const { firebase } = this.props;
+    firebase.db.collection('parties').doc('BAQcvjUE6ongzcsSw7fX')
+      .collection('songs').doc(uri)
+      .set(reducedTrack)
+      .then(() => {
+        console.log('[Search] Track added!');
+      })
+      .catch((err) => {
+        console.error('[Search] Error adding track!', err);
+      });
+  }
+
   render() {
     const { classes } = this.props;
     const { tracks } = this.state;
@@ -72,7 +96,7 @@ class Search extends React.Component {
         spacing={16}
       >
         <SearchBar onChange={this.handleChange} keyPress={keyPress} />
-        <SearchList tracks={tracks} />
+        <SearchList tracks={tracks} addTrack={this.addTrack} />
       </Grid>
     );
   }
@@ -81,4 +105,5 @@ class Search extends React.Component {
 export default compose(
   withStyles(styles),
   withSpotify,
+  withFirebase,
 )(Search);

@@ -7,6 +7,7 @@ import {
 
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
+import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
   root: {
@@ -15,23 +16,53 @@ const styles = theme => ({
   },
 });
 
+const keyPress = (event, onChange) => {
+  if (event.key === 'Enter') {
+    onChange(event.target);
+    event.preventDefault();
+  }
+};
+
 class Search extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchString: 'The',
+      tracks: [],
     };
 
     this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange(event) {
-    this.setState({ searchString: event.value });
+    console.log('handling');
+    const searchStr = event.value;
+    const { spotify } = this.props;
+    const items = [];
+    spotify.client.searchTracks(searchStr)
+      .then((data) => {
+        console.log('[SearchList] Found tracks', data);
+        data.tracks.items.forEach((track) => {
+          const item = {
+            album: track.album,
+            artists: track.artists,
+            id: track.id,
+            name: track.name,
+            uri: track.uri,
+          };
+          items.push(item);
+        });
+      }, (err) => {
+        console.log('[SearchList] Search error:', err);
+      });
+
+    this.setState({
+      tracks: items,
+    });
   }
 
   render() {
     const { classes } = this.props;
-    const { searchString } = this.state;
+    const { tracks } = this.state;
 
     return (
       <Grid
@@ -42,8 +73,8 @@ class Search extends React.Component {
         className={classes.root}
         spacing={16}
       >
-        <SearchBar onChange={this.handleChange} />
-        <SearchList searchString={searchString} />
+        <SearchBar onChange={this.handleChange} keyPress={keyPress} />
+        <SearchList tracks={tracks} />
       </Grid>
     );
   }
@@ -51,4 +82,5 @@ class Search extends React.Component {
 
 export default compose(
   withStyles(styles),
+  withSpotify,
 )(Search);

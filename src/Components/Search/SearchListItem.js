@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 
 const SearchListItem = (props) => {
-  const { album, artist, id, is_playable, name, uri } = props;
+  const { album, artist, id, name, uri } = props;
 
   return (
     <ListItem>

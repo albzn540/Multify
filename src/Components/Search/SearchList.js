@@ -20,7 +20,6 @@ const SearchList = (props) => {
           album: song.album,
           artists: song.artists,
           id: song.id,
-          is_playable: song.is_playable,
           name: song.name,
           uri: song.uri,
         };
@@ -31,8 +30,8 @@ const SearchList = (props) => {
 
     const unsubscribe = spotify.client.searchTracks(searchString)
       .then((data) => {
-        console.log('Here are the songs', data);
-        handleNewSearch(data);
+        console.log('[SearchList] Found songs', data);
+        handleNewSearch(data.tracks.items);
       }, (err) => {
         console.log('[SearchList] Search error:', err);
       });
@@ -42,21 +41,22 @@ const SearchList = (props) => {
     };
   }, []);
 
-  console.log('[SearchList] got:', searchString);
+  console.log('[SearchList] Got string:', searchString);
+
+  /* {items.map(item => (
+    <SearchListItem
+      album={item.album}
+      artists={item.artists}
+      id={item.id}
+      name={item.name}
+      uri={item.uri}
+    />
+  ))} */
 
   return (
     <Grid item>
       <List dense={false}>
-        {items.map(item => (
-          <SearchListItem
-            album={item.album}
-            artists={item.artists}
-            id={item.id}
-            is_playable={item.is_playable}
-            name={item.name}
-            uri={item.uri}
-          />
-        ))}
+        {console.log('hello', items)}
       </List>
     </Grid>
   );

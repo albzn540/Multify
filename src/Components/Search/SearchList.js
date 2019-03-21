@@ -1,18 +1,32 @@
 import React from 'react';
 import { compose } from 'recompose';
 import {
+  withStyles,
   Grid,
   List,
 } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
 import SearchListItem from './SearchListItem';
 
+const styles = () => ({
+  root: {
+    width: '100%',
+    maxWidth: '50vh',
+    position: 'relative',
+    overflow: 'auto',
+    maxHeight: '50vh',
+  },
+});
+
 const SearchList = (props) => {
-  const { tracks, addTrack } = props;
+  const { tracks, addTrack, classes } = props;
 
   return (
     <Grid item>
-      <List dense={false}>
+      <List
+        dense={false}
+        className={classes.root}
+      >
         {tracks.map(track => (
           <SearchListItem
             album={track.album}
@@ -29,5 +43,6 @@ const SearchList = (props) => {
 };
 
 export default compose(
+  withStyles(styles),
   withSpotify,
 )(SearchList);

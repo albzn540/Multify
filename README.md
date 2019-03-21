@@ -31,6 +31,6 @@ eg. Login page background styling.
 Is what we use for the heavy design and layouting.
 
 ### If there are any questions about .env variables
-Conntact:\
+Contact:\
 simflo@kth.se or\
 albinwi@kth.se

@@ -45,7 +45,7 @@ class Spotify {
         // token has not yet expired
         console.log('[Spotify] Token has not yet expired');
         refreshToken = spotifyData.refresh_token;
-        this.refreshTokenCallback(); // refresh token every 3000 seconds
+        setTimeout(this.refreshTokenCallback, tokenExpiresIn * 1000 - 3000);
         this.client.setAccessToken(spotifyData.access_token);
       }
     }
@@ -53,12 +53,12 @@ class Spotify {
 
   spotifyUser = () => {
     const accToken = this.client.getAccessToken();
-    console.log('[Spotify] spotifyUser', accToken);
-    return accToken === '' ? null : this.client.getAccessToken();
+    console.log('[Spotify][spotifyUser]', accToken);
+    return accToken === '' ? null : accToken;
   };
 
   authorizeWithSpotify = async (url: string = '') => {
-    console.log('[Spotify] authorizeWithSpotify()');
+    console.log('[Spotify][authorizeWithSpotify]');
 
     if (!this.spotifyUser()) {
       const authenticate = fb.functions.httpsCallable('authenticateSpotifyUser');
@@ -82,39 +82,43 @@ class Spotify {
 
   loginUser = async (url: string = '') => {
     // Check if we're already logged in
-    if (!fb.currentUser()) {
-      // Check if we already have an access token
-      if (!this.spotifyUser()) {
-        // Retrieve Spotify code
-        await this.authorizeWithSpotify(url).catch(err => {
-          return Promise.resolve(err);
-        });
-      }
-
-      const verifiedUser = await this.client.getMe();
-      console.log('[Spotify] Verified Spotify user', verifiedUser);
-      const { email, id } = verifiedUser;
-
-      return fb.auth.signInWithEmailAndPassword(email, id).then(userCredentials => {
-        // User exists
-        return userCredentials.user;
-      }).catch(error => {
-        // User does not exist
-        console.error(error.message);
-        console.log("Creating new user");
-        return fb.auth.createUserWithEmailAndPassword(email, id).then(userCredentials => {
-          const user = userCredentials.user;
-          if(user != null) {
-            user.updateProfile({
-              displayName: verifiedUser.display_name
-            });
-          }
-          return user;
-        });
+    // Check if we already have an access token
+    if (!this.spotifyUser()) {
+      // Retrieve Spotify code
+      
+      console.log('[Spotify][loginUser] Retrieve accesstoken...', this.spotifyUser());
+      await this.authorizeWithSpotify(url).catch(err => {
+        return Promise.resolve(err);
       });
+      console.log('[Spotify][loginUser] Retrieved accesstoken!', this.spotifyUser());
     }
 
-    return Promise.resolve(fb.currentUser());
+    if(fb.currentUser()) {
+      return Promise.resolve(fb.currentUser());
+    }
+
+    const verifiedUser = await this.client.getMe();
+    console.log('[Spotify][loginUser] Verified Spotify user', verifiedUser);
+    const { email, id } = verifiedUser;
+
+    return fb.auth.signInWithEmailAndPassword(email, id).then(userCredentials => {
+      // User exists
+      return userCredentials.user;
+    }).catch(error => {
+      // User does not exist
+      console.error(error.message);
+      console.log("[Spotify][loginUser] Creating new user");
+      return fb.auth.createUserWithEmailAndPassword(email, id).then(userCredentials => {
+        const user = userCredentials.user;
+        if (user != null) {
+          user.updateProfile({
+            displayName: verifiedUser.display_name
+          });
+        }
+        return user;
+      });
+    });
+
   }
 
   saveToLocalStorage = () => {
@@ -128,20 +132,21 @@ class Spotify {
   };
 
   refreshTokenCallback = () => {
-    console.log('[Spotify] refreshTokenCallback');
+    console.log('[Spotify][refreshTokenCallback]');
     const refreshFunction = fb.functions.httpsCallable('refreshToken');
     refreshFunction({ refreshToken }).then(res => {
       const { data } = res;
       tokenExpiresIn = data.expires_in;
       this.saveToLocalStorage();
       this.client.setAccessToken(data.access_token);
+      console.info('[Spotify][refreshTokenCallback] New access token', data.access_token);
     });
 
-    setTimeout(this.refreshTokenCallback, tokenExpiresIn * 1000);
+    setTimeout(this.refreshTokenCallback, tokenExpiresIn * 1000 - 3000);
   }
 
   createParty = () => {
-    console.log('[Spotify] Creating party')
+    console.log('[Spotify][createParty] Creating party')
   };
 
 }

@@ -148,7 +148,7 @@ class Party extends Component {
     Drawer      - ish done
     Queue list  - ish done
     Fab button (add tracks, search for tracks) - done
-    TODO: Add button in search so we can go back to queue
+    Add button in search so we can go back to queue - done
 
     // later
     TODO: Display party code on top (in case youre logged in as party amdin)

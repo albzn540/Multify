@@ -151,6 +151,7 @@ class Party extends Component {
     TODO: Display party code on top (in case youre logged in as party amdin)
     TODO: Add share button to sidebar
     TODO: Customize sidebar for admin and anonomous users
+    TODO: Spacing 0 to remove scroll issues?
   */
 
 
@@ -164,9 +165,9 @@ class Party extends Component {
 
   render() {
     const { classes, theme } = this.props;
-    const { drawerOpen } = this.state;
+    const { drawerOpen, partyId } = this.state;
 
-    const SearchLink = props => <Link to="/search" {...props} />;
+    const SearchLink = props => <Link to="/search" {...props} partyId={partyId} />;
 
     return (
       <div className={classes.root}>

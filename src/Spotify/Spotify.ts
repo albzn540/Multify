@@ -5,6 +5,7 @@ declare class Firebase {
   db: firebase.firestore.Firestore;
   functions: firebase.functions.Functions;
   auth: firebase.auth.Auth;
+  user: null | firebase.User;
 }
 
 const config = {
@@ -59,49 +60,50 @@ class Spotify {
     return accToken === '' ? null : this.client.getAccessToken();
   };
 
-  authorizeWithSpotify = () => {
-    if (!this.spotifyUser()) {
-      console.log('[Spotify] Authorizing');
-      const url = authClient.code.getUri();
-      window.location.assign(url);
-    } else {
-      console.log('[Spotify] Already authenticated');
-    }
-  };
-
-  authenticateSpotifyUser = async (url: string) => {
+  authorizeWithSpotify = async (url: string = '') => {
     if (!this.spotifyUser()) {
       const authenticate = fb.functions.httpsCallable('authenticateSpotifyUser');
       return authenticate({ url }).then(async response => {
-        const { data } = response;
-        console.log(data);
-  
-        const { access_token, refresh_token, expires_in } = data;
+        console.log('[Spotify] Authenticating');
+        const { data: { access_token, refresh_token, expires_in } } = response;
         tokenExpiresIn = expires_in;
         refreshToken = refresh_token;
         this.saveToLocalStorage();
         this.client.setAccessToken(access_token);
+      }).catch(e => {
+        console.error(e);
+        console.info('[Spotify] Not yet authorizing, autorizing...');
+        const uri = authClient.code.getUri();
+        window.location.assign(uri);
       });
     } else {
       return Promise.resolve('Already authenticated');
     }
   };
 
-  loginUser = async () => {
-    const verifiedUser = await this.client.getMe();
+  loginUser = async (url: string = '') => {
+    // Check if we're already logged in
+    if(!fb.user) {
+      // check if we have an access token
+      if(this.spotifyUser()) {
+        const verifiedUser = await this.client.getMe();
+        console.log('Verified Spotify user', verifiedUser);
+        const { email, id } = verifiedUser;
 
-    console.log('Verified Spotify user', verifiedUser);
-    const { email, id } = verifiedUser;
-
-    fb.auth.signInWithEmailAndPassword(email, id).then(loggedInUser => {
-      // User exists
-      this.setUser(loggedInUser);
-    }).catch(error => {
-      // user does not exist
-      console.error(error.message);
-      console.log("Creating new user");
-      fb.auth.createUserWithEmailAndPassword(email, id).then(user => this.setUser(user));
-    });
+        fb.auth.signInWithEmailAndPassword(email, id).then(loggedInUser => {
+          // User exists
+          this.setUser(loggedInUser);
+        }).catch(error => {
+          // user does not exist
+          console.error(error.message);
+          console.log("Creating new user");
+          fb.auth.createUserWithEmailAndPassword(email, id).then(user => this.setUser(user));
+        });
+      } else {
+        // Retrieve spotify code
+        this.authorizeWithSpotify(url);
+      }
+    }
   }
 
   setUser = (user: firebase.auth.UserCredential) => {

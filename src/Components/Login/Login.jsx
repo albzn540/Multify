@@ -27,21 +27,13 @@ const Login = (props) => {
 
   const [isLoggedIn, setLoggedIn] = useState(false);
 
-  spotify.authorizeWithSpotify();
-
   useEffect(() => {
-    if (!spotify.spotifyUser()) {
-      // Log in user
-      console.log('[Login] Authenticate user');
-      const url = location.pathname + location.search;
-      spotify.authenticateSpotifyUser(url).then((info) => {
-        console.log(info);
-      }).catch((error) => {
-        console.log(error);
-      });
-    } else {
-      setLoggedIn(true);
-    }
+    const url = location.pathname + location.search;
+    spotify.loginUser(url).then((e) => {
+      console.log(e);
+    }).catch((e) => {
+      console.log(e);
+    });
   }, []);
 
   const text = () => {

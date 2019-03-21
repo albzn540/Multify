@@ -26,11 +26,14 @@ const Login = (props) => {
   } = props;
 
   const [isLoggedIn, setLoggedIn] = useState(false);
+  const [name, setName] = useState('');
 
   useEffect(() => {
     const url = location.pathname + location.search;
-    spotify.loginUser(url).then((e) => {
-      console.log(e);
+    spotify.loginUser(url).then((user) => {
+      console.log(user);
+      setLoggedIn(true);
+      setName(user.displayName);
     }).catch((e) => {
       console.log(e);
     });
@@ -40,7 +43,7 @@ const Login = (props) => {
     if (isLoggedIn) {
       return (
         <Typography variant="h3" className={classes.text}>
-          LOGGED IN MA MAN
+          Hi, {name}!
         </Typography>
       );
     } else {

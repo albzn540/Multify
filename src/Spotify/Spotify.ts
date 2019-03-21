@@ -5,7 +5,7 @@ declare class Firebase {
   db: firebase.firestore.Firestore;
   functions: firebase.functions.Functions;
   auth: firebase.auth.Auth;
-  user: null | firebase.User;
+  currentUser(): null | firebase.User;
 }
 
 const config = {
@@ -24,19 +24,16 @@ let tokenExpiresIn: number;
 
 class Spotify {
   client: SpotifyWebApi.SpotifyWebApiJs;
-  firebaseUser: null | firebase.auth.UserCredential;
-  status: 'pending' | 'done';
 
   constructor(firebase: Firebase) {
     // Initialize private stuff
     fb = firebase;
-    this.firebaseUser = null;
     tokenExpiresIn = 0;
 
     // Public stuff
     this.client = new SpotifyWebApi();
-    this.status = 'pending';
 
+    // Check for stored data
     const storedData = localStorage.getItem('spotify_data');
     if (storedData) {
       const spotifyData = JSON.parse(storedData);
@@ -85,7 +82,7 @@ class Spotify {
 
   loginUser = async (url: string = '') => {
     // Check if we're already logged in
-    if (!fb.user) {
+    if (!fb.currentUser()) {
       // Check if we already have an access token
       if (!this.spotifyUser()) {
         // Retrieve Spotify code
@@ -98,28 +95,26 @@ class Spotify {
       console.log('[Spotify] Verified Spotify user', verifiedUser);
       const { email, id } = verifiedUser;
 
-      return fb.auth.signInWithEmailAndPassword(email, id).then(user => {
+      return fb.auth.signInWithEmailAndPassword(email, id).then(userCredentials => {
         // User exists
-        this.setUser(user);
-        return user;
+        return userCredentials.user;
       }).catch(error => {
         // User does not exist
         console.error(error.message);
         console.log("Creating new user");
-        return fb.auth.createUserWithEmailAndPassword(email, id).then(user => {
-          this.setUser(user);
+        return fb.auth.createUserWithEmailAndPassword(email, id).then(userCredentials => {
+          const user = userCredentials.user;
+          if(user != null) {
+            user.updateProfile({
+              displayName: verifiedUser.display_name
+            });
+          }
           return user;
         });
       });
     }
 
-    return Promise.resolve(fb.user);
-  }
-
-  setUser = (user: firebase.auth.UserCredential) => {
-    console.log('[Spotify] Set user', user);
-    this.firebaseUser = user;
-    this.status = 'done';
+    return Promise.resolve(fb.currentUser());
   }
 
   saveToLocalStorage = () => {

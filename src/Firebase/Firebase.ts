@@ -17,14 +17,12 @@ class Firebase {
   db: firebase.firestore.Firestore;
   functions: firebase.functions.Functions;
   auth: firebase.auth.Auth;
-  user: null | firebase.User;
 
   constructor() {
     firebase.initializeApp(config);
     this.db = firebase.firestore();
     this.functions = firebase.functions();
     this.auth = firebase.auth();
-    this.user = null;
 
     if(process.env.NODE_ENV === 'development') {
       console.log('[Firebase] Running in dev mode, setting firebase functions address to localhost:3001');
@@ -34,13 +32,15 @@ class Firebase {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         console.info('[Firebase] User logged in', user);
-        this.user = user;
       } else {
-        console.info('[Firebase] User logged out', this.user);
-        this.user = null;
+        console.info('[Firebase] User logged out', user);
       }
     });
   }
+
+  currentUser = () => {
+    return firebase.auth().currentUser;
+  };
 
   test = () => {
     

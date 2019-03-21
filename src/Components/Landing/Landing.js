@@ -9,10 +9,10 @@ import { withSpotify } from '../../Spotify';
 const styles = theme => ({
   root: {
     height: '100vh',
-    backgroundColor: theme.palette.black.main,
+    backgroundColor: theme.palette.background.main,
   },
   logo: {
-    color: theme.palette.green.main,
+    color: theme.palette.common.green,
     paddingBottom: '80px',
     fontSize: '260px',
   },

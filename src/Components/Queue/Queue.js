@@ -12,7 +12,7 @@ import QueueList from './QueueList';
 const styles = theme => ({
   root: {
     height: '100vh',
-    backgroundColor: theme.palette.black.main,
+    backgroundColor: theme.palette.background.main,
   },
 });
 

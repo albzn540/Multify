@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { compose } from 'recompose';
 import classNames from 'classnames';
 import {
-  withStyles, AppBar, Toolbar, IconButton, Typography, Drawer, Divider, List, ListItem, ListItemText,
+  withStyles, AppBar, Toolbar, IconButton, Typography, Drawer,
+  Divider, List, ListItem, ListItemText, Grid,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 import { withFirebase } from '../../Firebase';
-import Queue from '../Queue';
+import Queue from '../Queue2';
 
 const drawerWidth = 240;
 
@@ -17,14 +18,14 @@ const styles = theme => ({
     display: 'flex',
     // flexGrow: '1', // might not be needed
     height: '100vh',
-    backgroundColor: theme.palette.black.main,
+    backgroundColor: theme.palette.background.main,
   },
   hide: {
     display: 'none',
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing.unit * 3,
+    // padding: theme.spacing.unit * 3, // BREAKS CHILD COMPONENTS IN MY OPINION
   },
   toolbar: {
     display: 'flex',
@@ -33,7 +34,6 @@ const styles = theme => ({
     // padding: '0 8px', // uncomment for more 'room' in the drawer
     ...theme.mixins.toolbar,
   },
-
   // Make sure app bar renders ABOVE drawer
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -90,7 +90,7 @@ class Party extends Component {
 
     this.state = {
       user: null,
-      drawerOpen: true,
+      drawerOpen: false,
     };
   }
 
@@ -167,7 +167,14 @@ class Party extends Component {
 
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          <Queue />
+          <Grid
+            container
+            justify="center"
+          >
+            <Grid item xs={12} sm={8} md={6}>
+              <Queue />
+            </Grid>
+          </Grid>
         </main>
       </div>
     );

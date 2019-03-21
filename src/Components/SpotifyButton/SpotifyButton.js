@@ -6,12 +6,7 @@ const styles = theme => ({
   button: {
     borderRadius: '50px',
     marginBottom: '10px',
-  },
-  buttonText: {
-    color: theme.palette.textPrimary.main,
-    fontWeight: '500',
-    fontSize: '0.9375rem',
-  },
+  }
 });
 
 const SpotifyButton = (props) => {
@@ -26,9 +21,7 @@ const SpotifyButton = (props) => {
       className={classes.button}
       fullWidth
     >
-      <Typography
-        className={classes.buttonText}
-      >
+      <Typography>
         {value}
       </Typography>
     </Button>

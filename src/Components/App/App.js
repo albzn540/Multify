@@ -18,20 +18,16 @@ const theme = createMuiTheme({
     primary: {
       main: '#1DB954',
     },
-    green: {
-      main: '#1DB954',
+    secondary: {
+      main: '#fff',
     },
-    white: {
-      main: '#FFFFFF',
+    common: {
+      green: '#1DB954',
+      ligthBlack: '#191414',
     },
-    black: {
-      main: '#191414',
-    },
-    textPrimary: {
-      main: '#FFFFFF',
-    },
+    type: 'dark',
     background: {
-      default: '#191414',
+      main: '#191414',
     },
   },
   typography: { useNextVariants: true },
@@ -40,6 +36,8 @@ const theme = createMuiTheme({
 const history = createBrowserHistory();
 const firebase = new Firebase();
 const spotify = new Spotify(firebase);
+
+console.log(JSON.stringify(theme));
 
 const App = () => (
   <div>

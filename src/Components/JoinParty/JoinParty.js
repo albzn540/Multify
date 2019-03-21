@@ -7,10 +7,10 @@ import SpotifyButton from '../SpotifyButton';
 const styles = theme => ({
   root: {
     height: '100vh',
-    backgroundColor: theme.palette.black.main,
+    backgroundColor: theme.palette.background.main,
   },
   logo: {
-    color: theme.palette.green.main,
+    color: theme.palette.common.green,
     paddingBottom: '80px',
     fontSize: '260px',
   },
@@ -18,20 +18,20 @@ const styles = theme => ({
     margin: theme.spacing.unit,
   },
   cssLabel: {
-    color: theme.palette.white.main,
+    color: theme.palette.common.white,
   },
   cssOutlinedInput: {
     '&$cssFocused $notchedOutline': {
-      borderColor: `${theme.palette.green.main} !important`,
+      borderColor: `${theme.palette.common.green} !important`,
     },
   },
   cssFocused: {},
   notchedOutline: {
     borderWidth: '1px',
-    borderColor: `${theme.palette.white.main} !important`,
+    borderColor: `${theme.palette.common.white} !important`,
   },
   multilineColor: {
-    color: theme.palette.white.main,
+    color: theme.palette.common.white,
   },
 });
 

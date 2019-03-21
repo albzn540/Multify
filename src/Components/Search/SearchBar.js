@@ -55,7 +55,7 @@ const SearchBar = (props) => {
         }}
         onKeyPress={(ev) => {
           if (ev.key === 'Enter') {
-            console.log('[SearchBar] Entered: ', ev.target.value);
+            console.log('[SearchBar] Entered string: ', ev.target.value);
             onChange(ev.target);
             ev.preventDefault();
           }

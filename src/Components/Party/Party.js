@@ -7,11 +7,12 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import MenuIcon from '@material-ui/icons/Menu';
 // import { isMobile } from 'react-device-detect';
-import DesktopDrawer from '../DesktopDrawer';
-
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { withFirebase } from '../../Firebase';
+import DesktopDrawer from '../DesktopDrawer';
 import Queue from '../Queue2';
 import Search from '../Search';
+
 
 const drawerWidth = 240;
 
@@ -49,7 +50,7 @@ const styles = theme => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
-  menuButton: {
+  toolbarButton: {
     marginLeft: 12,
     marginRight: 36,
   },
@@ -71,7 +72,7 @@ class Party extends Component {
     // If there's more than 2 arguments, a party code was sent!
     const urlParams = pathname.split('/');
     const partyId = urlParams.length > 2 ? urlParams[2] : null;
-    if (partyId) console.info('[Party] Party code:', partyId);
+    if (partyId) console.info('[Party] Party id:', partyId);
 
     this.state = {
       user: null,
@@ -107,8 +108,8 @@ class Party extends Component {
 
     Drawer      - ish done
     Queue list  - ish done
-    Fab button (add tracks, search for tracks) - done
-    Add button in search so we can go back to queue - done
+    Fab button (add tracks, search for tracks) - ish done
+    Add button in search so we can go back to queue - ish done
 
     // later
     TODO: Display party code on top (in case youre logged in as party amdin)
@@ -136,7 +137,7 @@ class Party extends Component {
   render() {
     const { classes } = this.props;
     const {
-      drawerOpen, hideQueue, hideSearch, partyId, partyName,
+      drawerOpen, hideSearch, partyName, partyId,
     } = this.state;
     const isMobile = true;
 
@@ -149,16 +150,28 @@ class Party extends Component {
           })}
         >
           <Toolbar disableGutters={!drawerOpen}>
-            <IconButton
-              aria-label="Open dawer"
-              color="inherit"
-              onClick={this.handleDrawerOpen}
-              className={classNames(classes.menuButton, {
-                [classes.hide]: drawerOpen,
-              })}
-            >
-              <MenuIcon />
-            </IconButton>
+            {hideSearch ? (
+              <IconButton
+                aria-label="Open dawer"
+                color="inherit"
+                onClick={this.handleDrawerOpen}
+                className={classNames(classes.toolbarButton, {
+                  [classes.hide]: drawerOpen,
+                })}
+              >
+                <MenuIcon />
+              </IconButton>
+            ) : (
+              <IconButton
+                aria-label="Back to party"
+                color="inherit"
+                onClick={this.handleSwitchView}
+                className={classes.toolbarButton}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+            )}
+
             <Typography variant="h5">
               {partyName}
             </Typography>
@@ -174,7 +187,7 @@ class Party extends Component {
           />
         )}
 
-        { hideSearch ? (
+        {hideSearch ? (
           <main className={classes.content}>
             <div className={classes.toolbar} />
             <Grid
@@ -182,7 +195,7 @@ class Party extends Component {
               justify="center"
             >
               <Grid item xs={12} sm={8} md={6}>
-                <Queue />
+                <Queue partyId={partyId} />
                 <Grid
                   container
                   direction="row"
@@ -208,7 +221,7 @@ class Party extends Component {
               justify="center"
             >
               <Grid item xs={12} sm={8} md={6}>
-                <Search switchView={this.handleSwitchView} />
+                <Search />
               </Grid>
             </Grid>
           </main>

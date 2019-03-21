@@ -34,10 +34,12 @@ const styles = theme => ({
 
 const SongListItem = (props) => {
   const {
-    classes, name, artist, album, albumUrl,
+    classes, name, artists, album, albumUrl,
   } = props;
 
-  const artistAndAlbum = `${artist} - ${album}`;
+  const concatArtists = artists.join(', ');
+
+  const artistAndAlbum = `${concatArtists} - ${album}`;
 
   return (
     <ListItem className={classes.root}>

@@ -42,6 +42,10 @@ class Firebase {
     return firebase.auth().currentUser;
   };
 
+  partyRef = (id: string) => firebase.firestore().collection('parties').doc(id);
+  
+  partyQueueRef = (id: string) => this.partyRef(id).collection('queue');
+  
   test = () => {
     
   };

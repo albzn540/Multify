@@ -109,36 +109,26 @@ class Party extends Component {
       hideQueue: false,
       hideSearch: true,
       partyId,
+      partyName: 'default name',
     };
 
     // TODO: Retrieve party from firestore IN CASE OF CODE
-    // Fells like this should be in comp. did update/mount
-    /* const { partyId } = this.state;
-    const [party, setParty] = useState({});
-    useEffect(() => {
-      const handleNewSongs = (songs) => {
-        const newItems = [];
-        songs.forEach((song) => {
-          console.log('[QueueList] Found song: ', song.data().spotifyUri);
-          const item = {
-            artist: song.data().artist,
-            title: song.data().title,
-            album: song.data().album,
-            picture: song.data().picture,
-            spotifyUri: song.data().spotifyUri,
-          };
-          newItems.push(item);
+  }
+
+  componentDidMount() {
+    const { firebase } = this.props;
+    const { partyId } = this.state;
+
+    firebase.db.collection('parties').doc(partyId)
+      .get()
+      .then((doc) => {
+        this.setState({
+          partyName: doc.name,
         });
-        setItems(newItems);
-      };
-
-      const unsubscribe = firebase.db.collection('parties').doc(partyId)
-        .onSnapshot(handleNewSongs);
-
-      return () => {
-        unsubscribe();
-      };
-    }, []); */
+      })
+      .catch((err) => {
+        console.error('[Party] Firestore get error:', err);
+      });
   }
 
   /*

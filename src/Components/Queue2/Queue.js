@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { compose } from 'recompose';
 import { withStyles, Typography, List } from '@material-ui/core';
+import { withFirebase } from '../../Firebase';
 import SongListItem from '../SongListItem';
 
 const styles = theme => ({
@@ -16,9 +17,21 @@ const styles = theme => ({
 });
 
 const Queue = (props) => {
-  const { classes, partyId } = props;
+  const { classes, partyId, firebase } = props;
 
-  // TODO: Add listener to queue collection (based on party id)
+  const [songs, setSongs] = useState([]);
+
+  useEffect(() => {
+    const unsibscribeParty = firebase.partyQueueRef(partyId).onSnapshot((snap) => {
+      const newSongs = [];
+      snap.forEach(songDoc => newSongs.push(songDoc.data()));
+      setSongs(songs.concat(newSongs));
+    });
+
+    return () => {
+      unsibscribeParty();
+    };
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -27,7 +40,13 @@ const Queue = (props) => {
       </Typography>
 
       <List>
-        <SongListItem />
+        <SongListItem
+          key="Give you up"
+          name="Give you up"
+          artists={['Rick']}
+          album="pW0ned"
+          albumUrl="https://www.femalefirst.co.uk/image-library/square/1000/r/rick-astley-whenever-you-need-somebody-album-cover.jpg"
+        />
       </List>
 
       <Typography variant="h6" className={classes.text}>
@@ -35,13 +54,15 @@ const Queue = (props) => {
       </Typography>
 
       <List>
-        {/* TODO: Make sure they gather data from firestore */}
-        <SongListItem />
-        <SongListItem />
-        <SongListItem />
-        <SongListItem />
-        <SongListItem />
-        <SongListItem />
+        {songs.map(song => (
+          <SongListItem
+            key={song.name}
+            name={song.name}
+            artists={song.artists}
+            album={song.album.name}
+            albumUrl={song.album.images[2].url}
+          />
+        ))}
       </List>
     </div>
   );
@@ -49,4 +70,5 @@ const Queue = (props) => {
 
 export default compose(
   withStyles(styles),
+  withFirebase,
 )(Queue);

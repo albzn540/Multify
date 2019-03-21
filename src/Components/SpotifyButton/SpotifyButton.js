@@ -6,7 +6,7 @@ const styles = theme => ({
   button: {
     borderRadius: '50px',
     marginBottom: '10px',
-  }
+  },
 });
 
 const SpotifyButton = (props) => {

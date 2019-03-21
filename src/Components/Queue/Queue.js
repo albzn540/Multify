@@ -5,9 +5,9 @@ import {
   Grid,
 } from '@material-ui/core';
 
-import QueueHeader from '../QueueHeader';
-import QueueMenu from '../QueueMenu';
-import QueueList from '../QueueList';
+import QueueHeader from './QueueHeader';
+import QueueMenu from './QueueMenu';
+import QueueList from './QueueList';
 
 const styles = theme => ({
   root: {

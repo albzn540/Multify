@@ -19,7 +19,7 @@ const styles = theme => ({
 });
 
 const Landing = (props) => {
-  const { classes, spotify } = props;
+  const { classes } = props;
 
   const JoinPartyLink = props => <Link to="/joinparty" {...props} />;
   const LoginLink = props => <Link to="/login" {...props} />;

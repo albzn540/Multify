@@ -5,7 +5,7 @@ import {
   List,
 } from '@material-ui/core';
 
-import QueueListItem from '../QueueListItem';
+import ListItem from './QueueListItem';
 import { withFirebase } from '../../Firebase';
 
 const QueueList = (props) => {
@@ -42,7 +42,7 @@ const QueueList = (props) => {
     <Grid item>
       <List dense={false}>
         {items.map(item => (
-          <QueueListItem
+          <ListItem
             artist={item.artist}
             title={item.title}
             album={item.album}

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { compose } from 'recompose';
 import { withStyles, Grid, TextField } from '@material-ui/core';
+// import { Link } from 'react-router-dom';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 import SpotifyButton from '../SpotifyButton';
+import { withFirebase } from '../../Firebase';
 
 const styles = theme => ({
   root: {
@@ -42,7 +44,22 @@ const JoinParty = (props) => {
 
   const formSubmit = (e) => {
     e.preventDefault(); // prevents page refreshing
-    console.log(partyCode);
+
+    const { firebase } = props;
+    firebase.db.collection('parties').where('code', '==', partyCode)
+      .get()
+      .then((querySnapshot) => {
+        let foundDoc = false;
+        querySnapshot.forEach((doc) => {
+          foundDoc = true;
+          console.debug(props);
+          // Maybe Link looks better but this works
+          window.location.assign(`party/${doc.id}`);
+        });
+        if (!foundDoc) {
+          console.log('[JoinParty] No such room');
+        }
+      });
   };
 
   return (
@@ -100,4 +117,5 @@ const JoinParty = (props) => {
 
 export default compose(
   withStyles(styles),
+  withFirebase,
 )(JoinParty);

@@ -1,14 +1,13 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import { compose } from 'recompose';
 import classNames from 'classnames';
 import {
-  withStyles, AppBar, Toolbar, IconButton, Typography, Drawer,
-  Divider, List, ListItem, ListItemText, Grid, Fab,
+  withStyles, AppBar, Toolbar, IconButton, Typography, Grid, Fab,
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { Link } from 'react-router-dom';
 import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+// import { isMobile } from 'react-device-detect';
+import DesktopDrawer from '../DesktopDrawer';
 
 import { withFirebase } from '../../Firebase';
 import Queue from '../Queue2';
@@ -18,6 +17,7 @@ const drawerWidth = 240;
 const styles = theme => ({
   root: {
     display: 'flex',
+    overflowY: 'scroll',
     // flexGrow: '1', // might not be needed
     height: '100vh',
     backgroundColor: theme.palette.background.main,
@@ -30,13 +30,9 @@ const styles = theme => ({
     // padding: theme.spacing.unit * 3, // BREAKS CHILD COMPONENTS IN MY OPINION
   },
   toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    // padding: '0 8px', // uncomment for more 'room' in the drawer
     ...theme.mixins.toolbar,
   },
-  // Make sure app bar renders ABOVE drawer
+  // Make sure app bar renders ABOVE desktop drawer
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
@@ -57,44 +53,18 @@ const styles = theme => ({
     marginRight: 36,
   },
 
-  // Drawer css
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-  },
-  drawerOpen: {
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerClose: {
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: 'hidden',
-    width: theme.spacing.unit * 7 + 1,
-    [theme.breakpoints.up('sm')]: {
-      width: theme.spacing.unit * 9 + 1,
-    },
-  },
-
   fab: {
     margin: theme.spacing.unit,
     color: theme.palette.common.lightBlack,
     backgroundColor: theme.palette.common.green,
   },
-
 });
 
 class Party extends Component {
   constructor(props) {
     super(props);
 
-    const { firebase, classes, location: { pathname } } = props;
+    const { location: { pathname } } = props;
 
     // /party/12345 = ["", "party", "5LJ0rnLKhslTmW357AbS"]
     // If there's more than 2 arguments, a party code was sent!
@@ -154,7 +124,6 @@ class Party extends Component {
     TODO: Spacing 0 to remove scroll issues?
   */
 
-
   handleDrawerOpen = () => {
     this.setState({ drawerOpen: true });
   };
@@ -164,10 +133,9 @@ class Party extends Component {
   };
 
   render() {
-    const { classes, theme } = this.props;
+    const { classes } = this.props;
     const { drawerOpen, partyId } = this.state;
-
-    const SearchLink = props => <Link to="/search" {...props} partyId={partyId} />;
+    const isMobile = true;
 
     return (
       <div className={classes.root}>
@@ -193,36 +161,16 @@ class Party extends Component {
             </Typography>
           </Toolbar>
         </AppBar>
-        <Drawer
-          variant="permanent"
-          open={drawerOpen}
-          className={classNames(classes.drawer, {
-            [classes.drawerOpen]: drawerOpen,
-            [classes.drawerClose]: !drawerOpen,
-          })}
-          classes={{
-            paper: classNames({
-              [classes.drawerOpen]: drawerOpen,
-              [classes.drawerClose]: !drawerOpen,
-            }),
-          }}
-        >
-          <div className={classes.toolbar}>
-            <IconButton onClick={this.handleDrawerClose}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </div>
 
-          <Divider />
+        {isMobile ? (
+          null
+        ) : (
+          <DesktopDrawer
+            open={drawerOpen}
+            handleClose={this.handleDrawerClose}
+          />
+        )}
 
-          <List>
-            {['Queue', 'Party Settings', 'Logout'].map(text => (
-              <ListItem button key={text}>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
-        </Drawer>
 
         <main className={classes.content}>
           <div className={classes.toolbar} />
@@ -241,7 +189,6 @@ class Party extends Component {
                 <Fab
                   aria-label="Add"
                   className={classes.fab}
-                  component={SearchLink}
                 >
                   <AddIcon />
                 </Fab>

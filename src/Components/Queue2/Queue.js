@@ -42,6 +42,21 @@ const Queue = (props) => {
         <SongListItem />
         <SongListItem />
         <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
+        <SongListItem />
       </List>
     </div>
   );

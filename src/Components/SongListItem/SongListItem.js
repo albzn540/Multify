@@ -26,21 +26,16 @@ const styles = theme => ({
   },
   primaryText: {
     color: theme.palette.common.white,
-    // fontWeight: '600',
   },
   secondaryText: {
     color: theme.palette.common.white,
-    // fontWeight: '600',
   },
 });
 
 const SongListItem = (props) => {
-  let { theme, classes, title, artist, album, albumUrl } = props;
-
-  albumUrl = "https://about.canva.com/wp-content/uploads/sites/3/2015/01/album-cover.png";
-  title = "Cool beans";
-  album = "Adventure";
-  artist = "Pink guy";
+  const {
+    classes, name, artist, album, albumUrl,
+  } = props;
 
   const artistAndAlbum = `${artist} - ${album}`;
 
@@ -52,7 +47,7 @@ const SongListItem = (props) => {
         src={albumUrl}
       />
       <ListItemText
-        primary={title}
+        primary={name}
         secondary={artistAndAlbum}
         primaryTypographyProps={{ className: classes.primaryText }}
       />

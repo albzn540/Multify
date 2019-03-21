@@ -86,17 +86,35 @@ class Party extends Component {
   constructor(props) {
     super(props);
 
-    const { firebase, classes } = props;
+    const { firebase, classes, location: { pathname } } = props;
+
+    // /party/12345 = ["", "party", "12345"]
+    // If there's more than 2 arguments, a party code was sent!
+    const urlParams = pathname.split('/');
+    const partyCode = urlParams.length > 2 ? urlParams[2] : null;
+    if (partyCode) console.info('[Party] Party code:', partyCode);
 
     this.state = {
       user: null,
       drawerOpen: false,
+      partyCode,
     };
+
+    // TODO: Retrieve party from firestore IN CASE OF CODE
   }
 
-  // Drawer
-  // Queue list
-  // fab button
+  /*
+    Things that should be implemented in this component (some things will
+    be broken out in the future)
+
+    Drawer      - ish done
+    Queue list  - ish done
+    TODO: Fab button (add tracks, search for tracks)
+    TODO: Display party code on top (in case youre logged in as party amdin)
+    TODO: Add share button to sidebar
+    TODO: Customize sidebar for admin and anonomous users
+  */
+
 
   handleDrawerOpen = () => {
     this.setState({ drawerOpen: true });
@@ -130,7 +148,7 @@ class Party extends Component {
               <MenuIcon />
             </IconButton>
             <Typography variant="h5">
-              Party
+              Party {/* TODO: Take name from party */}
             </Typography>
           </Toolbar>
         </AppBar>

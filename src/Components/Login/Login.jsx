@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { compose } from 'recompose';
 import { withStyles, Grid, Typography } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
-import { withFirebase } from '../../Firebase';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 
 const styles = theme => ({
@@ -22,7 +21,7 @@ const styles = theme => ({
 
 const Login = (props) => {
   const {
-    spotify, firebase, classes, location
+    spotify, classes, location
   } = props;
 
   const [isLoggedIn, setLoggedIn] = useState(false);
@@ -78,5 +77,4 @@ const Login = (props) => {
 export default compose(
   withStyles(styles),
   withSpotify,
-  withFirebase,
 )(Login);

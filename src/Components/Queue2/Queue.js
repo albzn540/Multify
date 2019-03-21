@@ -1,17 +1,14 @@
 import React from 'react';
 import { compose } from 'recompose';
 import { withStyles, Typography, List } from '@material-ui/core';
-import SingListItem from '../SongListItem';
 import SongListItem from '../SongListItem';
 
 const styles = theme => ({
   root: {
-    height: `calc(100% - ${theme.spacing.unit * 8}px)`,
     // display: 'flex',
     // flexGrow: '1',
-    // backgroundColor: theme.palette.black.main,
+    height: `calc(100% - ${theme.spacing.unit * 8}px)`,
     padding: theme.spacing.unit,
-    // backgroundColor: 'pink',
   },
   text: {
     color: theme.palette.common.white,
@@ -19,7 +16,9 @@ const styles = theme => ({
 });
 
 const Queue = (props) => {
-  const { classes } = props;
+  const { classes, partyId } = props;
+
+  // TODO: Add listener to queue collection (based on party id)
 
   return (
     <div className={classes.root}>
@@ -36,6 +35,7 @@ const Queue = (props) => {
       </Typography>
 
       <List>
+        {/* TODO: Make sure they gather data from firestore */}
         <SongListItem />
         <SongListItem />
         <SongListItem />

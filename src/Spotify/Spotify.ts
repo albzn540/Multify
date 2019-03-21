@@ -67,8 +67,8 @@ class Spotify {
         const { data: { access_token, refresh_token, expires_in } } = response;
         tokenExpiresIn = expires_in;
         refreshToken = refresh_token;
-        this.saveToLocalStorage();
         this.client.setAccessToken(access_token);
+        this.saveToLocalStorage();
       }).catch(e => {
         console.error(e);
         console.info('[Spotify][authorizeWithSpotify] Not yet authorizing. Now autorizing...');
@@ -137,8 +137,8 @@ class Spotify {
     refreshFunction({ refreshToken }).then(res => {
       const { data } = res;
       tokenExpiresIn = data.expires_in;
-      this.saveToLocalStorage();
       this.client.setAccessToken(data.access_token);
+      this.saveToLocalStorage();
       console.info('[Spotify][refreshTokenCallback] New access token', data.access_token);
     });
 

@@ -61,10 +61,12 @@ class Spotify {
   };
 
   authorizeWithSpotify = async (url: string = '') => {
+    console.log('[Spotify] authorizeWithSpotify()');
+
     if (!this.spotifyUser()) {
       const authenticate = fb.functions.httpsCallable('authenticateSpotifyUser');
       return authenticate({ url }).then(async response => {
-        console.log('[Spotify] Authenticating');
+        console.log('[Spotify] Authorized! Now authenticating...');
         const { data: { access_token, refresh_token, expires_in } } = response;
         tokenExpiresIn = expires_in;
         refreshToken = refresh_token;
@@ -72,7 +74,7 @@ class Spotify {
         this.client.setAccessToken(access_token);
       }).catch(e => {
         console.error(e);
-        console.info('[Spotify] Not yet authorizing, autorizing...');
+        console.info('[Spotify] Not yet authorizing. Now autorizing...');
         const uri = authClient.code.getUri();
         window.location.assign(uri);
       });
@@ -83,26 +85,33 @@ class Spotify {
 
   loginUser = async (url: string = '') => {
     // Check if we're already logged in
-    if(!fb.user) {
-      // check if we have an access token
-      if(this.spotifyUser()) {
-        const verifiedUser = await this.client.getMe();
-        console.log('Verified Spotify user', verifiedUser);
-        const { email, id } = verifiedUser;
+    if (!fb.user) {
 
-        fb.auth.signInWithEmailAndPassword(email, id).then(loggedInUser => {
-          // User exists
-          this.setUser(loggedInUser);
-        }).catch(error => {
-          // user does not exist
-          console.error(error.message);
-          console.log("Creating new user");
-          fb.auth.createUserWithEmailAndPassword(email, id).then(user => this.setUser(user));
+      // Check if we already have an access token
+      if (!this.spotifyUser()) {
+        // Retrieve Spotify code
+        await this.authorizeWithSpotify(url).catch(err => {
+          return Promise.resolve(err);
         });
-      } else {
-        // Retrieve spotify code
-        this.authorizeWithSpotify(url);
       }
+
+      const verifiedUser = await this.client.getMe();
+      console.log('[Spotify] Verified Spotify user', verifiedUser);
+      const { email, id } = verifiedUser;
+
+      return fb.auth.signInWithEmailAndPassword(email, id).then(user => {
+        // User exists
+        this.setUser(user);
+        return user;
+      }).catch(error => {
+        // user does not exist
+        console.error(error.message);
+        console.log("Creating new user");
+        return fb.auth.createUserWithEmailAndPassword(email, id).then(user => {
+          this.setUser(user);
+          return user;
+        });
+      });
     }
   }
 
@@ -118,7 +127,7 @@ class Spotify {
       refresh_token: refreshToken,
       expires_at: Math.round(Date.now() / 1000 + tokenExpiresIn),
     };
-  
+
     localStorage.setItem('spotify_data', JSON.stringify(localStorageData));
   };
 

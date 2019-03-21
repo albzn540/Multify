@@ -8,7 +8,7 @@ import { withSpotify } from '../../Spotify';
 import SearchListItem from './SearchListItem';
 
 const SearchList = (props) => {
-  const { tracks } = props;
+  const { tracks, addTrack } = props;
 
   return (
     <Grid item>
@@ -20,6 +20,7 @@ const SearchList = (props) => {
             id={track.id}
             name={track.name}
             uri={track.uri}
+            addTrack={addTrack}
           />
         ))}
       </List>

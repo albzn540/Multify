@@ -71,8 +71,8 @@ class Search extends React.Component {
       },
     };
     const { firebase } = this.props;
-    firebase.db.collection('parties').doc('BAQcvjUE6ongzcsSw7fX')
-      .collection('songs').doc(uri)
+    firebase.db.collection('parties').doc('c9fjG0WmJ2BxWa9id1Rw')
+      .collection('queue').doc(uri)
       .set(reducedTrack)
       .then(() => {
         console.log('[Search] Track added!');

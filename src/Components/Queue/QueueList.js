@@ -30,7 +30,7 @@ const QueueList = (props) => {
       setItems(newItems);
     };
 
-    const unsubscribe = firebase.db.collection('parties').doc('BAQcvjUE6ongzcsSw7fX').collection('songs')
+    const unsubscribe = firebase.db.collection('parties').doc('c9fjG0WmJ2BxWa9id1Rw').collection('queue')
       .onSnapshot(handleNewSongs);
 
     return () => {

@@ -29,3 +29,8 @@ eg. Login page background styling.
 
 ### Material-UI
 Is what we use for the heavy design and layouting.
+
+### If there are questions about .env variables
+Conntact:
+simflo@kth.se
+albinwi@kth.se

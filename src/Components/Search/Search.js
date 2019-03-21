@@ -1,9 +1,6 @@
 import React from 'react';
 import { compose } from 'recompose';
-import {
-  withStyles, IconButton, SvgIcon,
-  Grid,
-} from '@material-ui/core';
+import { withStyles, Grid } from '@material-ui/core';
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
 import { withSpotify } from '../../Spotify';

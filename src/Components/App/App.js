@@ -11,6 +11,7 @@ import Landing from '../Landing';
 import Login from '../Login';
 import Search from '../Search';
 import Queue from '../Queue';
+import Party from '../Party';
 
 const theme = createMuiTheme({
   palette: {
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/joinparty" component={JoinParty} />
             <Route path="/search" component={Search} />
             <Route path="/queue" component={Queue} />
+            <Route path="/party" component={Party} />
           </SpotifyContext.Provider>
         </FirebaseContext.Provider>
       </MuiThemeProvider>

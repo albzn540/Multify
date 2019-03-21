@@ -31,11 +31,11 @@ const Login = (props) => {
   useEffect(() => {
     const url = location.pathname + location.search;
     spotify.loginUser(url).then((user) => {
-      console.log(user);
+      console.log('[Login] Logged in!', user);
       setLoggedIn(true);
       setName(user.displayName);
     }).catch((e) => {
-      console.log(e);
+      console.log('[Login]', e);
     });
   }, []);
 

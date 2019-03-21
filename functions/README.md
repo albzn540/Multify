@@ -14,3 +14,5 @@ Open up the set_environmental_variables and fill in the appropriate variables. T
 This will build and serve the functions locally
 
 ## Deploy functions
+`$ npm run deploy`  
+This will build and deploy the functions

@@ -8,7 +8,7 @@ import {
 import { withSpotify } from '../../Spotify';
 import SearchListItem from './SearchListItem';
 
-const styles = theme => ({
+const styles = () => ({
   root: {
     width: '100%',
     maxWidth: '50vh',

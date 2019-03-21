@@ -27,6 +27,7 @@ const SearchListItem = (props) => {
     name,
     uri,
     classes,
+    addTrack,
   } = props;
 
   // Todo: fix space after last artist
@@ -50,7 +51,15 @@ const SearchListItem = (props) => {
         )}
       />
       <ListItemSecondaryAction>
-        <IconButton aria-label="Delete">
+        <IconButton
+          aria-label="Delete"
+          onClick={() => addTrack({
+            id,
+            artists,
+            name,
+            album,
+          }, uri)}
+        >
           <SvgIcon>
             <path
               fill="#FFFFFF"

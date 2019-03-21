@@ -54,6 +54,7 @@ const JoinParty = (props) => {
           foundDoc = true;
           console.debug(props);
           // Maybe Link looks better but this works
+          // Fixes problem with linking user if they don't have correct code
           window.location.assign(`party/${doc.id}`);
         });
         if (!foundDoc) {

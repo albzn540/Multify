@@ -16,8 +16,15 @@ const SearchList = (props) => {
     const handleNewSearch = (songs) => {
       const newSongs = [];
       songs.forEach((song) => {
-        // TODO
-        newSongs.push(song);
+        const item = {
+          album: song.album,
+          artists: song.artists,
+          id: song.id,
+          is_playable: song.is_playable,
+          name: song.name,
+          uri: song.uri,
+        };
+        newSongs.push(item);
       });
       setItems(newSongs);
     };
@@ -41,7 +48,14 @@ const SearchList = (props) => {
     <Grid item>
       <List dense={false}>
         {items.map(item => (
-          <SearchListItem />
+          <SearchListItem
+            album={item.album}
+            artists={item.artists}
+            id={item.id}
+            is_playable={item.is_playable}
+            name={item.name}
+            uri={item.uri}
+          />
         ))}
       </List>
     </Grid>

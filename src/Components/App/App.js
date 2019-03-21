@@ -38,8 +38,6 @@ const history = createBrowserHistory();
 const firebase = new Firebase();
 const spotify = new Spotify(firebase);
 
-console.log(JSON.stringify(theme));
-
 const App = () => (
   <div>
     <CssBaseline />

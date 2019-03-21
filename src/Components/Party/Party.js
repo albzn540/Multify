@@ -88,16 +88,16 @@ class Party extends Component {
 
     const { firebase, classes, location: { pathname } } = props;
 
-    // /party/12345 = ["", "party", "12345"]
+    // /party/12345 = ["", "party", "5LJ0rnLKhslTmW357AbS"]
     // If there's more than 2 arguments, a party code was sent!
     const urlParams = pathname.split('/');
-    const partyCode = urlParams.length > 2 ? urlParams[2] : null;
-    if (partyCode) console.info('[Party] Party code:', partyCode);
+    const partyId = urlParams.length > 2 ? urlParams[2] : null;
+    if (partyId) console.info('[Party] Party code:', partyId);
 
     this.state = {
       user: null,
       drawerOpen: false,
-      partyCode,
+      partyId,
     };
 
     // TODO: Retrieve party from firestore IN CASE OF CODE
@@ -110,6 +110,9 @@ class Party extends Component {
     Drawer      - ish done
     Queue list  - ish done
     TODO: Fab button (add tracks, search for tracks)
+    TODO: Add button in search so we can go back to queue
+
+    // later
     TODO: Display party code on top (in case youre logged in as party amdin)
     TODO: Add share button to sidebar
     TODO: Customize sidebar for admin and anonomous users

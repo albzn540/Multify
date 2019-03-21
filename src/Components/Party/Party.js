@@ -12,6 +12,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 import { withFirebase } from '../../Firebase';
 import Queue from '../Queue2';
+import Search from '../Search';
 
 const drawerWidth = 240;
 
@@ -105,6 +106,8 @@ class Party extends Component {
     this.state = {
       user: null,
       drawerOpen: false,
+      hideQueue: false,
+      hideSearch: true,
       partyId,
     };
 
@@ -163,11 +166,17 @@ class Party extends Component {
     this.setState({ drawerOpen: false });
   };
 
+  handleSwitchView = () => {
+    const { hideQueue, hideSearch } = this.state;
+    this.setState({
+      hideQueue: !hideQueue,
+      hideSearch: !hideSearch,
+    });
+  };
+
   render() {
     const { classes, theme } = this.props;
-    const { drawerOpen, partyId } = this.state;
-
-    const SearchLink = props => <Link to="/search" {...props} partyId={partyId} />;
+    const { drawerOpen, hideQueue, hideSearch, partyId } = this.state;
 
     return (
       <div className={classes.root}>
@@ -223,32 +232,45 @@ class Party extends Component {
             ))}
           </List>
         </Drawer>
-
-        <main className={classes.content}>
-          <div className={classes.toolbar} />
-          <Grid
-            container
-            justify="center"
-          >
-            <Grid item xs={12} sm={8} md={6}>
-              <Queue />
-              <Grid
-                container
-                direction="row"
-                justify="flex-end"
-                alignItems="flex-end"
-              >
-                <Fab
-                  aria-label="Add"
-                  className={classes.fab}
-                  component={SearchLink}
+        { hideSearch ? (
+          <main className={classes.content}>
+            <div className={classes.toolbar} />
+            <Grid
+              container
+              justify="center"
+            >
+              <Grid item xs={12} sm={8} md={6}>
+                <Queue />
+                <Grid
+                  container
+                  direction="row"
+                  justify="flex-end"
+                  alignItems="flex-end"
                 >
-                  <AddIcon />
-                </Fab>
+                  <Fab
+                    aria-label="Add"
+                    className={classes.fab}
+                    onClick={this.handleSwitchView}
+                  >
+                    <AddIcon />
+                  </Fab>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        </main>
+          </main>
+        ) : (
+          <main className={classes.content}>
+            <div className={classes.toolbar} />
+            <Grid
+              container
+              justify="center"
+            >
+              <Grid item xs={12} sm={8} md={6}>
+                <Search switchView={this.handleSwitchView} />
+              </Grid>
+            </Grid>
+          </main>
+        )}
       </div>
     );
   }

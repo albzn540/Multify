@@ -56,7 +56,7 @@ export const authenticateSpotifyUser = functions.https.onCall(async (reqData, co
 // }); 
 
 export const refreshToken = functions.https.onCall(async (data, context) => {
-  console.log("[authenticateSpotifyUser] 1.0");
+  console.log("[refreshToken] 1.0");
 
   const { refreshToken } = data;
   if (!refreshToken) {

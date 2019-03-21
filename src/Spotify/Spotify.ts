@@ -45,6 +45,7 @@ class Spotify {
       console.info('[Spotify] Token expires in', tokenExpiresIn);
       if (tokenExpiresIn >= 0) {
         // token has not yet expired
+        console.log('[Spotify] Token has not yet expired');
         refreshToken = spotifyData.refresh_token;
         this.refreshTokenCallback(); // refresh token every 3000 seconds
         this.client.setAccessToken(spotifyData.access_token);
@@ -54,33 +55,36 @@ class Spotify {
 
   spotifyUser = () => {
     const accToken = this.client.getAccessToken();
-    return accToken === '' ? null : accToken; 
+    console.log('[Spotify] spotifyUser', accToken);
+    return accToken === '' ? null : this.client.getAccessToken();
   };
 
   authorizeWithSpotify = () => {
-    this.spotifyUser
-    console.log('[Spotify] Signing in');
-    const url = authClient.code.getUri();
-    window.location.assign(url);
+    if (!this.spotifyUser()) {
+      console.log('[Spotify] Authorizing');
+      const url = authClient.code.getUri();
+      window.location.assign(url);
+    } else {
+      console.log('[Spotify] Already authenticated');
+    }
   };
 
   authenticateSpotifyUser = async (url: string) => {
-    const authenticate = fb.functions.httpsCallable('authenticateSpotifyUser');
-    return authenticate({ url }).then(async response => {
-      const { data } = response;
-      console.log(data);
-      const { access_token, refresh_token, expires_in } = data;
-
-      const localStorageData = {
-        access_token,
-        refresh_token,
-        expires_at: Math.round(Date.now() / 1000 + expires_in),
-      };
-
-      localStorage.setItem('spotify_data', JSON.stringify(localStorageData));
-
-      this.client.setAccessToken(access_token);
-    });
+    if (!this.spotifyUser()) {
+      const authenticate = fb.functions.httpsCallable('authenticateSpotifyUser');
+      return authenticate({ url }).then(async response => {
+        const { data } = response;
+        console.log(data);
+  
+        const { access_token, refresh_token, expires_in } = data;
+        tokenExpiresIn = expires_in;
+        refreshToken = refresh_token;
+        this.saveToLocalStorage();
+        this.client.setAccessToken(access_token);
+      });
+    } else {
+      return Promise.resolve('Already authenticated');
+    }
   };
 
   loginUser = async () => {
@@ -106,13 +110,24 @@ class Spotify {
     this.status = 'done';
   }
 
+  saveToLocalStorage = () => {
+    const localStorageData = {
+      access_token: this.spotifyUser(),
+      refresh_token: refreshToken,
+      expires_at: Math.round(Date.now() / 1000 + tokenExpiresIn),
+    };
+  
+    localStorage.setItem('spotify_data', JSON.stringify(localStorageData));
+  };
+
   refreshTokenCallback = () => {
     console.log('[Spotify] refreshTokenCallback');
     const refreshFunction = fb.functions.httpsCallable('refreshToken');
     refreshFunction({ refreshToken }).then(res => {
       const { data } = res;
-      this.client.setAccessToken(data.access_token);
       tokenExpiresIn = data.expires_in;
+      this.saveToLocalStorage();
+      this.client.setAccessToken(data.access_token);
     });
 
     setTimeout(this.refreshTokenCallback, tokenExpiresIn * 1000);

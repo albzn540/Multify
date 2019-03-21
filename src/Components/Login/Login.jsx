@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { compose } from 'recompose';
 import { withStyles, Grid, Typography } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
@@ -27,18 +27,22 @@ const Login = (props) => {
 
   const [isLoggedIn, setLoggedIn] = useState(false);
 
-  if (!spotify.spotifyUser && location.search === '') {
-    // No user authenticated
-    spotify.authorizeWithSpotify();
-  } else if (!spotify.spotifyUser) {
-    // Log in user
-    const url = location.pathname + location.search;
-    spotify.authenticateSpotifyUser(url).then(() => {
+  spotify.authorizeWithSpotify();
+
+  useEffect(() => {
+    if (!spotify.spotifyUser()) {
+      // Log in user
+      console.log('[Login] Authenticate user');
+      const url = location.pathname + location.search;
+      spotify.authenticateSpotifyUser(url).then((info) => {
+        console.log(info);
+      }).catch((error) => {
+        console.log(error);
+      });
+    } else {
       setLoggedIn(true);
-    }).catch((error) => {
-      console.log(error);
-    });
-  }
+    }
+  }, []);
 
   const text = () => {
     if (isLoggedIn) {

@@ -6,13 +6,16 @@ import {
   ListItemSecondaryAction,
   SvgIcon,
   IconButton,
+  Typography,
 } from '@material-ui/core';
 import { compose } from 'recompose';
 
 const styles = theme => ({
-  root: {
-    height: '100vh',
-    backgroundColor: theme.palette.black.main,
+  listText: {
+    color: theme.palette.white.main,
+  },
+  listSubText: {
+    color: theme.palette.lightGrey.main,
   },
 });
 
@@ -23,14 +26,28 @@ const SearchListItem = (props) => {
     id,
     name,
     uri,
+    classes,
   } = props;
 
   // Todo: fix space after last artist
   return (
     <ListItem>
       <ListItemText
-        primary={name}
-        secondary={`${album.name} - ${artists.map(artist => `${artist.name} `)}`}
+        disableTypography
+        primary={(
+          <Typography
+            className={classes.listText}
+          >
+            {name}
+          </Typography>
+        )}
+        secondary={(
+          <Typography
+            className={classes.listSubText}
+          >
+            {`${album.name} - ${artists.map(artist => `${artist.name} `)}`}    
+          </Typography>
+        )}
       />
       <ListItemSecondaryAction>
         <IconButton aria-label="Delete">

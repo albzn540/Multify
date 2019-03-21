@@ -5,6 +5,9 @@ Share the music queue with your friends!
 To get the app proparly working, copy .env.example and paste it as .env, after that you just add the required variables.  
 Don't delete it.. Copy it..
 
+## Access to Spotify account
+This app requires you to have a Spotify account. If you would like to revoke the access it can be done at: https://www.spotify.com/is/account/apps/ the app is called Spotify Queue.
+
 ## Frameworks
 
 ### Styled Components

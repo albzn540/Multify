@@ -5,8 +5,8 @@ import {
   Grid,
 } from '@material-ui/core';
 
-import SearchBar from '../SearchBar';
-import SearchList from '../SearchList';
+import SearchBar from './SearchBar';
+import SearchList from './SearchList';
 
 const styles = theme => ({
   root: {

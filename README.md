@@ -15,6 +15,9 @@ Obviously the 'now playing' component must be implemented. The voting system is 
 Navigating from the create party needs to be smoother, i.e. not have to back out or switch url. There needs to be some way for the party room creator
 to get and share the party code. More admin priviliges for the party creator that are not accessible by users who join by code.
 
+[Read about setting up firebase](./functions/README.md)
+[Read about setting up React](./REACT_README.md)
+
 ## Access to Spotify account
 This app requires you to have a Spotify account. If you would like to revoke the access it can be done at: https://www.spotify.com/is/account/apps/ the app is called Spotify Queue.
 

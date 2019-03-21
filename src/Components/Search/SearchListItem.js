@@ -1,27 +1,36 @@
 import React from 'react';
 import {
+  withStyles,
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  ListItemAvatar,
-  Avatar,
   SvgIcon,
   IconButton,
 } from '@material-ui/core';
+import { compose } from 'recompose';
+
+const styles = theme => ({
+  root: {
+    height: '100vh',
+    backgroundColor: theme.palette.black.main,
+  },
+});
 
 const SearchListItem = (props) => {
-  const { album, artist, id, name, uri } = props;
+  const {
+    album,
+    artists,
+    id,
+    name,
+    uri,
+  } = props;
 
+  // Todo: fix space after last artist
   return (
     <ListItem>
-      <ListItemAvatar>
-        <Avatar>
-          {}
-        </Avatar>
-      </ListItemAvatar>
       <ListItemText
-        primary="tmp"
-        secondary="lorem"
+        primary={name}
+        secondary={`${album.name} - ${artists.map(artist => `${artist.name} `)}`}
       />
       <ListItemSecondaryAction>
         <IconButton aria-label="Delete">
@@ -37,4 +46,6 @@ const SearchListItem = (props) => {
   );
 };
 
-export default SearchListItem;
+export default compose(
+  withStyles(styles),
+)(SearchListItem);

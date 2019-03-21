@@ -34,13 +34,12 @@ class Search extends React.Component {
   }
 
   handleChange(event) {
-    console.log('handling');
     const searchStr = event.value;
     const { spotify } = this.props;
     const items = [];
     spotify.client.searchTracks(searchStr)
       .then((data) => {
-        console.log('[SearchList] Found tracks', data);
+        console.info('[SearchList] Found tracks', data);
         data.tracks.items.forEach((track) => {
           const item = {
             album: track.album,
@@ -51,13 +50,12 @@ class Search extends React.Component {
           };
           items.push(item);
         });
+        this.setState({
+          tracks: items,
+        });
       }, (err) => {
-        console.log('[SearchList] Search error:', err);
+        console.error('[SearchList] Search error:', err);
       });
-
-    this.setState({
-      tracks: items,
-    });
   }
 
   render() {

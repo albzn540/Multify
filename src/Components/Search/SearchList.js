@@ -11,10 +11,10 @@ import SearchListItem from './SearchListItem';
 const styles = theme => ({
   root: {
     width: '100%',
-    maxWidth: 360,
+    maxWidth: '50vh',
     position: 'relative',
     overflow: 'auto',
-    maxHeight: 300,
+    maxHeight: '50vh',
   },
 });
 

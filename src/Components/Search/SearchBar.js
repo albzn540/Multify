@@ -30,7 +30,7 @@ const styles = theme => ({
 });
 
 const SearchBar = (props) => {
-  const { classes, onChange } = props;
+  const { classes, onChange, keyPress } = props;
 
   return (
     <Grid item>
@@ -54,11 +54,7 @@ const SearchBar = (props) => {
           },
         }}
         onKeyPress={(ev) => {
-          if (ev.key === 'Enter') {
-            console.log('[SearchBar] Entered string: ', ev.target.value);
-            onChange(ev.target);
-            ev.preventDefault();
-          }
+          keyPress(ev, onChange);
         }}
       />
     </Grid>

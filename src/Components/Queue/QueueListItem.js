@@ -29,7 +29,7 @@ const QueueListItem = (props) => {
         secondary={`${artist} - ${album}`}
       />
       <ListItemSecondaryAction>
-        <IconButton aria-label="Delete">
+        <IconButton>
           <SvgIcon>
             <path
               fill="#FFFFFF"
@@ -37,7 +37,7 @@ const QueueListItem = (props) => {
             />
           </SvgIcon>
         </IconButton>
-        <IconButton aria-label="Delete">
+        <IconButton>
           <SvgIcon>
             <path
               fill="#FFFFFF"

@@ -52,7 +52,6 @@ const SearchListItem = (props) => {
       />
       <ListItemSecondaryAction>
         <IconButton
-          aria-label="Delete"
           onClick={() => addTrack({
             id,
             artists,

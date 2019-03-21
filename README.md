@@ -1,9 +1,19 @@
 # Multify
-Share the music queue with your friends!
+Share the music queue with your friends! This app will access your Spotify account and setup a playlist to be used as a collaborative queue.
+After creating a room your friends can join with a given code. In the queue users can upvote or downvote tracks to determine the order that
+they will be played. It is also possible to search for new tracks and add them to the queue, all done through the Spotify API. There (will be) is 
+also a 'now playing' view to control the current song, play, pause, etc.
 
-## .env variables
-To get the app proparly working, copy .env.example and paste it as .env, after that you just add the required variables.  
-Don't delete it.. Copy it..
+## What has been done so far...
+Currently authorization with spotify works but the user must go one page back and enter a room with a party room code.
+Inside the party room one can switch between a view of the queue and the search bar. The search bar is fully functional and will add
+tracks to the firestore. The rest of the code is displayed through mock data. As for what has been done with the framework and other technologies,
+Almost all except the 'now playing' screen have been created as react components and the firebase and Spotify integration code have been implemented. Bundles of resources as constants also reside within the source folder.
+
+## What will be done later on...
+Obviously the 'now playing' component must be implemented. The voting system is not in place. All mock data should be replaced by dynamic data.
+Navigating from the create party needs to be smoother, i.e. not have to back out or switch url. There needs to be some way for the party room creator
+to get and share the party code. More admin priviliges for the party creator that are not accessible by users who join by code.
 
 ## Access to Spotify account
 This app requires you to have a Spotify account. If you would like to revoke the access it can be done at: https://www.spotify.com/is/account/apps/ the app is called Spotify Queue.
@@ -15,76 +25,4 @@ Styled components is used where we need to do some minor styling, seems to be th
 eg. Login page background styling.
 
 ### Material-UI
-Is used for design and layouting.
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run deploy`
-
-First it runs the `npm run build` command and then `firebase deploy --only hosting` to deploy it to firebase.
-Make sure you've installed and logged in with firebase-tools
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Is what we use for the heavy design and layouting.

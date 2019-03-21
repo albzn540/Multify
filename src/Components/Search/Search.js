@@ -1,10 +1,9 @@
 import React from 'react';
 import { compose } from 'recompose';
 import {
-  withStyles,
+  withStyles, IconButton, SvgIcon,
   Grid,
 } from '@material-ui/core';
-
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
 import { withSpotify } from '../../Spotify';
@@ -83,7 +82,7 @@ class Search extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, switchView } = this.props;
     const { tracks } = this.state;
 
     return (
@@ -95,6 +94,16 @@ class Search extends React.Component {
         className={classes.root}
         spacing={16}
       >
+        <IconButton
+          onClick={() => switchView()}
+        >
+          <SvgIcon>
+            <path
+              fill="#FFFFFF"
+              d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"
+            />
+          </SvgIcon>
+        </IconButton>
         <SearchBar onChange={this.handleChange} keyPress={keyPress} />
         <SearchList tracks={tracks} addTrack={this.addTrack} />
       </Grid>

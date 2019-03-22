@@ -4,9 +4,10 @@ import * as clientOauth2 from 'client-oauth2';
 const config = {
   clientId: functions.config().spotify.id,
   clientSecret: functions.config().spotify.secret,
-  authorizationUri: 'https://accounts.spotify.com/authorize',
-  accessTokenUri: 'https://accounts.spotify.com/api/token',
-  redirectUri: 'http://localhost:3000/login/',
+  authorizationUri: 'https://accounts.spotify.com/authorize/',
+  accessTokenUri: 'https://accounts.spotify.com/api/token/',
+  // redirectUri: 'http://localhost:3000/login/',
+  redirectUri: 'https://multify-d5371.firebaseapp.com/login/',
   scopes: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email'],
 };
 
@@ -15,16 +16,15 @@ const oauthClient = new clientOauth2(config);
 
 export const authenticateSpotifyUser = functions.https.onCall(async (reqData, context) => {
   console.log("[authenticateSpotifyUser] 1.1");
-  const { url } = reqData;
-
-  if (!url) {
+  console.log("URL param", reqData.url);
+  if (!reqData.url) {
     throw new functions.https.HttpsError(
       'invalid-argument',
       "Missing 'url' parameter.",
     );
   }
 
-  return oauthClient.code.getToken(url).then(res => {
+  return oauthClient.code.getToken(reqData.url).then(res => {
     console.log(res);
     const { data } = res;
     return data;
@@ -32,7 +32,7 @@ export const authenticateSpotifyUser = functions.https.onCall(async (reqData, co
     console.error(err);
     throw new functions.https.HttpsError(
       'unknown',
-      `Spotify error code: '${err.status}`,
+      `Spotify error code: ${err.status}`,
     );
   });
 });

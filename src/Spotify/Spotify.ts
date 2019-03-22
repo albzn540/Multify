@@ -13,9 +13,14 @@ const config = {
   clientSecret: process.env.REACT_APP_SPOTIFY_SECRET,
   authorizationUri: 'https://accounts.spotify.com/authorize',
   accessTokenUri: 'https://accounts.spotify.com/api/token',
-  redirectUri: 'http://localhost:3000/login/',
+  redirectUri: 'https://multify-d5371.firebaseapp.com/login/',
   scopes: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email'],
 };
+
+if(process.env.NODE_ENV === 'development') {
+  console.log('[Spotify] Running in dev mode, setting spotify redirect uri to localhost:3000');
+  config.redirectUri = 'http://localhost:3000/login/';
+}
 
 const authClient = new oauth2(config);
 let fb: Firebase;
@@ -62,10 +67,10 @@ class Spotify {
 
     if (!this.spotifyUser()) {
       const authenticate = fb.functions.httpsCallable('authenticateSpotifyUser');
-      return authenticate({ url }).then(async response => {
+      authClient.code.getToken(url).then(async response => {
         console.log('[Spotify][authorizeWithSpotify] Authorized! Now authenticating...');
         const { data: { access_token, refresh_token, expires_in } } = response;
-        tokenExpiresIn = expires_in;
+        tokenExpiresIn = 3000;
         refreshToken = refresh_token;
         this.client.setAccessToken(access_token);
         this.saveToLocalStorage();
@@ -75,6 +80,20 @@ class Spotify {
         const uri = authClient.code.getUri();
         window.location.assign(uri);
       });
+
+      // return authenticate({ url }).then(async response => {
+      //   console.log('[Spotify][authorizeWithSpotify] Authorized! Now authenticating...');
+      //   const { data: { access_token, refresh_token, expires_in } } = response;
+      //   tokenExpiresIn = expires_in;
+      //   refreshToken = refresh_token;
+      //   this.client.setAccessToken(access_token);
+      //   this.saveToLocalStorage();
+      // }).catch(e => {
+      //   console.error(e);
+      //   console.info('[Spotify][authorizeWithSpotify] Not yet authorizing. Now autorizing...');
+      //   const uri = authClient.code.getUri();
+      //   window.location.assign(uri);
+      // });
     } else {
       return Promise.resolve('Already authenticated');
     }

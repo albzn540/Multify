@@ -67,33 +67,23 @@ class Spotify {
 
     if (!this.spotifyUser()) {
       const authenticate = fb.functions.httpsCallable('authenticateSpotifyUser');
-      authClient.code.getToken(url).then(async response => {
+
+      return authenticate({ url }).then(async response => {
         console.log('[Spotify][authorizeWithSpotify] Authorized! Now authenticating...');
         const { data: { access_token, refresh_token, expires_in } } = response;
-        tokenExpiresIn = 3000;
+        tokenExpiresIn = expires_in;
         refreshToken = refresh_token;
         this.client.setAccessToken(access_token);
         this.saveToLocalStorage();
       }).catch(e => {
         console.error(e);
-        console.info('[Spotify][authorizeWithSpotify] Not yet authorizing. Now autorizing...');
         const uri = authClient.code.getUri();
-        window.location.assign(uri);
+        console.log("Right now, since we have to pay Firebase, we need to restrict the number of requests");
+        console.log("In the future this way of authentication will be removed");
+        console.log("Paste this url into the browser: ", uri);
+        console.info('[Spotify][authorizeWithSpotify] Not yet authorizing. Now autorizing...');
+        // window.location.assign(uri);
       });
-
-      // return authenticate({ url }).then(async response => {
-      //   console.log('[Spotify][authorizeWithSpotify] Authorized! Now authenticating...');
-      //   const { data: { access_token, refresh_token, expires_in } } = response;
-      //   tokenExpiresIn = expires_in;
-      //   refreshToken = refresh_token;
-      //   this.client.setAccessToken(access_token);
-      //   this.saveToLocalStorage();
-      // }).catch(e => {
-      //   console.error(e);
-      //   console.info('[Spotify][authorizeWithSpotify] Not yet authorizing. Now autorizing...');
-      //   const uri = authClient.code.getUri();
-      //   window.location.assign(uri);
-      // });
     } else {
       return Promise.resolve('Already authenticated');
     }

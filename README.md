@@ -1,5 +1,6 @@
-# We use a paid version of Firebase so PLEASE DON'T GO CRAZY WITH ADDING SONGS, AUTHORIZING AND SWITCHING PAGES
-We had to do this because of the CORS problem. If you know a solution to this please contact us on our email addresses below.
+# We use a paid version of Firebase so PLEASE READ these instructions
+When you click 'create a party' you need to check the developer tools and check the console log. There will be a url that will take you to a Spotify authentication page. Then all you need to do is click agree.
+We had to do use the paid version because of the CORS problem and data usage will cost money. This is fine by us but we ask that you will be respectfull by not needlessly skipping around the page, searching and adding songs more than necessary, and also following these instructions to minimize the cost. If you know a solution to this please contact us on our email addresses below.
 
 # Multify
 Share the music queue with your friends! This app will access your Spotify account and setup a playlist to be used as a collaborative queue.

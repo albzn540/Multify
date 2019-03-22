@@ -22,6 +22,8 @@ to get and share the party code. More admin priviliges for the party creator tha
 ./Firebase -  Provides context for frontend Firebase functions so that they do not need to be passed as props
 ./Spotify -  Provides context for frontend SpotifyAPI functions so that they do not need to be passed as props
 
+See a more detailed tree structure here: [Detailed structure](./tree.txt)  
+
 ### Other ReadMe:s
 [Read about setting up firebase](./functions/README.md)\
 [Read about setting up React](./REACT_README.md)

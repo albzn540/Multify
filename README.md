@@ -1,3 +1,6 @@
+# We use a paid version of Firebase so PLEASE DON'T GO CRAZY WITH ADDING SONGS, AUTHORIZING AND SWITCHING PAGES
+We had to do this because of the CORS problem. If you know a solution to this please contact us on our email addresses below.
+
 # Multify
 Share the music queue with your friends! This app will access your Spotify account and setup a playlist to be used as a collaborative queue.
 After creating a room your friends can join with a given code. In the queue users can upvote or downvote tracks to determine the order that

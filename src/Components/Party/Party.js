@@ -164,15 +164,15 @@ class Party extends Component {
                 <MenuIcon />
               </IconButton>
             ) : (
-                <IconButton
-                  aria-label="Back to party"
-                  color="inherit"
-                  onClick={this.handleSwitchView}
-                  className={classes.toolbarButton}
-                >
-                  <ChevronLeftIcon />
-                </IconButton>
-              )}
+              <IconButton
+                aria-label="Back to party"
+                color="inherit"
+                onClick={this.handleSwitchView}
+                className={classes.toolbarButton}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+            )}
 
             <Typography variant="h5">
               {partyName}
@@ -183,11 +183,11 @@ class Party extends Component {
         {isMobile ? (
           null
         ) : (
-            <DesktopDrawer
-              open={drawerOpen}
-              handleClose={this.handleDrawerClose}
-            />
-          )}
+          <DesktopDrawer
+            open={drawerOpen}
+            handleClose={this.handleDrawerClose}
+          />
+        )}
 
         {hideSearch ? (
           <main className={classes.content}>
@@ -216,18 +216,18 @@ class Party extends Component {
             </Grid>
           </main>
         ) : (
-            <main className={classes.content}>
-              <div className={classes.toolbar} />
-              <Grid
-                container
-                justify="center"
-              >
-                <Grid item xs={12} sm={8} md={6}>
-                  <Search />
-                </Grid>
+          <main className={classes.content}>
+            <div className={classes.toolbar} />
+            <Grid
+              container
+              justify="center"
+            >
+              <Grid item xs={12} sm={8} md={6}>
+                <Search />
               </Grid>
-            </main>
-          )}
+            </Grid>
+          </main>
+        )}
       </div>
     );
   }

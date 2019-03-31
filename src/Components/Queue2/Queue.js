@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { compose } from 'recompose';
 import { withStyles, Typography, List } from '@material-ui/core';
 import { withFirebase } from '../../Firebase';
-import SongListItem from '../SongListItem';
+import { SongListItem, SongItem } from '../SongItem';
 
 const styles = theme => ({
   root: {
@@ -40,7 +40,7 @@ const Queue = (props) => {
       </Typography>
 
       <List>
-        <SongListItem
+        <SongItem
           key="Give you up"
           name="Give you up"
           artists={['Rick']}

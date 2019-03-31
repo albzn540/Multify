@@ -35,17 +35,15 @@ const Queue = (props) => {
 
   // Make this more DRY?
   const changeVote = (up, down, id) => {
-    // How do we get UID? - firebase.currenuser.userid ~
-    const mockUid = 'usertest123';
-    const mockId = '4NzMOnvSJVNKF7nw5NkXIP';
+    const uid = firebase.currentUser().uid;
 
     const votes = firebase.db
       .collection('parties')
       .doc('c9fjG0WmJ2BxWa9id1Rw')
       .collection('queue')
-      .doc(mockId);
+      .doc(id);
     if (up) {
-      votes.collection('likes').doc(mockUid).set({})
+      votes.collection('likes').doc(uid).set({})
         .then(() => {
           console.log('[Queue] Upvote added');
         })
@@ -53,7 +51,7 @@ const Queue = (props) => {
           console.error('[Queue] Error adding upvote', err);
         });
     } else {
-      votes.collection('likes').doc(mockUid).delete()
+      votes.collection('likes').doc(uid).delete()
         .then(() => {
           console.log('[Queue] Upvote deleted');
         })
@@ -62,7 +60,7 @@ const Queue = (props) => {
         });
     }
     if (down) {
-      votes.collection('dislikes').doc(mockUid).set({})
+      votes.collection('dislikes').doc(uid).set({})
         .then(() => {
           console.log('[Queue] Downvote added');
         })
@@ -70,7 +68,7 @@ const Queue = (props) => {
           console.error('[Queue] Error adding downvote', err);
         });
     } else {
-      votes.collection('dislikes').doc(mockUid).delete()
+      votes.collection('dislikes').doc(uid).delete()
         .then(() => {
           console.log('[Queue] Downvote deleted');
         })

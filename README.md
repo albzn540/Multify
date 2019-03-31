@@ -21,11 +21,11 @@ Navigating from the create party needs to be smoother, i.e. not have to back out
 to get and share the party code. More admin priviliges for the party creator that are not accessible by users who join by code.
 
 ## Project structure
-./functions - Contains firebase functions
-./src/Components - React components
-./src/Constants - Resources, images and icons, etc
-./Firebase -  Provides context for frontend Firebase functions so that they do not need to be passed as props
-./Spotify -  Provides context for frontend SpotifyAPI functions so that they do not need to be passed as props
+./functions - Contains firebase functions  
+./src/Components - React components  
+./src/Constants - Resources, images and icons, etc  
+./Firebase -  Provides context for frontend Firebase functions so that they do not need to be passed as props  
+./Spotify -  Provides context for frontend SpotifyAPI functions so that they do not need to be passed as props  
 
 See a more detailed tree structure here: [Detailed structure](./tree.txt)  
 

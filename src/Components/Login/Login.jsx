@@ -38,8 +38,20 @@ const Login = (props) => {
     });
   }, []);
 
-  const text = () => {
-    if (isLoggedIn) {
+  const text = () => (
+    <div>
+      {isLoggedIn ? (
+        <Typography variant="h3" className={classes.text}>
+          Hi, {name}!
+        </Typography>
+      ) : (
+        <Typography variant="h3" className={classes.text}>
+          Logging in...
+        </Typography>
+      )}
+    </div>
+  );
+    /* if (isLoggedIn) {
       return (
         <Typography variant="h3" className={classes.text}>
           Hi, {name}!
@@ -51,8 +63,7 @@ const Login = (props) => {
           Logging in...
         </Typography>
       );
-    }
-  };
+    } */
 
   return (
     <Grid

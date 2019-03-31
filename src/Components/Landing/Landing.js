@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 import React from 'react';
 import { compose } from 'recompose';
 import { withStyles, Grid } from '@material-ui/core';

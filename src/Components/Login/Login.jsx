@@ -21,7 +21,7 @@ const styles = theme => ({
 
 const Login = (props) => {
   const {
-    spotify, classes, location
+    spotify, classes, location,
   } = props;
 
   const [isLoggedIn, setLoggedIn] = useState(false);

@@ -39,7 +39,6 @@ const styles = theme => ({
 
 const JoinParty = (props) => {
   const { classes } = props;
-
   const [partyCode, setPartyCode] = useState('');
 
   const formSubmit = (e) => {

@@ -34,7 +34,6 @@ const styles = theme => ({
   toolbar: {
     ...theme.mixins.toolbar,
   },
-  // Make sure app bar renders ABOVE desktop drawer
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
@@ -56,7 +55,11 @@ const styles = theme => ({
   },
 
   fab: {
-    margin: theme.spacing.unit,
+    zIndex: theme.zIndex.appBar,
+    position: 'fixed',
+    bottom: '0px',
+    right: '0px',
+    margin: '16px',
     color: theme.palette.common.lightBlack,
     backgroundColor: theme.palette.common.green,
   },
@@ -198,22 +201,15 @@ class Party extends Component {
             >
               <Grid item xs={12} sm={8} md={6}>
                 <Queue partyId={partyId} />
-                <Grid
-                  container
-                  direction="row"
-                  justify="flex-end"
-                  alignItems="flex-end"
-                >
-                  <Fab
-                    aria-label="Add"
-                    className={classes.fab}
-                    onClick={this.handleSwitchView}
-                  >
-                    <AddIcon />
-                  </Fab>
-                </Grid>
               </Grid>
             </Grid>
+            <Fab
+              aria-label="Add"
+              className={classes.fab}
+              onClick={this.handleSwitchView}
+            >
+              <AddIcon />
+            </Fab>
           </main>
         ) : (
           <main className={classes.content}>

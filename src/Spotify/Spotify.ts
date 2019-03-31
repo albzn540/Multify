@@ -112,6 +112,7 @@ class Spotify {
 
     return fb.auth.signInWithEmailAndPassword(email, id).then(userCredentials => {
       // User exists
+      fb.auth.updateCurrentUser(userCredentials.user);
       return userCredentials.user;
     }).catch(error => {
       // User does not exist
@@ -124,6 +125,7 @@ class Spotify {
             displayName: verifiedUser.display_name
           });
         }
+        fb.auth.updateCurrentUser(userCredentials.user);
         return user;
       });
     });

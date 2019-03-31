@@ -5,6 +5,7 @@ import { withStyles, Grid, TextField } from '@material-ui/core';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 import SpotifyButton from '../SpotifyButton';
 import { withFirebase } from '../../Firebase';
+import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
   root: {
@@ -38,28 +39,17 @@ const styles = theme => ({
 });
 
 const JoinParty = (props) => {
-  const { classes } = props;
+  const { classes, spotify } = props;
   const [partyCode, setPartyCode] = useState('');
 
   const formSubmit = (e) => {
     e.preventDefault(); // prevents page refreshing
 
-    const { firebase } = props;
-    firebase.db.collection('parties').where('code', '==', partyCode)
-      .get()
-      .then((querySnapshot) => {
-        let foundDoc = false;
-        querySnapshot.forEach((doc) => {
-          foundDoc = true;
-          console.debug(props);
-          // Maybe Link looks better but this works
-          // To be changed to Link component later
-          window.location.assign(`party/${doc.id}`);
-        });
-        if (!foundDoc) {
-          console.log('[JoinParty] No such room');
-        }
-      });
+    spotify.getPartyId(partyCode).then((partyId) => {
+      window.location.assign(`/party/${partyId}`);
+    }).catch((err) => {
+      console.error(err);
+    });
   };
 
   return (
@@ -118,4 +108,5 @@ const JoinParty = (props) => {
 export default compose(
   withStyles(styles),
   withFirebase,
+  withSpotify,
 )(JoinParty);

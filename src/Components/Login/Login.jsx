@@ -30,29 +30,30 @@ const Login = (props) => {
   useEffect(() => {
     const url = location.pathname + location.search;
     spotify.loginUser(url).then((user) => {
-      console.log('[Login] Logged in!', user);
       setLoggedIn(true);
       setName(user.displayName);
+
+      console.debug('[Login] Creating party...');
+      spotify.createParty({
+        name: 'Party',
+        spotify_token: spotify.spotifyUser(),
+      }).then((partyData) => {
+        const { data: { code } } = partyData;
+        console.debug('[Login] Party created', partyData);
+        spotify.getPartyId(code).then((partyId) => {
+          window.location.assign(`/party/${partyId}`);
+        });
+      });
     }).catch((e) => {
       console.log('[Login]', e);
     });
   }, []);
 
-  const text = () => {
-    if (isLoggedIn) {
-      return (
-        <Typography variant="h3" className={classes.text}>
-          Hi, {name}!
-        </Typography>
-      );
-    } else {
-      return (
-        <Typography variant="h3" className={classes.text}>
-          Logging in...
-        </Typography>
-      );
-    }
-  };
+  const text = (
+    <Typography variant="h3" className={classes.text}>
+      {isLoggedIn ? `Hi, ${name}!` : 'Logging in...'}
+    </Typography>
+  );
 
   return (
     <Grid
@@ -67,7 +68,7 @@ const Login = (props) => {
       </Grid>
 
       <Grid item>
-        {text()}
+        {text}
       </Grid>
 
     </Grid>

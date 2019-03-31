@@ -6,6 +6,8 @@ declare class Firebase {
   functions: firebase.functions.Functions;
   auth: firebase.auth.Auth;
   currentUser(): null | firebase.User;
+  partyRef(): firebase.firestore.DocumentReference;
+  partiesRef(): firebase.firestore.CollectionReference;
 }
 
 const config = {
@@ -154,10 +156,28 @@ class Spotify {
     });
 
     setTimeout(this.refreshTokenCallback, tokenExpiresIn * 1000 - 3000);
-  }
+  };
 
   createParty = () => {
-    console.log('[Spotify][createParty] Creating party')
+    console.debug('[Spotify][createParty] Creating party');
+    const createPartyFunc = fb.functions.httpsCallable('createParty');
+    return createPartyFunc({name: "Zup", spotify_token: "testtoken"});
+  };
+
+  getPartyId = (code: string) => {
+    console.debug('[Spotify][getParyId] Retrieving party', code);
+    return fb.partiesRef().where('code', '==', code).get().then((snap) => {
+      let id = undefined;
+      snap.forEach(doc => {
+        id = doc.id;
+      });
+
+      if(id) {
+        return Promise.resolve(id);
+      } else { 
+        return Promise.reject("Could not find party");
+      }
+    });
   };
 
 }

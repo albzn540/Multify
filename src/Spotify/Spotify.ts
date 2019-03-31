@@ -78,11 +78,11 @@ class Spotify {
       }).catch(e => {
         console.error(e);
         const uri = authClient.code.getUri();
-        console.log("Right now, since we have to pay Firebase, we need to restrict the number of requests");
-        console.log("In the future this way of authentication will be removed");
-        console.log("Paste this url into the browser: ", uri);
-        console.info('[Spotify][authorizeWithSpotify] Not yet authorizing. Now autorizing...');
-        // window.location.assign(uri);
+        // console.log("Right now, since we have to pay Firebase, we need to restrict the number of requests");
+        // console.log("In the future this way of authentication will be removed");
+        // console.log("Paste this url into the browser: ", uri);
+        // console.info('[Spotify][authorizeWithSpotify] Not yet authorizing. Now autorizing...');
+        window.location.assign(uri);
       });
     } else {
       return Promise.resolve('Already authenticated');

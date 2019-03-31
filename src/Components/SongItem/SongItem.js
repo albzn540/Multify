@@ -28,7 +28,7 @@ const styles = theme => ({
   },
 });
 
-const SongListItem = (props) => {
+const SongItem = (props) => {
   const {
     classes, name, artists, album, albumUrl,
   } = props;
@@ -57,4 +57,4 @@ const SongListItem = (props) => {
 
 export default compose(
   withStyles(styles, { withTheme: true }),
-)(SongListItem);
+)(SongItem);

@@ -10,11 +10,13 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { withFirebase } from '../../Firebase';
 import DesktopDrawer from '../DesktopDrawer';
+import MobileDrawer from '../MobileDrawer';
 import Queue from '../Queue2';
 import Search from '../Search';
 
 
 const drawerWidth = 240;
+const isMobile = true;
 
 const styles = theme => ({
   root: {
@@ -53,7 +55,6 @@ const styles = theme => ({
     marginLeft: 12,
     marginRight: 36,
   },
-
   fab: {
     zIndex: theme.zIndex.appBar,
     position: 'fixed',
@@ -144,24 +145,23 @@ class Party extends Component {
     const {
       drawerOpen, hideSearch, partyName, partyId,
     } = this.state;
-    const isMobile = true;
 
     return (
       <div className={classes.root}>
         <AppBar
           position="fixed"
           className={classNames(classes.appBar, {
-            [classes.appBarShift]: drawerOpen,
+            [classes.appBarShift]: isMobile ? false : drawerOpen,
           })}
         >
-          <Toolbar disableGutters={!drawerOpen}>
+          <Toolbar disableGutters={isMobile ? true : !drawerOpen}>
             {hideSearch ? (
               <IconButton
                 aria-label="Open dawer"
                 color="inherit"
                 onClick={this.handleDrawerOpen}
                 className={classNames(classes.toolbarButton, {
-                  [classes.hide]: drawerOpen,
+                  [classes.hide]: isMobile ? false : drawerOpen,
                 })}
               >
                 <MenuIcon />
@@ -184,7 +184,10 @@ class Party extends Component {
         </AppBar>
 
         {isMobile ? (
-          null
+          <MobileDrawer
+            open={drawerOpen}
+            handleClose={this.handleDrawerClose}
+          />
         ) : (
           <DesktopDrawer
             open={drawerOpen}

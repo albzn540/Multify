@@ -30,7 +30,6 @@ const SearchListItem = (props) => {
     addTrack,
   } = props;
 
-  // Todo: fix space after last artist
   return (
     <ListItem>
       <ListItemText

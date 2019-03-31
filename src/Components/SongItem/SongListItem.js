@@ -37,11 +37,19 @@ const styles = theme => ({
 
 const SongListItem = (props) => {
   const {
-    classes, name, artists, album, albumUrl, id, changeVote,
+    classes,
+    name,
+    artists,
+    album,
+    albumUrl,
+    id,
+    changeVote,
+    upvoteBefore,
+    downvoteBefore,
   } = props;
 
-  const [upvoted, setUpvote] = useState(false);
-  const [downvoted, setDownvote] = useState(false);
+  const [upvoted, setUpvote] = useState(upvoteBefore);
+  const [downvoted, setDownvote] = useState(downvoteBefore);
 
   const concatArtists = artists.join(', ');
 

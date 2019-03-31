@@ -37,7 +37,7 @@ const styles = theme => ({
 
 const SongListItem = (props) => {
   const {
-    classes, name, artists, album, albumUrl, changeVote,
+    classes, name, artists, album, albumUrl, id, changeVote,
   } = props;
 
   const [upvoted, setUpvote] = useState(false);
@@ -59,15 +59,15 @@ const SongListItem = (props) => {
       setUpvote(true);
       setDownvote(false);
       // Add upvote and remove downvote
-      changeVote(upvoted, downvoted);
+      changeVote(upvoted, downvoted, id);
     } else if (upvoted) {
       setUpvote(false);
       // Remove upvote
-      changeVote(upvoted, downvoted);
+      changeVote(upvoted, downvoted, id);
     } else {
       setUpvote(true);
       // Add upvote
-      changeVote(upvoted, downvoted);
+      changeVote(upvoted, downvoted, id);
     }
   };
   const toggleDownvote = () => {
@@ -75,15 +75,15 @@ const SongListItem = (props) => {
       setUpvote(false);
       setDownvote(true);
       // Add downvote and remove upvote
-      changeVote(upvoted, downvoted);
+      changeVote(upvoted, downvoted, id);
     } else if (downvoted) {
       setDownvote(false);
       // Remove downvote
-      changeVote(upvoted, downvoted);
+      changeVote(upvoted, downvoted, id);
     } else {
       setDownvote(true);
       // Add downvote
-      changeVote(upvoted, downvoted);
+      changeVote(upvoted, downvoted, id);
     }
   };
 

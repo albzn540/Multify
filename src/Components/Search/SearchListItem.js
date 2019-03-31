@@ -25,7 +25,6 @@ const SearchListItem = (props) => {
     artists,
     id,
     name,
-    uri,
     classes,
     addTrack,
   } = props;
@@ -56,7 +55,7 @@ const SearchListItem = (props) => {
             artists,
             name,
             album,
-          }, uri)}
+          })}
         >
           <Add />
         </IconButton>

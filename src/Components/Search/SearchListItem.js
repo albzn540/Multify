@@ -4,11 +4,11 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  SvgIcon,
   IconButton,
   Typography,
 } from '@material-ui/core';
 import { compose } from 'recompose';
+import Add from '../../Constants/Icons/Add';
 
 const styles = theme => ({
   listText: {
@@ -59,12 +59,7 @@ const SearchListItem = (props) => {
             album,
           }, uri)}
         >
-          <SvgIcon>
-            <path
-              fill="#FFFFFF"
-              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-            />
-          </SvgIcon>
+          <Add />
         </IconButton>
       </ListItemSecondaryAction>
     </ListItem>

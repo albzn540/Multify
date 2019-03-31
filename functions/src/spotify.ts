@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as clientOauth2 from 'client-oauth2';
+import * as admin from 'firebase-admin';
 
 const config = {
   clientId: functions.config().spotify.id,
@@ -13,6 +14,9 @@ const config = {
 
 // Oauth2 client
 const oauthClient = new clientOauth2(config);
+
+// Firestore references
+const partiesRef = admin.firestore().collection('parties');
 
 export const authenticateSpotifyUser = functions.https.onCall(async (reqData, context) => {
   console.log("[authenticateSpotifyUser] 1.1");
@@ -58,4 +62,57 @@ export const refreshToken = functions.https.onCall(async (data, context) => {
       `Spotify error code: '${err.status}`,
     );
   });;
+});
+
+const partyCodeGenerator = async () => {
+  let partyNumbers = [];
+  await partiesRef.select('code').get().then(partyCodes => {
+    partyCodes.forEach(partyNum => {
+      partyNumbers = [Number(partyNum.data().code), ...partyNumbers];
+    });
+  }).catch((err) => {
+    console.error(err);
+  });
+  console.log("Numbers", partyNumbers);
+
+  let done = false;
+  let num = 0;
+  while(!done) {
+    num = Math.floor(Math.random() * 90000) + 10000;
+    done = !partyNumbers.some(existingNumber => {
+      return (existingNumber === num);
+    })
+  }
+  console.log("Found unique number", num);
+  return `${num}`;
+}
+
+export const createParty = functions.https.onCall(async (data, context) => {
+  const { name, spotify_token } = data;
+  
+  if (!name) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      "Missing 'name' parameter.",
+    );
+  }
+
+  if (!spotify_token) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      "Missing 'spotify_token' parameter.",
+    );
+  }
+  
+  const code = await partyCodeGenerator();
+  return admin.firestore().collection('parties').doc().create({
+    code,
+    name,
+    spotify_token,
+    host: context.auth.uid
+  }).then(() => {
+    return {code, name}
+  }).catch(error => {
+    return error;
+  });
 });

@@ -8,5 +8,4 @@ export const helloWorld = functions.https.onRequest((request, response) => {
 });
 
 export * from './spotify';
-export * from './numberGenerator';
 

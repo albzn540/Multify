@@ -37,7 +37,7 @@ const styles = theme => ({
 
 const SongListItem = (props) => {
   const {
-    classes, name, artists, album, albumUrl, // changeVotes,
+    classes, name, artists, album, albumUrl, changeVote,
   } = props;
 
   const [upvoted, setUpvote] = useState(false);
@@ -50,18 +50,24 @@ const SongListItem = (props) => {
   /**
    * Upvote and downvote takes place inside the list item file
    * to give imidiate feedback
+   *
+   * Feels like DRY may not work here, but should be considered
+   * for improvement
    */
   const toggleUpvote = () => {
     if (downvoted) {
       setUpvote(true);
       setDownvote(false);
       // Add upvote and remove downvote
+      changeVote(upvoted, downvoted);
     } else if (upvoted) {
       setUpvote(false);
       // Remove upvote
+      changeVote(upvoted, downvoted);
     } else {
       setUpvote(true);
       // Add upvote
+      changeVote(upvoted, downvoted);
     }
   };
   const toggleDownvote = () => {
@@ -69,12 +75,15 @@ const SongListItem = (props) => {
       setUpvote(false);
       setDownvote(true);
       // Add downvote and remove upvote
+      changeVote(upvoted, downvoted);
     } else if (downvoted) {
       setDownvote(false);
       // Remove downvote
+      changeVote(upvoted, downvoted);
     } else {
       setDownvote(true);
       // Add downvote
+      changeVote(upvoted, downvoted);
     }
   };
 

@@ -21,8 +21,8 @@ const styles = theme => ({
 const Landing = (props) => {
   const { classes } = props;
 
-  const JoinPartyLink = props => <Link to="/joinparty" {...props} />;
-  const LoginLink = props => <Link to="/login" {...props} />;
+  const JoinPartyLink = () => <Link to="/joinparty" {...props} />;
+  const LoginLink = () => <Link to="/login" {...props} />;
 
   return (
     <Grid

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { compose } from 'recompose';
 import {
   withStyles, ListItem, ListItemText, ListItemSecondaryAction,
@@ -21,7 +21,10 @@ const styles = theme => ({
     maxHeight: `${ListItemHeight - 2 * theme.spacing.unit}px`,
     width: 'auto',
   },
-  voteButton: {
+  buttonSelected: {
+    color: theme.palette.common.green,
+  },
+  buttonDeselected: {
     color: theme.palette.common.white,
   },
   primaryText: {
@@ -34,12 +37,63 @@ const styles = theme => ({
 
 const SongListItem = (props) => {
   const {
-    classes, name, artists, album, albumUrl,
+    classes,
+    name,
+    artists,
+    album,
+    albumUrl,
+    id,
+    changeVote,
+    upvoteBefore,
+    downvoteBefore,
   } = props;
+
+  const [upvoted, setUpvote] = useState(upvoteBefore);
+  const [downvoted, setDownvote] = useState(downvoteBefore);
 
   const concatArtists = artists.join(', ');
 
   const artistAndAlbum = `${concatArtists} - ${album}`;
+
+  /**
+   * Upvote and downvote takes place inside the list item file
+   * to give imidiate feedback
+   *
+   * Feels like DRY may not work here, but should be considered
+   * for improvement
+   */
+  const toggleUpvote = () => {
+    if (downvoted) {
+      setUpvote(true);
+      setDownvote(false);
+      // Add upvote and remove downvote
+      changeVote(true, false, id);
+    } else if (upvoted) {
+      setUpvote(false);
+      // Remove upvote
+      changeVote(false, false, id);
+    } else {
+      setUpvote(true);
+      // Add upvote
+      changeVote(true, false, id);
+    }
+  };
+  const toggleDownvote = () => {
+    if (upvoted) {
+      setUpvote(false);
+      setDownvote(true);
+      // Add downvote and remove upvote
+      changeVote(false, true, id);
+    } else if (downvoted) {
+      setDownvote(false);
+      // Remove downvote
+      changeVote(false, false, id);
+    } else {
+      setDownvote(true);
+      // Add downvote
+      changeVote(false, true, id);
+    }
+  };
 
   return (
     <ListItem className={classes.root}>
@@ -54,11 +108,25 @@ const SongListItem = (props) => {
         primaryTypographyProps={{ className: classes.primaryText }}
       />
       <ListItemSecondaryAction>
-        <IconButton aria-label="Downvote">
-          <Downvote className={classes.voteButton} />
+        <IconButton
+          aria-label="Downvote"
+          onClick={() => toggleDownvote()}
+        >
+          <Downvote className={{
+            [classes.buttonSelected]: downvoted,
+            [classes.buttonDeselected]: !downvoted,
+          }}
+          />
         </IconButton>
-        <IconButton aria-label="Upvote">
-          <Upvote className={classes.voteButton} />
+        <IconButton
+          aria-label="Upvote"
+          onClick={() => toggleUpvote()}
+        >
+          <Upvote className={{
+            [classes.buttonSelected]: upvoted,
+            [classes.buttonDeselected]: !upvoted,
+          }}
+          />
         </IconButton>
       </ListItemSecondaryAction>
     </ListItem>

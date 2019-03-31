@@ -33,6 +33,53 @@ const Queue = (props) => {
     };
   }, []);
 
+  // Make this more DRY?
+  const changeVote = (up, down, id) => {
+    // How do we get UID? - firebase.currenuser.userid ~
+    const mockUid = 'usertest123';
+    const mockId = '4NzMOnvSJVNKF7nw5NkXIP';
+
+    const votes = firebase.db
+      .collection('parties')
+      .doc('c9fjG0WmJ2BxWa9id1Rw')
+      .collection('queue')
+      .doc(mockId);
+    if (up) {
+      votes.collection('likes').doc(mockUid).set({})
+        .then(() => {
+          console.log('[Queue] Upvote added');
+        })
+        .catch((err) => {
+          console.error('[Queue] Error adding upvote', err);
+        });
+    } else {
+      votes.collection('likes').doc(mockUid).delete()
+        .then(() => {
+          console.log('[Queue] Upvote deleted');
+        })
+        .catch((err) => {
+          console.error('[Queue] Error deleting upvote', err);
+        });
+    }
+    if (down) {
+      votes.collection('dislikes').doc(mockUid).set({})
+        .then(() => {
+          console.log('[Queue] Downvote added');
+        })
+        .catch((err) => {
+          console.error('[Queue] Error adding downvote', err);
+        });
+    } else {
+      votes.collection('dislikes').doc(mockUid).delete()
+        .then(() => {
+          console.log('[Queue] Downvote deleted');
+        })
+        .catch((err) => {
+          console.error('[Queue] Error deleting downvote', err);
+        });
+    }
+  };
+
   return (
     <div className={classes.root}>
       <Typography variant="h6" className={classes.text}>
@@ -61,6 +108,8 @@ const Queue = (props) => {
             artists={song.artists}
             album={song.album.name}
             albumUrl={song.album.images[2].url}
+            id={song.id}
+            changeVote={changeVote}
           />
         ))}
       </List>

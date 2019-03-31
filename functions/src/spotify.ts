@@ -7,7 +7,11 @@ const config = {
   authorizationUri: 'https://accounts.spotify.com/authorize/',
   accessTokenUri: 'https://accounts.spotify.com/api/token/',
   redirectUri: 'http://localhost:3000/login/',
+<<<<<<< HEAD
   // redirectUri: 'https://multify-d5371.firebaseapp.com/login/',
+=======
+  //redirectUri: 'https://multify-d5371.firebaseapp.com/login/',
+>>>>>>> 4b569f96aa084deddab831caa8505e9dc5a4ae6b
   scopes: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email'],
 };
 

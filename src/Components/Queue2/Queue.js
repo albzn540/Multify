@@ -22,14 +22,14 @@ const Queue = (props) => {
   const [songs, setSongs] = useState([]);
 
   useEffect(() => {
-    const unsibscribeParty = firebase.partyQueueRef(partyId).onSnapshot((snap) => {
+    const unsubscribeParty = firebase.partyQueueRef(partyId).onSnapshot((snap) => {
       const newSongs = [];
       snap.forEach(songDoc => newSongs.push(songDoc.data()));
       setSongs(songs.concat(newSongs));
     });
 
     return () => {
-      unsibscribeParty();
+      unsubscribeParty();
     };
   }, []);
 

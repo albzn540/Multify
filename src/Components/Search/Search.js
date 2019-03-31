@@ -56,7 +56,7 @@ class Search extends React.Component {
       });
   }
 
-  addTrack(track, uri) {
+  addTrack(track) {
     const reducedTrack = {
       id: track.id,
       artists: track.artists.map(artist => artist.name),
@@ -68,7 +68,7 @@ class Search extends React.Component {
     };
     const { firebase } = this.props;
     firebase.db.collection('parties').doc('c9fjG0WmJ2BxWa9id1Rw')
-      .collection('queue').doc(uri)
+      .collection('queue').doc(track.id)
       .set(reducedTrack)
       .then(() => {
         console.log('[Search] Track added!');

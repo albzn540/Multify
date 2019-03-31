@@ -46,7 +46,7 @@ const SearchListItem = (props) => {
           <Typography
             className={classes.listSubText}
           >
-            {`${album.name} - ${artists.map(artist => `${artist.name} `)}`}
+            {`${album.name} -${artists.map(artist => ` ${artist.name}`)}`}
           </Typography>
         )}
       />

@@ -59,15 +59,15 @@ const SongListItem = (props) => {
       setUpvote(true);
       setDownvote(false);
       // Add upvote and remove downvote
-      changeVote(upvoted, downvoted, id);
+      changeVote(true, false, id);
     } else if (upvoted) {
       setUpvote(false);
       // Remove upvote
-      changeVote(upvoted, downvoted, id);
+      changeVote(false, false, id);
     } else {
       setUpvote(true);
       // Add upvote
-      changeVote(upvoted, downvoted, id);
+      changeVote(true, false, id);
     }
   };
   const toggleDownvote = () => {
@@ -75,15 +75,15 @@ const SongListItem = (props) => {
       setUpvote(false);
       setDownvote(true);
       // Add downvote and remove upvote
-      changeVote(upvoted, downvoted, id);
+      changeVote(false, true, id);
     } else if (downvoted) {
       setDownvote(false);
       // Remove downvote
-      changeVote(upvoted, downvoted, id);
+      changeVote(false, false, id);
     } else {
       setDownvote(true);
       // Add downvote
-      changeVote(upvoted, downvoted, id);
+      changeVote(false, true, id);
     }
   };
 

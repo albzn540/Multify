@@ -25,8 +25,8 @@ class Search extends React.Component {
     super(props);
     this.state = {
       tracks: [],
+      partyId: props.partyId,
     };
-
     this.handleChange = this.handleChange.bind(this);
     this.addTrack = this.addTrack.bind(this);
   }
@@ -57,6 +57,7 @@ class Search extends React.Component {
   }
 
   addTrack(track) {
+    const { partyId } = this.state;
     const reducedTrack = {
       id: track.id,
       artists: track.artists.map(artist => artist.name),
@@ -67,7 +68,7 @@ class Search extends React.Component {
       },
     };
     const { firebase } = this.props;
-    firebase.db.collection('parties').doc('c9fjG0WmJ2BxWa9id1Rw')
+    firebase.db.collection('parties').doc(partyId)
       .collection('queue').doc(track.id)
       .set(reducedTrack)
       .then(() => {

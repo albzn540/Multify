@@ -23,7 +23,7 @@ const Queue = (props) => {
 
   const queue = firebase.db
     .collection('parties')
-    .doc('c9fjG0WmJ2BxWa9id1Rw')
+    .doc(partyId)
     .collection('queue');
 
   useEffect(() => {

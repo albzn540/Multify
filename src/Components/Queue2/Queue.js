@@ -20,17 +20,96 @@ const Queue = (props) => {
   const { classes, partyId, firebase } = props;
 
   const [songs, setSongs] = useState([]);
+  const [votes, setVotes] = useState({});
 
   const queue = firebase.db
     .collection('parties')
     .doc(partyId)
     .collection('queue');
 
+  /* const getVotes = (() => {
+    // Get upvotes and downvotes for uid
+    // Might be a race cond. here if songs isn't ready
+    setVotes({});
+    songs.forEach((song) => {
+      // Cannot get uid outside this foreach for some reason
+      const uid = firebase.currentUser().uid;
+      queue.doc(song.id).collection('likes').doc(uid).get()
+        .then((like) => {
+          if (like.exists) {
+            votes[song.id] = {
+              upvote: true,
+              downvote: false,
+            };
+            setVotes(votes);
+          } else {
+            queue.doc(song.id).collection('dislikes').doc(uid).get()
+              .then((dislike) => {
+                if (dislike.exists) {
+                  votes[song.id] = {
+                    downvote: true,
+                    upvote: false,
+                  };
+                  setVotes(votes);
+                } else {
+                  votes[song.id] = {
+                    upvote: false,
+                    downvote: false,
+                  };
+                  setVotes(votes);
+                }
+              })
+              .catch((err) => {
+                console.error('[Queue] Error checking for dislikes', err);
+              });
+          }
+        })
+        .catch((err) => {
+          console.error('[Queue] Error checking for likes', err);
+        });
+    });
+  }); */
+
   useEffect(() => {
     const unsubscribeParty = firebase.partyQueueRef(partyId).onSnapshot((snap) => {
+      const uid = firebase.currentUser().uid;
       const newSongs = [];
-      snap.forEach(songDoc => newSongs.push(songDoc.data()));
-      setSongs(songs.concat(newSongs));
+      // snap.forEach(songDoc => newSongs.push(songDoc.data()));
+      snap.forEach((songDoc) => {
+        const id = songDoc.data().id;
+        const songObj = songDoc.data();
+        queue.doc(id).collection('likes').doc(uid).get()
+          .then((like) => {
+            if (like.exists) {
+              songObj.liked = true;
+              songObj.disliked = false;
+              newSongs.push(songObj);
+              setSongs(songs.concat(newSongs));
+            } else {
+              queue.doc(id).collection('dislikes').doc(uid).get()
+                .then((dislike) => {
+                  if (dislike.exists) {
+                    songObj.liked = false;
+                    songObj.disliked = true;
+                    newSongs.push(songObj);
+                    setSongs(songs.concat(newSongs));
+                  } else {
+                    songObj.liked = false;
+                    songObj.disliked = false;
+                    newSongs.push(songObj);
+                    setSongs(songs.concat(newSongs));
+                  }
+                })
+                .catch((err) => {
+                  console.error('[Queue] Error checking for dislikes', err);
+                });
+            }
+          })
+          .catch((err) => {
+            console.error('[Queue] Error checking for likes', err);
+          });
+      });
+      // setSongs(songs.concat(newSongs));
     });
 
     return () => {
@@ -38,39 +117,12 @@ const Queue = (props) => {
     };
   }, []);
 
-  // Get upvotes and downvotes for uid
-  // Might be a race cond. here
-  songs.forEach((song) => {
-    // Cannot get uid outside this foreach for some reason
-    const uid = firebase.currentUser().uid;
-    queue.doc(song.id).collection('likes').doc(uid).get()
-      .then((like) => {
-        if (like.exists) {
-          song.upvote = true;
-          song.downvote = false;
-        }
-      })
-      .catch((err) => {
-        console.error('[Queue] Error checking for likes', err);
-      });
-    queue.doc(song.id).collection('dislikes').doc(uid).get()
-      .then((dislike) => {
-        if (dislike.exists) {
-          song.upvote = false;
-          song.downvote = true;
-        }
-      })
-      .catch((err) => {
-        console.error('[Queue] Error checking for dislikes', err);
-      });
-  });
-
   // Make this more DRY?
   const changeVote = (up, down, id) => {
-    const votes = queue.doc(id);
+    const vote = queue.doc(id);
     const uid = firebase.currentUser().uid;
     if (up) {
-      votes.collection('likes').doc(uid).set({})
+      vote.collection('likes').doc(uid).set({})
         .then(() => {
           console.log('[Queue] Upvote added');
         })
@@ -78,7 +130,7 @@ const Queue = (props) => {
           console.error('[Queue] Error adding upvote', err);
         });
     } else {
-      votes.collection('likes').doc(uid).delete()
+      vote.collection('likes').doc(uid).delete()
         .then(() => {
           console.log('[Queue] Upvote deleted');
         })
@@ -87,7 +139,7 @@ const Queue = (props) => {
         });
     }
     if (down) {
-      votes.collection('dislikes').doc(uid).set({})
+      vote.collection('dislikes').doc(uid).set({})
         .then(() => {
           console.log('[Queue] Downvote added');
         })
@@ -95,7 +147,7 @@ const Queue = (props) => {
           console.error('[Queue] Error adding downvote', err);
         });
     } else {
-      votes.collection('dislikes').doc(uid).delete()
+      vote.collection('dislikes').doc(uid).delete()
         .then(() => {
           console.log('[Queue] Downvote deleted');
         })
@@ -135,8 +187,8 @@ const Queue = (props) => {
             albumUrl={song.album.images[2].url}
             id={song.id}
             changeVote={changeVote}
-            upvoteBefore={song.upvote}
-            downvoteBefore={song.downvote}
+            upvoteBefore={song.liked}
+            downvoteBefore={song.disliked}
           />
         ))}
       </List>

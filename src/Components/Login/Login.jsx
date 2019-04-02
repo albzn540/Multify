@@ -36,7 +36,7 @@ const Login = (props) => {
       console.debug('[Login] Creating party...');
       spotify.createParty({
         name: 'Party',
-        spotify_token: spotify.spotifyUser(),
+        spotify_token: spotify.client.getAccessToken(),
       }).then((partyData) => {
         const { data: { code } } = partyData;
         console.debug('[Login] Party created', partyData);

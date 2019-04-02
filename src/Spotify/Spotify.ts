@@ -8,6 +8,7 @@ declare class Firebase {
   currentUser(): null | firebase.User;
   partyRef(): firebase.firestore.DocumentReference;
   partiesRef(): firebase.firestore.CollectionReference;
+  addUser(user: firebase.User, name: string, token: string, spotifyId: string): Promise<void>;
 }
 
 const config = {
@@ -31,6 +32,7 @@ let tokenExpiresIn: number;
 
 class Spotify {
   client: SpotifyWebApi.SpotifyWebApiJs;
+  spotifyUser: SpotifyApi.CurrentUsersProfileResponse | undefined; 
 
   constructor(firebase: Firebase) {
     // Initialize private stuff
@@ -54,20 +56,30 @@ class Spotify {
         refreshToken = spotifyData.refresh_token;
         setTimeout(this.refreshTokenCallback, tokenExpiresIn * 1000 - 3000);
         this.client.setAccessToken(spotifyData.access_token);
+        this.getSpotifyUser();
       }
     }
   }
 
-  spotifyUser = () => {
-    const accToken = this.client.getAccessToken();
-    console.log('[Spotify][spotifyUser]', accToken);
-    return accToken === '' ? null : accToken;
+  getSpotifyUser = () => {
+    this.client.getMe().then(user => {
+      this.spotifyUser = user;
+    }).catch(e => {
+      console.error("Couldn't get Spotify user", e);
+    })
   };
+
+  // Might not be needed anymore
+  // spotifyUser = () => {
+  //   const accToken = this.client.getAccessToken();
+  //   console.log('[Spotify][spotifyUser]', accToken);
+  //   return accToken === '' ? null : accToken;
+  // };
 
   authorizeWithSpotify = async (url: string = '') => {
     console.log('[Spotify][authorizeWithSpotify]');
 
-    if (!this.spotifyUser()) {
+    if (!this.spotifyUser) {
       const authenticate = fb.functions.httpsCallable('authenticateSpotifyUser');
 
       return authenticate({ url }).then(async response => {
@@ -94,14 +106,14 @@ class Spotify {
   loginUser = async (url: string = '') => {
     // Check if we're already logged in
     // Check if we already have an access token
-    if (!this.spotifyUser()) {
+    if (!this.spotifyUser) {
       // Retrieve Spotify code
       
-      console.log('[Spotify][loginUser] Retrieve accesstoken...', this.spotifyUser());
+      console.log('[Spotify][loginUser] Retrieve accesstoken...', this.spotifyUser);
       await this.authorizeWithSpotify(url).catch(err => {
         return Promise.resolve(err);
       });
-      console.log('[Spotify][loginUser] Retrieved accesstoken!', this.spotifyUser());
+      console.log('[Spotify][loginUser] Retrieved accesstoken!', this.spotifyUser);
     }
 
     if(fb.currentUser()) {
@@ -109,6 +121,8 @@ class Spotify {
     }
 
     const verifiedUser = await this.client.getMe();
+    this.spotifyUser = verifiedUser; // assign the verified user to spotify client
+
     console.log('[Spotify][loginUser] Verified Spotify user', verifiedUser);
     const { email, id } = verifiedUser;
 
@@ -116,16 +130,25 @@ class Spotify {
       // User exists
       fb.auth.updateCurrentUser(userCredentials.user);
       return userCredentials.user;
-    }).catch(error => {
+    }).catch(async (error) => {
       // User does not exist
       console.error(error.message);
-      console.log("[Spotify][loginUser] Creating new user");
+      console.log('[Spotify][loginUser] Creating new user');
       return fb.auth.createUserWithEmailAndPassword(email, id).then(userCredentials => {
+        // Save displayname and such
         const user = userCredentials.user;
-        if (user != null) {
+        const name = verifiedUser.display_name;
+        if (user != null && name != null) {
           user.updateProfile({
-            displayName: verifiedUser.display_name
+            displayName: name
           });
+          // New user created, add user to database
+          fb.addUser(user, name, this.client.getAccessToken(), id).catch(e => {
+            console.error('ADD SNACKBAR'); //TODO
+            console.error("Couldn't add user to database", e);
+          });
+        } else {
+          console.error('Something went wrong creating new user, one or more parameter were missing', user, name);
         }
         fb.auth.updateCurrentUser(userCredentials.user);
         return user;
@@ -136,7 +159,7 @@ class Spotify {
 
   saveToLocalStorage = () => {
     const localStorageData = {
-      access_token: this.spotifyUser(),
+      access_token: this.client.getAccessToken(),
       refresh_token: refreshToken,
       expires_at: Math.round(Date.now() / 1000 + tokenExpiresIn),
     };
@@ -161,10 +184,19 @@ class Spotify {
   createParty = () => {
     console.debug('[Spotify][createParty] Creating party');
     const createPartyFunc = fb.functions.httpsCallable('createParty');
-    return createPartyFunc({name: "Zup", spotify_token: "testtoken"});
+
+    if(!this.spotifyUser) {
+      console.error("You don't seem to be logged in", this.spotifyUser);
+      return Promise.reject("You don't seem to be logged in");
+    }
+    return createPartyFunc({
+      name: "Zup",
+      spotifyToken: this.client.getAccessToken(),
+      spotifyId: this.spotifyUser.id
+    });
   };
 
-  getPartyId = (code: string) => {
+  getPartyId = async (code: string) => {
     console.debug('[Spotify][getParyId] Retrieving party', code);
     return fb.partiesRef().where('code', '==', code).get().then((snap) => {
       let id = undefined;

@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as clientOauth2 from 'client-oauth2';
 import * as admin from 'firebase-admin';
+const SpotifyWebApi = require('spotify-web-api-node');
 
 const config = {
   clientId: functions.config().spotify.id,
@@ -14,6 +15,9 @@ const config = {
 
 // Oauth2 client
 const oauthClient = new clientOauth2(config);
+
+// Spotify client
+const spotifyClient = new SpotifyWebApi();
 
 // Firestore references
 const partiesRef = admin.firestore().collection('parties');
@@ -88,7 +92,9 @@ const partyCodeGenerator = async () => {
 }
 
 export const createParty = functions.https.onCall(async (data, context) => {
-  const { name, spotify_token } = data;
+  const { name, spotifyToken, spotifyId } = data;
+  const promises = [];
+  console.log('Create new party!', name);
   
   if (!name) {
     throw new functions.https.HttpsError(
@@ -97,22 +103,47 @@ export const createParty = functions.https.onCall(async (data, context) => {
     );
   }
 
-  if (!spotify_token) {
+  if (!spotifyToken) {
     throw new functions.https.HttpsError(
       'invalid-argument',
       "Missing 'spotify_token' parameter.",
     );
   }
-  
-  const code = await partyCodeGenerator();
-  return admin.firestore().collection('parties').doc().create({
-    code,
-    name,
-    spotify_token,
-    host: context.auth.uid
-  }).then(() => {
-    return {code, name}
+
+  // Get party code
+  promises.push(partyCodeGenerator());
+
+  // Create spotify playlist
+  spotifyClient.setAccessToken(spotifyToken);
+  promises.push(spotifyClient.createPlaylist(
+    spotifyId,
+    {name: 'Multify Playlist'}
+  ));
+
+  // Wait for all promises
+  return Promise.all(promises).then(async () => {
+    console.log('All promises resolved');
+    promises.forEach((val, index) => {
+      console.log(`Promise[${index}] `, JSON.stringify(val));
+    })
+
+    const code = promises[0];
+
+    return admin.firestore().collection('parties').doc().create({
+      code,
+      name,
+      spotifyToken,
+      host: context.auth.uid,
+    }).then(() => {
+      return {code, name}
+    });
+
   }).catch(error => {
+    console.error('Something went wrong when waiting for promises', error);
     return error;
   });
+
+  
+
+
 });

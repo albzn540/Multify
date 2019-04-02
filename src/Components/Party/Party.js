@@ -222,7 +222,7 @@ class Party extends Component {
               justify="center"
             >
               <Grid item xs={12} sm={8} md={6}>
-                <Search />
+                <Search partyId={partyId} />
               </Grid>
             </Grid>
           </main>

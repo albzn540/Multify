@@ -14,7 +14,7 @@ const SpotifyButton = (props) => {
 
   return (
     <Button
-      {...props}
+      // {...props}
       variant="contained"
       color="primary"
       size="large"

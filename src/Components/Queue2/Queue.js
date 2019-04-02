@@ -20,55 +20,11 @@ const Queue = (props) => {
   const { classes, partyId, firebase } = props;
 
   const [songs, setSongs] = useState([]);
-  const [votes, setVotes] = useState({});
 
   const queue = firebase.db
     .collection('parties')
     .doc(partyId)
     .collection('queue');
-
-  /* const getVotes = (() => {
-    // Get upvotes and downvotes for uid
-    // Might be a race cond. here if songs isn't ready
-    setVotes({});
-    songs.forEach((song) => {
-      // Cannot get uid outside this foreach for some reason
-      const uid = firebase.currentUser().uid;
-      queue.doc(song.id).collection('likes').doc(uid).get()
-        .then((like) => {
-          if (like.exists) {
-            votes[song.id] = {
-              upvote: true,
-              downvote: false,
-            };
-            setVotes(votes);
-          } else {
-            queue.doc(song.id).collection('dislikes').doc(uid).get()
-              .then((dislike) => {
-                if (dislike.exists) {
-                  votes[song.id] = {
-                    downvote: true,
-                    upvote: false,
-                  };
-                  setVotes(votes);
-                } else {
-                  votes[song.id] = {
-                    upvote: false,
-                    downvote: false,
-                  };
-                  setVotes(votes);
-                }
-              })
-              .catch((err) => {
-                console.error('[Queue] Error checking for dislikes', err);
-              });
-          }
-        })
-        .catch((err) => {
-          console.error('[Queue] Error checking for likes', err);
-        });
-    });
-  }); */
 
   useEffect(() => {
     const unsubscribeParty = firebase.partyQueueRef(partyId).onSnapshot((snap) => {

@@ -113,7 +113,7 @@ class Spotify {
       await this.authorizeWithSpotify(url).catch(err => {
         return Promise.resolve(err);
       });
-      console.log('[Spotify][loginUser] Retrieved accesstoken!', this.spotifyUser);
+      console.log('[Spotify][loginUser] Retrieved accesstoken!', this.client.getAccessToken());
     }
 
     if(fb.currentUser()) {

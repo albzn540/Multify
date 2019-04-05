@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { compose } from 'recompose';
-import { withStyles, Grid, Typography, CircularProgress } from '@material-ui/core';
+import { withStyles, Grid, CircularProgress } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 

@@ -11,7 +11,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { withFirebase } from '../../Firebase';
 import DesktopDrawer from '../DesktopDrawer';
 import MobileDrawer from '../MobileDrawer';
-import Queue from '../Queue2';
+import Queue from '../Queue';
 import Search from '../Search';
 
 

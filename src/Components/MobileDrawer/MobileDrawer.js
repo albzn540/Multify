@@ -1,11 +1,9 @@
 import React from 'react';
-import classNames from 'classnames';
 import { compose } from 'recompose';
 import {
-  Divider, List, ListItem, ListItemText, IconButton, withStyles,
+  Divider, List, ListItem, ListItemText, withStyles,
   SwipeableDrawer,
 } from '@material-ui/core';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 const drawerWidth = 240;
 

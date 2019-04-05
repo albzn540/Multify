@@ -17,7 +17,11 @@ const config = {
 const oauthClient = new clientOauth2(config);
 
 // Spotify client
-const spotifyClient = new SpotifyWebApi();
+const spotifyClient = new SpotifyWebApi({
+  clientId: config.clientId,
+  clientSecret: config.clientSecret,
+  redirectUri: config.redirectUri
+});
 
 // Firestore references
 const partiesRef = admin.firestore().collection('parties');
@@ -94,7 +98,6 @@ const partyCodeGenerator = async () => {
 export const createParty = functions.https.onCall(async (data, context) => {
   const { name, spotifyToken, spotifyId } = data;
   const promises = [];
-  console.log('Create new party!', name);
   
   if (!name) {
     throw new functions.https.HttpsError(
@@ -111,39 +114,40 @@ export const createParty = functions.https.onCall(async (data, context) => {
   }
 
   // Get party code
-  promises.push(partyCodeGenerator());
+  let code: string;
+  promises.push(partyCodeGenerator().then(num => code = num));
 
   // Create spotify playlist
+  let spotifyRes: any;
   spotifyClient.setAccessToken(spotifyToken);
   promises.push(spotifyClient.createPlaylist(
     spotifyId,
-    {name: 'Multify Playlist'}
-  ));
+    'Multify Playlist'
+  ).then((res: any) => spotifyRes = res));
 
   // Wait for all promises
   return Promise.all(promises).then(async () => {
-    console.log('All promises resolved');
-    promises.forEach((val, index) => {
-      console.log(`Promise[${index}] `, JSON.stringify(val));
-    })
-
-    const code = promises[0];
-
-    return admin.firestore().collection('parties').doc().create({
+    const party = {
       code,
       name,
       spotifyToken,
-      host: context.auth.uid,
-    }).then(() => {
-      return {code, name}
-    });
-
+      playlistId: spotifyRes.body.id,
+      playlistUri: spotifyRes.body.uri,
+      host: context.auth.uid
+    }
+    return admin.firestore().collection('parties').doc().create(party)
+      .then(() => {
+        return {code, name}
+      }).catch(error => {
+        throw new functions.https.HttpsError(
+          'unknown',
+          error
+        );
+      });
   }).catch(error => {
-    console.error('Something went wrong when waiting for promises', error);
-    return error;
+    throw new functions.https.HttpsError(
+      'unknown',
+      error
+    );
   });
-
-  
-
-
 });

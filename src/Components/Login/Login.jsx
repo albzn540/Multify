@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { compose } from 'recompose';
-import { withStyles, Grid, Typography } from '@material-ui/core';
+import { withStyles, Grid, Typography, CircularProgress } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 
@@ -24,15 +24,9 @@ const Login = (props) => {
     spotify, classes, location,
   } = props;
 
-  const [isLoggedIn, setLoggedIn] = useState(false);
-  const [name, setName] = useState('');
-
   useEffect(() => {
     const url = location.pathname + location.search;
-    spotify.loginUser(url).then((user) => {
-      setLoggedIn(true);
-      setName(user.displayName);
-
+    spotify.loginUser(url).then(() => {
       console.debug('[Login] Creating party...');
       spotify.createParty({
         name: 'Party',
@@ -49,12 +43,6 @@ const Login = (props) => {
     });
   }, []);
 
-  const text = (
-    <Typography variant="h3" className={classes.text}>
-      {isLoggedIn ? `Hi, ${name}!` : 'Logging in...'}
-    </Typography>
-  );
-
   return (
     <Grid
       container
@@ -67,7 +55,7 @@ const Login = (props) => {
         <SpotifyLogo className={classes.logo} />
       </Grid>
       <Grid item>
-        {text}
+        <CircularProgress color="primary" />
       </Grid>
     </Grid>
   );

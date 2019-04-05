@@ -64,7 +64,7 @@ class Spotify {
   getSpotifyUser = () => {
     this.client.getMe().then(user => {
       this.spotifyUser = user;
-    }).catch(e => {
+    }).catch((e: any) => {
       console.error("Couldn't get Spotify user", e);
     })
   };

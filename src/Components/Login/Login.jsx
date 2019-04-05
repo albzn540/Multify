@@ -36,7 +36,7 @@ const Login = (props) => {
       console.debug('[Login] Creating party...');
       spotify.createParty({
         name: 'Party',
-        spotify_token: spotify.spotifyUser(),
+        spotifyToken: spotify.client.getAccessToken(),
       }).then((partyData) => {
         const { data: { code } } = partyData;
         console.debug('[Login] Party created', partyData);
@@ -66,11 +66,9 @@ const Login = (props) => {
       <Grid item>
         <SpotifyLogo className={classes.logo} />
       </Grid>
-
       <Grid item>
         {text}
       </Grid>
-
     </Grid>
   );
 };

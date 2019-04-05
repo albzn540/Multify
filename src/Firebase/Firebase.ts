@@ -24,7 +24,7 @@ class Firebase {
     this.functions = firebase.functions();
     this.auth = firebase.auth();
 
-    if(process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development') {
       console.log('[Firebase] Running in dev mode, setting firebase functions address to localhost:3001');
       this.functions.useFunctionsEmulator('http://localhost:3001');
     }
@@ -47,13 +47,22 @@ class Firebase {
   };
 
   partiesRef = () => firebase.firestore().collection('parties');
-  
+
   partyRef = (id: string) => this.partiesRef().doc(id);
-  
+
   partyQueueRef = (id: string) => this.partyRef(id).collection('queue');
-  
+
+  addUser = (user: firebase.User, name: string, accessToken: string, spotifyId: string) => {
+    return firebase.firestore().collection('users').doc(user.uid).set({
+      email: user.email,
+      name,
+      accessToken,
+      spotifyId,
+    });
+  }
+
   test = () => {
-    
+
   };
 }
 

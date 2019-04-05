@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as clientOauth2 from 'client-oauth2';
 import * as admin from 'firebase-admin';
+const SpotifyWebApi = require('spotify-web-api-node');
 
 const config = {
   clientId: functions.config().spotify.id,
@@ -14,6 +15,13 @@ const config = {
 
 // Oauth2 client
 const oauthClient = new clientOauth2(config);
+
+// Spotify client
+const spotifyClient = new SpotifyWebApi({
+  clientId: config.clientId,
+  clientSecret: config.clientSecret,
+  redirectUri: config.redirectUri
+});
 
 // Firestore references
 const partiesRef = admin.firestore().collection('parties');
@@ -88,7 +96,8 @@ const partyCodeGenerator = async () => {
 }
 
 export const createParty = functions.https.onCall(async (data, context) => {
-  const { name, spotify_token } = data;
+  const { name, spotifyToken, spotifyId } = data;
+  const promises = [];
   
   if (!name) {
     throw new functions.https.HttpsError(
@@ -97,22 +106,48 @@ export const createParty = functions.https.onCall(async (data, context) => {
     );
   }
 
-  if (!spotify_token) {
+  if (!spotifyToken) {
     throw new functions.https.HttpsError(
       'invalid-argument',
       "Missing 'spotify_token' parameter.",
     );
   }
-  
-  const code = await partyCodeGenerator();
-  return admin.firestore().collection('parties').doc().create({
-    code,
-    name,
-    spotify_token,
-    host: context.auth.uid
-  }).then(() => {
-    return {code, name}
+
+  // Get party code
+  let code: string;
+  promises.push(partyCodeGenerator().then(num => code = num));
+
+  // Create spotify playlist
+  let spotifyRes: any;
+  spotifyClient.setAccessToken(spotifyToken);
+  promises.push(spotifyClient.createPlaylist(
+    spotifyId,
+    'Multify Playlist'
+  ).then((res: any) => spotifyRes = res));
+
+  // Wait for all promises
+  return Promise.all(promises).then(async () => {
+    const party = {
+      code,
+      name,
+      spotifyToken,
+      playlistId: spotifyRes.body.id,
+      playlistUri: spotifyRes.body.uri,
+      host: context.auth.uid
+    }
+    return admin.firestore().collection('parties').doc().create(party)
+      .then(() => {
+        return {code, name}
+      }).catch(error => {
+        throw new functions.https.HttpsError(
+          'unknown',
+          error
+        );
+      });
   }).catch(error => {
-    return error;
+    throw new functions.https.HttpsError(
+      'unknown',
+      error
+    );
   });
 });

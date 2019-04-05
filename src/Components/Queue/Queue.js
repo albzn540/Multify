@@ -21,6 +21,16 @@ const Queue = (props) => {
 
   const [songs, setSongs] = useState([]);
 
+  const compare = (track1, track2) => {
+    if (track1.averageLikes > track2.averageLikes) {
+      return -1;
+    }
+    if (track1.averageLikes < track2.averageLikes) {
+      return 1;
+    }
+    return 0;
+  };
+
   const queue = firebase.db
     .collection('parties')
     .doc(partyId)
@@ -32,37 +42,68 @@ const Queue = (props) => {
       const newSongs = [];
       // snap.forEach(songDoc => newSongs.push(songDoc.data()));
       snap.forEach((songDoc) => {
+        let totLikes = 0;
+        let totDislikes = 0;
         const id = songDoc.data().id;
         const songObj = songDoc.data();
-        queue.doc(id).collection('likes').doc(uid).get()
-          .then((like) => {
-            if (like.exists) {
-              songObj.liked = true;
-              songObj.disliked = false;
-              newSongs.push(songObj);
-              setSongs(songs.concat(newSongs));
-            } else {
-              queue.doc(id).collection('dislikes').doc(uid).get()
-                .then((dislike) => {
-                  if (dislike.exists) {
-                    songObj.liked = false;
-                    songObj.disliked = true;
-                    newSongs.push(songObj);
-                    setSongs(songs.concat(newSongs));
-                  } else {
-                    songObj.liked = false;
-                    songObj.disliked = false;
-                    newSongs.push(songObj);
-                    setSongs(songs.concat(newSongs));
-                  }
-                })
-                .catch((err) => {
-                  console.error('[Queue] Error checking for dislikes', err);
-                });
-            }
+        queue.doc(id).collection('likes').get()
+          .then((likesCol) => {
+            likesCol.forEach(() => {
+              totLikes += 1;
+            });
           })
           .catch((err) => {
-            console.error('[Queue] Error checking for likes', err);
+            console.error('[Queue] Error getting total likes', err);
+          })
+          .then(() => {
+            queue.doc(id).collection('dislikes').get()
+              .then((dislikesCol) => {
+                dislikesCol.forEach(() => {
+                  totDislikes += 1;
+                });
+              })
+              .catch((err) => {
+                console.error('[Queue] Error getting total dislikes', err);
+              })
+              .then(() => {
+                // Unnecessary then? No race condition here?
+                songObj.averageLikes = totLikes + totDislikes;
+              })
+              .then(() => {
+                queue.doc(id).collection('likes').doc(uid).get()
+                  .then((like) => {
+                    if (like.exists) {
+                      songObj.liked = true;
+                      songObj.disliked = false;
+                      newSongs.push(songObj);
+                      newSongs.sort(compare);
+                      setSongs(songs.concat(newSongs));
+                    } else {
+                      queue.doc(id).collection('dislikes').doc(uid).get()
+                        .then((dislike) => {
+                          if (dislike.exists) {
+                            songObj.liked = false;
+                            songObj.disliked = true;
+                            newSongs.push(songObj);
+                            newSongs.sort(compare);
+                            setSongs(songs.concat(newSongs));
+                          } else {
+                            songObj.liked = false;
+                            songObj.disliked = false;
+                            newSongs.push(songObj);
+                            newSongs.sort(compare);
+                            setSongs(songs.concat(newSongs));
+                          }
+                        })
+                        .catch((err) => {
+                          console.error('[Queue] Error checking for dislikes', err);
+                        });
+                    }
+                  })
+                  .catch((err) => {
+                    console.error('[Queue] Error checking for likes', err);
+                  });
+              });
           });
       });
       // setSongs(songs.concat(newSongs));

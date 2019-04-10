@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose } from 'recompose';
-import { withStyles, Grid } from '@material-ui/core';
+import { withStyles, Grid, CircularProgress } from '@material-ui/core';
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
 import { withSpotify } from '../../Spotify';
@@ -13,23 +13,27 @@ const styles = theme => ({
   },
 });
 
-const keyPress = (event, onChange) => {
-  if (event.key === 'Enter') {
-    onChange(event.target);
-    event.preventDefault();
-  }
-};
-
 class Search extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       tracks: [],
       partyId: props.partyId,
+      loading: false,
     };
     this.handleChange = this.handleChange.bind(this);
     this.addTrack = this.addTrack.bind(this);
   }
+
+  keyPress = (event, onChange) => {
+    if (event.key === 'Enter') {
+      onChange(event.target);
+      this.setState({
+        loading: true,
+      });
+      event.preventDefault();
+    }
+  };
 
   handleChange(event) {
     const searchStr = event.value;
@@ -50,6 +54,7 @@ class Search extends React.Component {
         });
         this.setState({
           tracks: items,
+          loading: false,
         });
       }, (err) => {
         console.error('[SearchList] Search error:', err);
@@ -66,6 +71,7 @@ class Search extends React.Component {
         images: track.album.images,
         name: track.album.name,
       },
+      timeStamp: Date.now(),
     };
     const { firebase } = this.props;
     firebase.db.collection('parties').doc(partyId)
@@ -81,7 +87,7 @@ class Search extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { tracks } = this.state;
+    const { tracks, loading } = this.state;
 
     return (
       <Grid
@@ -92,8 +98,12 @@ class Search extends React.Component {
         className={classes.root}
         spacing={16}
       >
-        <SearchBar onChange={this.handleChange} keyPress={keyPress} />
-        <SearchList tracks={tracks} addTrack={this.addTrack} />
+        <SearchBar onChange={this.handleChange} keyPress={this.keyPress} />
+        {loading ? (
+          <CircularProgress color="primary" />
+        ) : (
+          <SearchList tracks={tracks} addTrack={this.addTrack} />
+        )}
       </Grid>
     );
   }

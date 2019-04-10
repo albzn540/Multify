@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { compose } from 'recompose';
-import { withStyles, Typography, List } from '@material-ui/core';
+import {
+  withStyles,
+  Typography,
+  List,
+  CircularProgress,
+} from '@material-ui/core';
 import { withFirebase } from '../../Firebase';
 import { SongListItem, SongItem } from '../SongItem';
 
@@ -20,6 +25,7 @@ const Queue = (props) => {
   const { classes, partyId, firebase } = props;
 
   const [songs, setSongs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const compare = (track1, track2) => {
     if (track1.averageLikes > track2.averageLikes) {
@@ -42,11 +48,12 @@ const Queue = (props) => {
     .doc(partyId)
     .collection('queue');
 
+  // Should make this more DRY
   useEffect(() => {
+    const newSongs = [];
     const unsubscribeParty = firebase.partyQueueRef(partyId).onSnapshot((snap) => {
       const uid = firebase.currentUser().uid;
-      const newSongs = [];
-      // snap.forEach(songDoc => newSongs.push(songDoc.data()));
+      // const newSongs = [];
       snap.forEach((songDoc) => {
         let totLikes = 0;
         let totDislikes = 0;
@@ -84,6 +91,7 @@ const Queue = (props) => {
                       newSongs.push(songObj);
                       newSongs.sort(compare);
                       setSongs(songs.concat(newSongs));
+                      setLoading(false);
                     } else {
                       queue.doc(id).collection('dislikes').doc(uid).get()
                         .then((dislike) => {
@@ -93,12 +101,14 @@ const Queue = (props) => {
                             newSongs.push(songObj);
                             newSongs.sort(compare);
                             setSongs(songs.concat(newSongs));
+                            setLoading(false);
                           } else {
                             songObj.liked = false;
                             songObj.disliked = false;
                             newSongs.push(songObj);
                             newSongs.sort(compare);
                             setSongs(songs.concat(newSongs));
+                            setLoading(false);
                           }
                         })
                         .catch((err) => {
@@ -112,7 +122,6 @@ const Queue = (props) => {
               });
           });
       });
-      // setSongs(songs.concat(newSongs));
     });
 
     return () => {
@@ -179,22 +188,25 @@ const Queue = (props) => {
       <Typography variant="h6" className={classes.text}>
         Queue
       </Typography>
-
-      <List>
-        {songs.map(song => (
-          <SongListItem
-            key={song.name}
-            name={song.name}
-            artists={song.artists}
-            album={song.album.name}
-            albumUrl={song.album.images[2].url}
-            id={song.id}
-            changeVote={changeVote}
-            upvoteBefore={song.liked}
-            downvoteBefore={song.disliked}
-          />
-        ))}
-      </List>
+      {loading ? (
+        <CircularProgress color="primary" />
+      ) : (
+        <List>
+          {songs.map(song => (
+            <SongListItem
+              key={song.name}
+              name={song.name}
+              artists={song.artists}
+              album={song.album.name}
+              albumUrl={song.album.images[2].url}
+              id={song.id}
+              changeVote={changeVote}
+              upvoteBefore={song.liked}
+              downvoteBefore={song.disliked}
+            />
+          ))}
+        </List>
+      )}
     </div>
   );
 };

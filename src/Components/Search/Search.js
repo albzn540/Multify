@@ -66,6 +66,7 @@ class Search extends React.Component {
         images: track.album.images,
         name: track.album.name,
       },
+      timeStamp: Date.now(),
     };
     const { firebase } = this.props;
     firebase.db.collection('parties').doc(partyId)

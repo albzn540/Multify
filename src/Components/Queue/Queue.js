@@ -28,6 +28,12 @@ const Queue = (props) => {
     if (track1.averageLikes < track2.averageLikes) {
       return 1;
     }
+    if (track1.timeStamp < track2.timeStamp) {
+      return -1;
+    }
+    if (track1.timeStamp > track2.timeStamp) {
+      return 1;
+    }
     return 0;
   };
 

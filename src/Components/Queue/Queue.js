@@ -50,15 +50,15 @@ const Queue = (props) => {
 
   // Should make this more DRY
   useEffect(() => {
-    const newSongs = [];
-    const unsubscribeParty = firebase.partyQueueRef(partyId).onSnapshot((snap) => {
+    const handleQueueSongs = (queueSnap) => {
       const uid = firebase.currentUser().uid;
-      // const newSongs = [];
-      snap.forEach((songDoc) => {
+      const newSongs = [];
+      queueSnap.forEach((songDoc) => {
         let totLikes = 0;
         let totDislikes = 0;
         const id = songDoc.data().id;
         const songObj = songDoc.data();
+
         queue.doc(id).collection('likes').get()
           .then((likesCol) => {
             likesCol.forEach(() => {
@@ -89,9 +89,6 @@ const Queue = (props) => {
                       songObj.liked = true;
                       songObj.disliked = false;
                       newSongs.push(songObj);
-                      newSongs.sort(compare);
-                      setSongs(songs.concat(newSongs));
-                      setLoading(false);
                     } else {
                       queue.doc(id).collection('dislikes').doc(uid).get()
                         .then((dislike) => {
@@ -99,16 +96,10 @@ const Queue = (props) => {
                             songObj.liked = false;
                             songObj.disliked = true;
                             newSongs.push(songObj);
-                            newSongs.sort(compare);
-                            setSongs(songs.concat(newSongs));
-                            setLoading(false);
                           } else {
                             songObj.liked = false;
                             songObj.disliked = false;
                             newSongs.push(songObj);
-                            newSongs.sort(compare);
-                            setSongs(songs.concat(newSongs));
-                            setLoading(false);
                           }
                         })
                         .catch((err) => {
@@ -122,7 +113,14 @@ const Queue = (props) => {
               });
           });
       });
-    });
+
+      newSongs.sort(compare);
+      setSongs(newSongs);
+      setLoading(false);
+    };
+
+    const unsubscribeParty = firebase.partyQueueRef(partyId)
+      .onSnapshot(snap => handleQueueSongs(snap));
 
     return () => {
       unsubscribeParty();

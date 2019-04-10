@@ -28,10 +28,7 @@ const Login = (props) => {
     const url = location.pathname + location.search;
     spotify.loginUser(url).then(() => {
       console.debug('[Login] Creating party...');
-      spotify.createParty({
-        name: 'Party',
-        spotifyToken: spotify.client.getAccessToken(),
-      }).then((partyData) => {
+      spotify.createParty(`${spotify.spotifyUser.display_name}'s party`).then((partyData) => {
         const { data: { code } } = partyData;
         console.debug('[Login] Party created', partyData);
         spotify.getPartyId(code).then((partyId) => {

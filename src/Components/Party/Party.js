@@ -79,15 +79,12 @@ class Party extends Component {
     if (partyId) console.info('[Party] Party id:', partyId);
 
     this.state = {
-      user: null,
       drawerOpen: false,
       hideQueue: false,
       hideSearch: true,
       partyId,
       partyName: '',
     };
-
-    // TODO: Retrieve party from firestore IN CASE OF CODE
   }
 
   componentDidMount() {
@@ -95,7 +92,7 @@ class Party extends Component {
     const { partyId } = this.state;
 
     if (partyId) {
-      firebase.db.collection('parties').doc(partyId)
+      firebase.partyRef(partyId)
         .get()
         .then((doc) => {
           this.setState({

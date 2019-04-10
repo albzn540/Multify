@@ -33,11 +33,7 @@ class Firebase {
       if (user) {
         console.info('[Firebase] User logged in', user);
       } else {
-        console.info('[Firebase] User logged out (or was never loged in)', user);
-        console.info('[Firebase] Logging in anonymous user...');
-        firebase.auth().signInAnonymously().catch(error => {
-          console.error('[Firebase] Something went wrong logging in anonymously', error);
-        })
+        console.info('[Firebase] User logged out (or was never loged in)');
       }
     });
   }

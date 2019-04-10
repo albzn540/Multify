@@ -20,7 +20,6 @@ class Search extends React.Component {
       tracks: [],
       partyId: props.partyId,
       loading: false,
-      searching: false,
     };
     this.handleChange = this.handleChange.bind(this);
     this.addTrack = this.addTrack.bind(this);
@@ -30,7 +29,6 @@ class Search extends React.Component {
     if (event.key === 'Enter') {
       onChange(event.target);
       this.setState({
-        searching: true,
         loading: true,
       });
       event.preventDefault();
@@ -57,7 +55,6 @@ class Search extends React.Component {
         this.setState({
           tracks: items,
           loading: false,
-          searching: false,
         });
       }, (err) => {
         console.error('[SearchList] Search error:', err);
@@ -90,7 +87,7 @@ class Search extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { tracks, loading, searching } = this.state;
+    const { tracks, loading } = this.state;
 
     return (
       <Grid

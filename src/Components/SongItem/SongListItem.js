@@ -122,6 +122,10 @@ const SongListItem = (props) => {
     }
   };
 
+  /**
+   * Toggle an up or down vote
+   * @param {bool} direction - True for Up and False for Down
+   */
   const toggleVote = (direction) => {
     let newVote = null;
     if (direction) {

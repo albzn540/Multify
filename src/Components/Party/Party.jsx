@@ -13,6 +13,7 @@ import DesktopDrawer from '../DesktopDrawer';
 import MobileDrawer from '../MobileDrawer';
 import Queue from '../Queue';
 import Search from '../Search';
+import NowPlayingSmall from '../NowPlaying';
 
 
 const drawerWidth = 240;
@@ -31,7 +32,7 @@ const styles = theme => ({
   },
   content: {
     flexGrow: 1,
-    // padding: theme.spacing.unit * 3, // BREAKS CHILD COMPONENTS IN MY OPINION
+    padding: theme.spacing.unit * 2,
   },
   toolbar: {
     ...theme.mixins.toolbar,
@@ -200,6 +201,10 @@ class Party extends Component {
               justify="center"
             >
               <Grid item xs={12} sm={8} md={6}>
+                <Typography variant="h6" className={classes.text}>
+                  Now playing
+                </Typography>
+                <NowPlayingSmall />
                 <Queue partyId={partyId} />
               </Grid>
             </Grid>

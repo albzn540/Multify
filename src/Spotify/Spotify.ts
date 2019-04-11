@@ -18,7 +18,7 @@ const config = {
   authorizationUri: 'https://accounts.spotify.com/authorize',
   accessTokenUri: 'https://accounts.spotify.com/api/token',
   redirectUri: 'https://multify-d5371.firebaseapp.com/login/',
-  scopes: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email'],
+  scopes: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email', 'user-read-playback-state', 'user-read-currently-playing'],
 };
 
 if(process.env.NODE_ENV === 'development') {
@@ -69,6 +69,10 @@ class Spotify {
     //Anoymous user, use old uuid if there is one
     this.uuid = uuid || this.uuid;
     console.debug('[Spotify] Anonymous user', this.uuid);
+
+    this.nowPlaying().then((d) => {
+      console.log(d);
+    })
   }
 
   /**
@@ -267,6 +271,13 @@ class Spotify {
         return Promise.reject(`Could not find party with code=${code}`);
       }
     });
+  };
+
+  /**
+   * @return A promise resolving to the current playing track
+   */
+  nowPlaying = async () => {
+    return this.client.getMyCurrentPlayingTrack()
   };
 }
 

@@ -1,3 +1,3 @@
-import Party from './Party';
+import Party from './Party.jsx';
 
 export default Party;

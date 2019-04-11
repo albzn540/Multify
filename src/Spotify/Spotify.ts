@@ -55,23 +55,20 @@ class Spotify {
       console.log('[Spotify] Stored data', spotifyData);
       const currentTime = Math.round(Date.now() / 1000) + 30; // add 30s buff time
       tokenExpiresIn = spotifyData.expires_at - currentTime;
-      console.info('[Spotify] Token expires in', tokenExpiresIn);
       if (tokenExpiresIn >= 0) {
         // token has not yet expired
-        console.log('[Spotify] Token has not yet expired');
+        console.info('[Spotify] Token expires in', tokenExpiresIn);
         refreshToken = spotifyData.refresh_token;
         setTimeout(this.refreshTokenCallback, tokenExpiresIn * 1000 - 3000);
         this.client.setAccessToken(spotifyData.access_token);
+        this.getNewSpotifyUser();
+      } else {
+        console.log('[Spotify] Token has expired');
       }
-      this.client.getMe().then(user => {
-        this.spotifyUser = user;
-        this.uuid = user.id;
-      }).catch(err => console.log("[Spotify] Couldn't fetch Spotify user"))
-    } else {
-      //Anoymous user, use old uuid if there is one
-      this.uuid = uuid || this.uuid;
-      console.debug('[Spotify] Anonymous user', this.uuid);
     }
+    //Anoymous user, use old uuid if there is one
+    this.uuid = uuid || this.uuid;
+    console.debug('[Spotify] Anonymous user', this.uuid);
   }
 
   /**
@@ -81,7 +78,7 @@ class Spotify {
     return this.client.getMe().then(user => {
       this.spotifyUser = user;
       this.uuid = user.id;
-    });
+    }).catch(err => console.log("[Spotify] Couldn't fetch Spotify user"));
   }
 
   /** 
@@ -123,7 +120,7 @@ class Spotify {
       tokenExpiresIn = expires_in;
       refreshToken = refresh_token;
       this.client.setAccessToken(access_token);
-      this.getNewSpotifyUser();
+      await this.getNewSpotifyUser();
       this.saveToLocalStorage();
     }).catch(err => console.error(err));
   };

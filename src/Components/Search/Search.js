@@ -1,6 +1,11 @@
 import React from 'react';
 import { compose } from 'recompose';
-import { withStyles, Grid, CircularProgress } from '@material-ui/core';
+import {
+  withStyles,
+  Grid,
+  CircularProgress,
+  Typography,
+} from '@material-ui/core';
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
 import { withSpotify } from '../../Spotify';
@@ -20,6 +25,7 @@ class Search extends React.Component {
       tracks: [],
       partyId: props.partyId,
       loading: false,
+      noResults: false,
     };
     this.handleChange = this.handleChange.bind(this);
     this.addTrack = this.addTrack.bind(this);
@@ -42,20 +48,28 @@ class Search extends React.Component {
     spotify.client.searchTracks(searchStr)
       .then((data) => {
         console.info('[SearchList] Found tracks', data);
-        data.tracks.items.forEach((track) => {
-          const item = {
-            album: track.album,
-            artists: track.artists,
-            id: track.id,
-            name: track.name,
-            uri: track.uri,
-          };
-          items.push(item);
-        });
-        this.setState({
-          tracks: items,
-          loading: false,
-        });
+        if (data.tracks.items.length === 0) {
+          this.setState({
+            noResults: true,
+            loading: false,
+          });
+        } else {
+          data.tracks.items.forEach((track) => {
+            const item = {
+              album: track.album,
+              artists: track.artists,
+              id: track.id,
+              name: track.name,
+              uri: track.uri,
+            };
+            items.push(item);
+          });
+          this.setState({
+            tracks: items,
+            loading: false,
+            noResults: false,
+          });
+        }
       }, (err) => {
         console.error('[SearchList] Search error:', err);
       });
@@ -88,7 +102,7 @@ class Search extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { tracks, loading } = this.state;
+    const { tracks, loading, noResults } = this.state;
 
     return (
       <Grid
@@ -103,7 +117,13 @@ class Search extends React.Component {
         {loading ? (
           <CircularProgress color="primary" />
         ) : (
-          <SearchList tracks={tracks} addTrack={this.addTrack} />
+          <div>
+            {noResults ? (
+              <Typography>No results</Typography>
+            ) : (
+              <SearchList tracks={tracks} addTrack={this.addTrack} />
+            )}
+          </div>
         )}
       </Grid>
     );

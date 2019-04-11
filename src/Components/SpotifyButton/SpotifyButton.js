@@ -1,13 +1,5 @@
 import React from 'react';
-import { compose } from 'recompose';
-import { Button, withStyles, Typography } from '@material-ui/core';
-
-const styles = theme => ({
-  button: {
-    borderRadius: '50px',
-    marginBottom: '10px',
-  },
-});
+import { Button, Typography } from '@material-ui/core';
 
 const SpotifyButton = (props) => {
   const { classes, value } = props;
@@ -28,6 +20,4 @@ const SpotifyButton = (props) => {
   );
 };
 
-export default compose(
-  withStyles(styles),
-)(SpotifyButton);
+export default SpotifyButton;

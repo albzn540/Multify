@@ -106,22 +106,6 @@ class Party extends Component {
     }
   }
 
-  /*
-    Things that should be implemented in this component (some things will
-    be broken out in the future)
-
-    Drawer      - ish done
-    Queue list  - ish done
-    Fab button (add tracks, search for tracks) - ish done
-    Add button in search so we can go back to queue - ish done
-
-    // later
-    TODO: Display party code on top (in case youre logged in as party amdin)
-    TODO: Add share button to sidebar
-    TODO: Customize sidebar for admin and anonomous users
-    TODO: Spacing 0 to remove scroll issues?
-  */
-
   handleDrawerOpen = () => {
     this.setState({ drawerOpen: true });
   };

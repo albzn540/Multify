@@ -10,12 +10,7 @@ import { withFirebase } from '../../Firebase';
 import { SongListItem } from '../SongItem';
 
 const styles = theme => ({
-  root: {
-    // display: 'flex',
-    // flexGrow: '1',
-    // height: `calc(100% - ${theme.spacing.unit * 16}px)`,
-    // padding: theme.spacing.unit,
-  },
+  root: {},
   text: {
     color: theme.palette.common.white,
   },

@@ -42,6 +42,10 @@ const JoinParty = (props) => {
   const { classes, spotify } = props;
   const [partyCode, setPartyCode] = useState('');
 
+  /**
+   * Redirects user to selected party if partycode exists
+   * @param {Event} e
+   */
   const formSubmit = (e) => {
     e.preventDefault(); // prevents page refreshing
 

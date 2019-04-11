@@ -7,7 +7,7 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { withFirebase } from '../../Firebase';
-import { SongListItem, SongItem } from '../SongItem';
+import { SongListItem } from '../SongItem';
 
 const styles = theme => ({
   root: {

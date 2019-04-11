@@ -62,31 +62,42 @@ const SongListItem = (props) => {
   let isLiked = null;
 
   const countLikes = () => {
+    // console.debug(`[SongListItem][countLikes] Track ${id} have ${likes - dislikes} likes`);
     setLikes(id, likes - dislikes);
   };
 
   useEffect(() => {
     const handleLikeChange = (snap) => {
       likes = 0;
+      let liked = null;
       snap.forEach((user) => {
         likes += 1;
         if (user.id === uuid) {
-          isLiked = true;
+          liked = true;
         }
       });
-      setVote(isLiked);
+      if (isLiked === null) {
+        // console.debug('[SongListItem][useEffect] First render, setting like', isLiked);
+        setVote(liked);
+        isLiked = liked;
+      }
       countLikes();
     };
 
     const handleDislikeChange = (snap) => {
       dislikes = 0;
+      let liked = null;
       snap.forEach((user) => {
         dislikes += 1;
         if (user.id === uuid) {
-          isLiked = false;
+          liked = false;
         }
       });
-      setVote(isLiked);
+      if (isLiked === null) {
+        // console.debug('[SongListItem][useEffect] First render, setting like', isLiked);
+        setVote(liked);
+        isLiked = liked;
+      }
       countLikes();
     };
 

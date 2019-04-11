@@ -82,6 +82,7 @@ class Search extends React.Component {
       uri: track.uri,
       artists: track.artists.map(artist => artist.name),
       name: track.name,
+      likes: 0,
       album: {
         images: track.album.images,
         name: track.album.name,

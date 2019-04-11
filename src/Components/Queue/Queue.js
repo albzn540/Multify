@@ -13,8 +13,8 @@ const styles = theme => ({
   root: {
     // display: 'flex',
     // flexGrow: '1',
-    height: `calc(100% - ${theme.spacing.unit * 8}px)`,
-    padding: theme.spacing.unit,
+    // height: `calc(100% - ${theme.spacing.unit * 16}px)`,
+    // padding: theme.spacing.unit,
   },
   text: {
     color: theme.palette.common.white,
@@ -26,28 +26,6 @@ const Queue = (props) => {
 
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const handleQueueSongs = (queueSnap) => {
-      const newTracks = [];
-      queueSnap.forEach((queueDoc) => {
-        const trackData = queueDoc.data();
-        trackData.id = queueDoc.id;
-        trackData.ref = queueDoc.ref;
-        trackData.likes = 0;
-        newTracks.push(trackData);
-      });
-      setTracks(newTracks);
-      setLoading(false);
-    };
-
-    const unsubscribeParty = firebase.partyQueueRef(partyId)
-      .onSnapshot(snap => handleQueueSongs(snap));
-
-    return () => {
-      unsubscribeParty();
-    };
-  }, []);
 
   const compare = (track1, track2) => {
     if (track1.likes > track2.likes) {
@@ -65,6 +43,29 @@ const Queue = (props) => {
     return 0;
   };
 
+  useEffect(() => {
+    const handleQueueSongs = (queueSnap) => {
+      const newTracks = [];
+      queueSnap.forEach((queueDoc) => {
+        const trackData = queueDoc.data();
+        trackData.id = queueDoc.id;
+        trackData.ref = queueDoc.ref;
+        newTracks.push(trackData);
+      });
+      newTracks.sort(compare);
+      setTracks(newTracks);
+      setLoading(false);
+      console.debug('[Queue][useEffect] New tracks', newTracks);
+    };
+
+    const unsubscribeParty = firebase.partyQueueRef(partyId)
+      .onSnapshot(snap => handleQueueSongs(snap));
+
+    return () => {
+      unsubscribeParty();
+    };
+  }, []);
+
   const setLikes = (trackId, likes) => {
     const allTracks = tracks.filter(cTrack => cTrack.id !== trackId);
     const track = tracks.find(cTrack => cTrack.id === trackId);
@@ -75,26 +76,11 @@ const Queue = (props) => {
     }
     allTracks.push(track);
     allTracks.sort(compare);
-    console.log(allTracks);
     setTracks(allTracks);
   };
 
   return (
     <div className={classes.root}>
-      <Typography variant="h6" className={classes.text}>
-        Now playing
-      </Typography>
-
-      <List>
-        <SongItem
-          key="Give you up"
-          name="Give you up"
-          artists={['Rick']}
-          album="pW0ned"
-          albumUrl="https://www.femalefirst.co.uk/image-library/square/1000/r/rick-astley-whenever-you-need-somebody-album-cover.jpg"
-        />
-      </List>
-
       <Typography variant="h6" className={classes.text}>
         Queue
       </Typography>

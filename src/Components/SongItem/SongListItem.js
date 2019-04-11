@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { compose } from 'recompose';
 import {
   withStyles, ListItem, ListItemText, ListItemSecondaryAction,
@@ -6,6 +6,7 @@ import {
 } from '@material-ui/core';
 import Downvote from '../../Constants/Icons/Downvote';
 import Upvote from '../../Constants/Icons/Upvote';
+import { withSpotify } from '../../Spotify';
 
 
 const ListItemHeight = 60;
@@ -42,57 +43,83 @@ const SongListItem = (props) => {
     artists,
     album,
     albumUrl,
+    songRef,
     id,
-    changeVote,
-    upvoteBefore,
-    downvoteBefore,
+    spotify,
+    setLikes,
   } = props;
 
-  const [upvoted, setUpvote] = useState(upvoteBefore);
-  const [downvoted, setDownvote] = useState(downvoteBefore);
-
+  const uuid = spotify.uuid;
+  const [vote, setVote] = useState(null);
   const concatArtists = artists.join(', ');
-
   const artistAndAlbum = `${concatArtists} - ${album}`;
 
-  /**
-   * Upvote and downvote takes place inside the list item file
-   * to give imidiate feedback
-   *
-   * Feels like DRY may not work here, but should be considered
-   * for improvement
-   */
-  const toggleUpvote = () => {
-    if (downvoted) {
-      setUpvote(true);
-      setDownvote(false);
-      // Add upvote and remove downvote
-      changeVote(true, false, id);
-    } else if (upvoted) {
-      setUpvote(false);
-      // Remove upvote
-      changeVote(false, false, id);
-    } else {
-      setUpvote(true);
-      // Add upvote
-      changeVote(true, false, id);
+  const likeRef = songRef.collection('likes');
+  const dislikeRef = songRef.collection('dislikes');
+
+  let likes = 0;
+  let dislikes = 0;
+  let isLiked = null;
+
+  const countLikes = () => {
+    setLikes(id, likes - dislikes);
+  };
+
+  useEffect(() => {
+    const handleLikeChange = (snap) => {
+      likes = 0;
+      snap.forEach((user) => {
+        likes += 1;
+        if (user.id === uuid) {
+          isLiked = true;
+        }
+      });
+      setVote(isLiked);
+      countLikes();
+    };
+
+    const handleDislikeChange = (snap) => {
+      dislikes = 0;
+      snap.forEach((user) => {
+        dislikes += 1;
+        if (user.id === uuid) {
+          isLiked = false;
+        }
+      });
+      setVote(isLiked);
+      countLikes();
+    };
+
+    const unsubscribeLikeChanges = likeRef
+      .onSnapshot(likeSnap => handleLikeChange(likeSnap));
+    const unsubscribeDislikeChanges = dislikeRef
+      .onSnapshot(dislikeSnap => handleDislikeChange(dislikeSnap));
+
+    return () => {
+      unsubscribeLikeChanges();
+      unsubscribeDislikeChanges();
+    };
+  }, []);
+
+  const pushVoteToFirebase = (newVote) => {
+    likeRef.doc(uuid).delete();
+    dislikeRef.doc(uuid).delete();
+    if (newVote) {
+      likeRef.doc(uuid).set({});
+    } else if (newVote === false) {
+      dislikeRef.doc(uuid).set({});
     }
   };
-  const toggleDownvote = () => {
-    if (upvoted) {
-      setUpvote(false);
-      setDownvote(true);
-      // Add downvote and remove upvote
-      changeVote(false, true, id);
-    } else if (downvoted) {
-      setDownvote(false);
-      // Remove downvote
-      changeVote(false, false, id);
+
+  const toggleVote = (direction) => {
+    let newVote = null;
+    if (direction) {
+      newVote = vote ? null : true;
     } else {
-      setDownvote(true);
-      // Add downvote
-      changeVote(false, true, id);
+      newVote = vote !== false ? false : null;
     }
+    setVote(newVote);
+    pushVoteToFirebase(newVote);
   };
 
   return (
@@ -110,30 +137,30 @@ const SongListItem = (props) => {
       <ListItemSecondaryAction>
         <IconButton
           aria-label="Downvote"
-          onClick={() => toggleDownvote()}
+          onClick={() => toggleVote(false)}
         >
           <Downvote className={{
-            [classes.buttonSelected]: downvoted,
-            [classes.buttonDeselected]: !downvoted,
+            [classes.buttonSelected]: vote === false,
+            [classes.buttonDeselected]: vote !== false,
           }}
           />
         </IconButton>
         <IconButton
           aria-label="Upvote"
-          onClick={() => toggleUpvote()}
+          onClick={() => toggleVote(true)}
         >
           <Upvote className={{
-            [classes.buttonSelected]: upvoted,
-            [classes.buttonDeselected]: !upvoted,
+            [classes.buttonSelected]: vote === true,
+            [classes.buttonDeselected]: vote !== true,
           }}
           />
         </IconButton>
       </ListItemSecondaryAction>
     </ListItem>
-
   );
 };
 
 export default compose(
   withStyles(styles, { withTheme: true }),
+  withSpotify,
 )(SongListItem);

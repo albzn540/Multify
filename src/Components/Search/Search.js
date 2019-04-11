@@ -65,6 +65,7 @@ class Search extends React.Component {
     const { partyId } = this.state;
     const reducedTrack = {
       id: track.id,
+      uri: track.uri,
       artists: track.artists.map(artist => artist.name),
       name: track.name,
       album: {

@@ -24,14 +24,36 @@ const styles = theme => ({
 const Queue = (props) => {
   const { classes, partyId, firebase } = props;
 
-  const [songs, setSongs] = useState([]);
+  const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const handleQueueSongs = (queueSnap) => {
+      const newTracks = [];
+      queueSnap.forEach((queueDoc) => {
+        const trackData = queueDoc.data();
+        trackData.id = queueDoc.id;
+        trackData.ref = queueDoc.ref;
+        trackData.likes = 0;
+        newTracks.push(trackData);
+      });
+      setTracks(newTracks);
+      setLoading(false);
+    };
+
+    const unsubscribeParty = firebase.partyQueueRef(partyId)
+      .onSnapshot(snap => handleQueueSongs(snap));
+
+    return () => {
+      unsubscribeParty();
+    };
+  }, []);
+
   const compare = (track1, track2) => {
-    if (track1.averageLikes > track2.averageLikes) {
+    if (track1.likes > track2.likes) {
       return -1;
     }
-    if (track1.averageLikes < track2.averageLikes) {
+    if (track1.likes < track2.likes) {
       return 1;
     }
     if (track1.timeStamp < track2.timeStamp) {
@@ -43,130 +65,18 @@ const Queue = (props) => {
     return 0;
   };
 
-  const queue = firebase.db
-    .collection('parties')
-    .doc(partyId)
-    .collection('queue');
-
-  // Should make this more DRY
-  useEffect(() => {
-    const newSongs = [];
-    const unsubscribeParty = firebase.partyQueueRef(partyId).onSnapshot((snap) => {
-      const uid = firebase.currentUser().uid;
-      // const newSongs = [];
-      snap.forEach((songDoc) => {
-        let totLikes = 0;
-        let totDislikes = 0;
-        const id = songDoc.data().id;
-        const songObj = songDoc.data();
-        queue.doc(id).collection('likes').get()
-          .then((likesCol) => {
-            likesCol.forEach(() => {
-              totLikes += 1;
-            });
-          })
-          .catch((err) => {
-            console.error('[Queue] Error getting total likes', err);
-          })
-          .then(() => {
-            queue.doc(id).collection('dislikes').get()
-              .then((dislikesCol) => {
-                dislikesCol.forEach(() => {
-                  totDislikes += 1;
-                });
-              })
-              .catch((err) => {
-                console.error('[Queue] Error getting total dislikes', err);
-              })
-              .then(() => {
-                // Unnecessary then? No race condition here?
-                songObj.averageLikes = totLikes + totDislikes;
-              })
-              .then(() => {
-                queue.doc(id).collection('likes').doc(uid).get()
-                  .then((like) => {
-                    if (like.exists) {
-                      songObj.liked = true;
-                      songObj.disliked = false;
-                      newSongs.push(songObj);
-                      newSongs.sort(compare);
-                      setSongs(songs.concat(newSongs));
-                      setLoading(false);
-                    } else {
-                      queue.doc(id).collection('dislikes').doc(uid).get()
-                        .then((dislike) => {
-                          if (dislike.exists) {
-                            songObj.liked = false;
-                            songObj.disliked = true;
-                            newSongs.push(songObj);
-                            newSongs.sort(compare);
-                            setSongs(songs.concat(newSongs));
-                            setLoading(false);
-                          } else {
-                            songObj.liked = false;
-                            songObj.disliked = false;
-                            newSongs.push(songObj);
-                            newSongs.sort(compare);
-                            setSongs(songs.concat(newSongs));
-                            setLoading(false);
-                          }
-                        })
-                        .catch((err) => {
-                          console.error('[Queue] Error checking for dislikes', err);
-                        });
-                    }
-                  })
-                  .catch((err) => {
-                    console.error('[Queue] Error checking for likes', err);
-                  });
-              });
-          });
-      });
-    });
-
-    return () => {
-      unsubscribeParty();
-    };
-  }, []);
-
-  // Make this more DRY?
-  const changeVote = (up, down, id) => {
-    const vote = queue.doc(id);
-    const uid = firebase.currentUser().uid;
-    if (up) {
-      vote.collection('likes').doc(uid).set({})
-        .then(() => {
-          console.log('[Queue] Upvote added');
-        })
-        .catch((err) => {
-          console.error('[Queue] Error adding upvote', err);
-        });
+  const setLikes = (trackId, likes) => {
+    const allTracks = tracks.filter(cTrack => cTrack.id !== trackId);
+    const track = tracks.find(cTrack => cTrack.id === trackId);
+    if (track) {
+      track.likes = likes;
     } else {
-      vote.collection('likes').doc(uid).delete()
-        .then(() => {
-          console.log('[Queue] Upvote deleted');
-        })
-        .catch((err) => {
-          console.error('[Queue] Error deleting upvote', err);
-        });
+      console.error(`Could not find track ${trackId} in queue`);
     }
-    if (down) {
-      vote.collection('dislikes').doc(uid).set({})
-        .then(() => {
-          console.log('[Queue] Downvote added');
-        })
-        .catch((err) => {
-          console.error('[Queue] Error adding downvote', err);
-        });
-    } else {
-      vote.collection('dislikes').doc(uid).delete()
-        .then(() => {
-          console.log('[Queue] Downvote deleted');
-        })
-        .catch((err) => {
-          console.error('[Queue] Error deleting downvote', err);
-        });
-    }
+    allTracks.push(track);
+    allTracks.sort(compare);
+    console.log(allTracks);
+    setTracks(allTracks);
   };
 
   return (
@@ -192,17 +102,16 @@ const Queue = (props) => {
         <CircularProgress color="primary" />
       ) : (
         <List>
-          {songs.map(song => (
+          {tracks.map(track => (
             <SongListItem
-              key={song.name}
-              name={song.name}
-              artists={song.artists}
-              album={song.album.name}
-              albumUrl={song.album.images[2].url}
-              id={song.id}
-              changeVote={changeVote}
-              upvoteBefore={song.liked}
-              downvoteBefore={song.disliked}
+              key={track.id}
+              name={track.name}
+              artists={track.artists}
+              album={track.album.name}
+              albumUrl={track.album.images[2].url}
+              id={track.id}
+              songRef={track.ref}
+              setLikes={setLikes}
             />
           ))}
         </List>

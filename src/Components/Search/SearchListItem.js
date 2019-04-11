@@ -25,6 +25,7 @@ const SearchListItem = (props) => {
     artists,
     id,
     name,
+    uri,
     classes,
     addTrack,
   } = props;
@@ -53,6 +54,7 @@ const SearchListItem = (props) => {
           onClick={() => addTrack({
             id,
             artists,
+            uri,
             name,
             album,
           })}

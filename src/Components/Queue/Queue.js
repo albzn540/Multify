@@ -22,6 +22,13 @@ const Queue = (props) => {
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  /**
+   * Compares two tracks based on number of upvotes.
+   * If upvotes are equal the track added earliest
+   * is the track selected by a .sort function.
+   * @param {Object} track1
+   * @param {Object} track2
+   */
   const compare = (track1, track2) => {
     if (track1.likes > track2.likes) {
       return -1;

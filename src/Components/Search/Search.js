@@ -31,6 +31,9 @@ class Search extends React.Component {
     this.addTrack = this.addTrack.bind(this);
   }
 
+  /**
+   * Initiates loading when user has pressed enter to confirm search
+   */
   keyPress = (event, onChange) => {
     if (event.key === 'Enter') {
       onChange(event.target);
@@ -41,6 +44,10 @@ class Search extends React.Component {
     }
   };
 
+  /**
+   * Searches for tracks when the keyPress function is fired
+   * @param {Event} event
+   */
   handleChange(event) {
     const searchStr = event.value;
     const { spotify } = this.props;
@@ -75,6 +82,10 @@ class Search extends React.Component {
       });
   }
 
+  /**
+   * A track has its important features stripped and added to firestore
+   * @param {Object} track
+   */
   addTrack(track) {
     const { partyId } = this.state;
     const reducedTrack = {

@@ -147,7 +147,6 @@ class Search extends React.Component {
         <Grid
           container
           justify="center"
-          spacing={32}
         >
           <Grid item xs={6}>
             <DropContainer

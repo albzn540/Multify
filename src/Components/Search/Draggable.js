@@ -17,6 +17,9 @@ const styles = theme => ({
   listSubText: {
     color: theme.palette.common.lightGrey,
   },
+  listItem: {
+    backgroundColor: theme.palette.common.grey,
+  },
 });
 
 const Draggable = (props) => {
@@ -35,7 +38,8 @@ const Draggable = (props) => {
     <ListItem
       onDragStart={e => onDragStart(e, 'drag test data')}
       draggable="true"
-      className={classes.draggable}
+      className={classes.listItem}
+      divider="true"
     >
       <ListItemText
         disableTypography

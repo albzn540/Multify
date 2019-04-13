@@ -34,19 +34,20 @@ class Search extends React.Component {
 
   // Drag and drop logic starts here
 
-  onDragStart = (e, data) => {
+  onDragStart = (e, draggedTrack) => {
     console.debug('Started dragging');
-    e.dataTransfer.setData('data', data);
+    const stringified = JSON.stringify(draggedTrack);
+    e.dataTransfer.setData('track', stringified);
   };
 
   onDragOver = (e) => {
     e.preventDefault();
   };
 
-  onDrop = (e, data) => {
-    const someData = e.dataTransfer.getData('data');
-    console.debug('Should be drag data:', someData);
-    console.debug('Should be drop data:', data);
+  onDrop = (e) => {
+    const droppedTrack = JSON.parse(e.dataTransfer.getData('track'));
+    console.debug('Track data:', droppedTrack);
+    this.addTrack(droppedTrack);
   }
 
   /**

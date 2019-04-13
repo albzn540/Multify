@@ -21,7 +21,7 @@ const DropContainer = (props) => {
       alignItems="center"
       justify="center"
       onDragOver={e => onDragOver(e)}
-      onDrop={e => onDrop(e, 'drop test data')}
+      onDrop={e => onDrop(e)}
     >
       <Typography>
         Drag a song here or click the + to add it to the queue!

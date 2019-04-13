@@ -34,9 +34,17 @@ const Draggable = (props) => {
     onDragStart,
   } = props;
 
+  const track = {
+    id,
+    artists,
+    uri,
+    name,
+    album,
+  };
+
   return (
     <ListItem
-      onDragStart={e => onDragStart(e, 'drag test data')}
+      onDragStart={e => onDragStart(e, track)}
       draggable="true"
       className={classes.listItem}
       divider="true"
@@ -60,13 +68,7 @@ const Draggable = (props) => {
       />
       <ListItemSecondaryAction>
         <IconButton
-          onClick={() => addTrack({
-            id,
-            artists,
-            uri,
-            name,
-            album,
-          })}
+          onClick={() => addTrack(track)}
         >
           <Add />
         </IconButton>

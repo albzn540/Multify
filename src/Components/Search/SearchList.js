@@ -6,7 +6,8 @@ import {
   List,
 } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
-import SearchListItem from './SearchListItem';
+// import SearchListItem from './SearchListItem';
+import Draggable from './Draggable';
 
 const styles = () => ({
   root: {
@@ -19,7 +20,12 @@ const styles = () => ({
 });
 
 const SearchList = (props) => {
-  const { tracks, addTrack, classes } = props;
+  const {
+    tracks,
+    addTrack,
+    classes,
+    onDragStart,
+  } = props;
 
   return (
     <Grid item>
@@ -28,13 +34,14 @@ const SearchList = (props) => {
         className={classes.root}
       >
         {tracks.map(track => (
-          <SearchListItem
+          <Draggable
             album={track.album}
             artists={track.artists}
             id={track.id}
             name={track.name}
             uri={track.uri}
             addTrack={addTrack}
+            onDragStart={onDragStart}
           />
         ))}
       </List>

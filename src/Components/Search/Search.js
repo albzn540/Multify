@@ -8,6 +8,7 @@ import {
 } from '@material-ui/core';
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
+import DropContainer from './DropContainer';
 import { withSpotify } from '../../Spotify';
 import { withFirebase } from '../../Firebase';
 
@@ -29,6 +30,23 @@ class Search extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.addTrack = this.addTrack.bind(this);
+  }
+
+  // Drag and drop logic starts here
+
+  onDragStart = (e, data) => {
+    console.debug('Started dragging');
+    e.dataTransfer.setData('data', data);
+  };
+
+  onDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  onDrop = (e, data) => {
+    const someData = e.dataTransfer.getData('data');
+    console.debug('Should be drag data:', someData);
+    console.debug('Should be drop data:', data);
   }
 
   /**
@@ -127,13 +145,29 @@ class Search extends React.Component {
       >
         <SearchBar onChange={this.handleChange} keyPress={this.keyPress} />
         {loading ? (
-          <CircularProgress color="primary" />
+          <div>
+            <CircularProgress color="primary" />
+            <DropContainer
+              onDragOver={this.onDragOver}
+              onDrop={this.onDrop}
+            />
+          </div>
         ) : (
           <div>
             {noResults ? (
               <Typography>No results</Typography>
             ) : (
-              <SearchList tracks={tracks} addTrack={this.addTrack} />
+              <div>
+                <SearchList
+                  tracks={tracks}
+                  addTrack={this.addTrack}
+                  onDragStart={this.onDragStart}
+                />
+                <DropContainer
+                  onDragOver={this.onDragOver}
+                  onDrop={this.onDrop}
+                />
+              </div>
             )}
           </div>
         )}

@@ -4,22 +4,22 @@ import { withStyles, Grid, Typography } from '@material-ui/core';
 
 const styles = theme => ({
   root: {
-    width: '100%',
-    maxWidth: '50vh',
+    width: '500px',
+    height: '80px',
     position: 'relative',
-    maxHeight: '50vh',
-    backgroundcolor: theme.palette.common.lightGrey,
+    backgroundColor: theme.palette.common.grey,
   },
 });
 
 const DropContainer = (props) => {
   const { classes, onDragOver, onDrop } = props;
 
-  // Does grid have dragOver? Use a div?
   return (
     <Grid
-      item
+      container
       className={classes.root}
+      alignItems="center"
+      justify="center"
       onDragOver={e => onDragOver(e)}
       onDrop={e => onDrop(e, 'drop test data')}
     >

@@ -144,33 +144,52 @@ class Search extends React.Component {
         spacing={16}
       >
         <SearchBar onChange={this.handleChange} keyPress={this.keyPress} />
-        {loading ? (
-          <div>
-            <CircularProgress color="primary" />
+        <Grid
+          container
+          justify="center"
+          spacing={32}
+        >
+          <Grid item xs={6}>
             <DropContainer
               onDragOver={this.onDragOver}
               onDrop={this.onDrop}
             />
-          </div>
-        ) : (
-          <div>
-            {noResults ? (
-              <Typography>No results</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            {loading ? (
+              <Grid
+                container
+                justify="center"
+              >
+                <CircularProgress color="primary" />
+              </Grid>
             ) : (
               <div>
-                <SearchList
-                  tracks={tracks}
-                  addTrack={this.addTrack}
-                  onDragStart={this.onDragStart}
-                />
-                <DropContainer
-                  onDragOver={this.onDragOver}
-                  onDrop={this.onDrop}
-                />
+                {noResults ? (
+                  <Grid
+                    container
+                    justify="center"
+                  >
+                    <Typography>No results</Typography>
+                  </Grid>
+                ) : (
+                  <Grid
+                    container
+                    justify="center"
+                  >
+                    <Grid item xs={6}>
+                      <SearchList
+                        tracks={tracks}
+                        addTrack={this.addTrack}
+                        onDragStart={this.onDragStart}
+                      />
+                    </Grid>
+                  </Grid>
+                )}
               </div>
             )}
-          </div>
-        )}
+          </Grid>
+        </Grid>
       </Grid>
     );
   }

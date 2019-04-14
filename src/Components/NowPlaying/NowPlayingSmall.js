@@ -10,6 +10,7 @@ const ListItemHeight = 60;
 const styles = theme => ({
   root: {
     height: `${ListItemHeight}px`,
+    width: '90vw',
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
     paddingLeft: theme.spacing.unit,
@@ -17,9 +18,6 @@ const styles = theme => ({
   img: {
     maxHeight: `${ListItemHeight - 2 * theme.spacing.unit}px`,
     width: 'auto',
-  },
-  voteButton: {
-    color: theme.palette.common.white,
   },
   primaryText: {
     color: theme.palette.common.white,
@@ -86,7 +84,8 @@ const NowPlayingSmall = (props) => {
         <ListItemText
           primary={track.name}
           secondary={track.artistAndAlbum}
-          primaryTypographyProps={{ className: classes.primaryText }}
+          primaryTypographyProps={{ className: classes.primaryText, noWrap: true }}
+          secondaryTypographyProps={{ noWrap: true }}
         />
       </ListItem>
     ) : (

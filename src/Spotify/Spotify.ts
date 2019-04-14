@@ -35,6 +35,7 @@ class Spotify {
   client: SpotifyWebApi.SpotifyWebApiJs;
   spotifyUser: SpotifyApi.CurrentUsersProfileResponse | undefined;
   uuid: string;
+  party: { code: string, id: string | null, name: string } | undefined;
 
   constructor(firebase: Firebase) {
     // Initialize private stuff
@@ -42,8 +43,8 @@ class Spotify {
     tokenExpiresIn = 0;
 
     // Public stuff
-    this.uuid = uuidv4();
     this.client = new SpotifyWebApi();
+    this.uuid = uuidv4();
 
     // Check for stored data
     const storedData = localStorage.getItem('spotify_data');
@@ -254,6 +255,7 @@ class Spotify {
 
   /**
    * Retrieve a party id (document firebase id) by party code (5 numbers)
+   * Also sets the party property for this Spotify instance
    * 
    * @param {string} code - 5 digit party code
    */
@@ -262,7 +264,9 @@ class Spotify {
     return fb.partiesRef().where('code', '==', code).get().then((snap) => {
       let id = undefined;
       snap.forEach(doc => {
+        const name = doc.data().name;
         id = doc.id;
+        this.party = { name, code, id };
       });
 
       if(id) {

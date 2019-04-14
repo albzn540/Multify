@@ -2,19 +2,15 @@ import React, { Component } from 'react';
 import { compose } from 'recompose';
 import classNames from 'classnames';
 import {
-  withStyles, AppBar, Toolbar, IconButton, Typography, Grid, Fab,
+  withStyles, AppBar, Toolbar, IconButton, Typography, Grid,
 } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
 import MenuIcon from '@material-ui/icons/Menu';
 // import { isMobile } from 'react-device-detect';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { withFirebase } from '../../Firebase';
+import { withSpotify } from '../../Spotify';
 import DesktopDrawer from '../DesktopDrawer';
 import MobileDrawer from '../MobileDrawer';
-import Queue from '../Queue';
 import Search from '../Search';
-import NowPlayingSmall from '../NowPlaying';
-
 
 const drawerWidth = 240;
 const isMobile = true;
@@ -23,6 +19,7 @@ const styles = theme => ({
   root: {
     display: 'flex',
     overflowY: 'scroll',
+    width: '100%',
     // flexGrow: '1', // might not be needed
     // height: '100vh',
     backgroundColor: theme.palette.background.main,
@@ -33,9 +30,6 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing.unit * 2,
-  },
-  toolbar: {
-    ...theme.mixins.toolbar,
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -56,54 +50,31 @@ const styles = theme => ({
     marginLeft: 12,
     marginRight: 36,
   },
-  fab: {
-    zIndex: theme.zIndex.appBar,
-    position: 'fixed',
-    bottom: '0px',
-    right: '0px',
-    margin: '16px',
-    color: theme.palette.common.lightBlack,
-    backgroundColor: theme.palette.common.green,
-  },
 });
 
-class Party extends Component {
+class Navigation extends Component {
   constructor(props) {
     super(props);
-
-    const { location: { pathname } } = props;
-
-    // /party/12345 = ["", "party", "5LJ0rnLKhslTmW357AbS"]
-    // If there's more than 2 arguments, a party code was sent!
-    const urlParams = pathname.split('/');
-    const partyId = urlParams.length > 2 ? urlParams[2] : null;
-    if (partyId) console.info('[Party] Party id:', partyId);
 
     this.state = {
       drawerOpen: false,
       hideQueue: false,
       hideSearch: true,
-      partyId,
       partyName: '',
     };
   }
 
   componentDidMount() {
-    const { firebase } = this.props;
-    const { partyId } = this.state;
+    const {
+      spotify,
+      match: { params: { partyId } },
+    } = this.props;
 
-    if (partyId) {
-      firebase.partyRef(partyId)
-        .get()
-        .then((doc) => {
-          this.setState({
-            partyName: doc.data().name,
-          });
-        })
-        .catch((err) => {
-          console.error('[Party] Firestore get error:', err);
-        });
-    }
+    spotify.getParty(partyId).then((party) => {
+      this.setState({ partyName: party.name });
+    }).catch((err) => {
+      console.error('[Navigation]', err);
+    });
   }
 
   handleDrawerOpen = () => {
@@ -178,28 +149,7 @@ class Party extends Component {
         )}
 
         {hideSearch ? (
-          <main className={classes.content}>
-            <div className={classes.toolbar} />
-            <Grid
-              container
-              justify="center"
-            >
-              <Grid item xs={12} sm={8} md={6}>
-                <Typography variant="h6" className={classes.text}>
-                  Now playing
-                </Typography>
-                <NowPlayingSmall />
-                <Queue partyId={partyId} />
-              </Grid>
-            </Grid>
-            <Fab
-              aria-label="Add"
-              className={classes.fab}
-              onClick={this.handleSwitchView}
-            >
-              <AddIcon />
-            </Fab>
-          </main>
+          null
         ) : (
           <main className={classes.content}>
             <div className={classes.toolbar} />
@@ -220,5 +170,5 @@ class Party extends Component {
 
 export default compose(
   withStyles(styles, { withTheme: true }),
-  withFirebase,
-)(Party);
+  withSpotify,
+)(Navigation);

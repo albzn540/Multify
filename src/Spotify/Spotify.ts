@@ -36,7 +36,12 @@ class Spotify {
   client: SpotifyWebApi.SpotifyWebApiJs;
   spotifyUser: SpotifyApi.CurrentUsersProfileResponse | undefined;
   uuid: string;
-  party: { code: string, id: string | null, name: string } | undefined;
+  party: {
+    code: string,
+    id: string | null,
+    name: string,
+    doc: firebase.firestore.DocumentSnapshot,
+  } | undefined;
 
   constructor(firebase: Firebase) {
     // Initialize private stuff
@@ -72,8 +77,8 @@ class Spotify {
     this.uuid = uuid || this.uuid;
     console.debug('[Spotify] Anonymous user', this.uuid);
 
-    this.nowPlaying().then((d) => {
-      console.log(d);
+    this.nowPlaying().then((res) => {
+      console.debug('[Spotify] Currently playing response', res);
     })
   }
 
@@ -256,7 +261,7 @@ class Spotify {
 
   /**
    * Retrieve a party id (document firebase id) by party code (5 numbers)
-   * Also sets the party property for this Spotify instance
+   * Also sets the party property for this Spotify instance (important)
    * 
    * @param {string} code - 5 digit party code
    */
@@ -267,7 +272,7 @@ class Spotify {
       snap.forEach(doc => {
         const name = doc.data().name;
         id = doc.id;
-        this.party = { name, code, id };
+        this.party = { name, code, id, doc };
       });
 
       if(id) {
@@ -275,6 +280,26 @@ class Spotify {
       } else { 
         return Promise.reject(`Could not find party with code=${code}`);
       }
+    });
+  };
+
+  /**
+   * @param {string} id Party id
+   * @returns Promise<firebase.firestore.DocumentReference> party object and
+   * saves it to the Spotify instance, or nothing if the party did not exist
+   */
+  getParty = async (id: string) => {
+    return fb.partyRef(id).get().then(partyDoc => {
+      const party = partyDoc.data();
+      if(party) {
+        return Promise.resolve(this.party = {
+          id: partyDoc.id,
+          name: party.name,
+          code: party.code,
+          doc: partyDoc
+        });
+      }
+      return Promise.reject("No such party");
     });
   };
 

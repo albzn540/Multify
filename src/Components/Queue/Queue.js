@@ -17,7 +17,10 @@ const styles = theme => ({
 });
 
 const Queue = (props) => {
-  const { classes, partyId, firebase } = props;
+  const {
+    classes, firebase,
+    match: { params: { partyId } },
+  } = props;
 
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -320,14 +320,22 @@ class Spotify {
       },
       timeStamp: Date.now(),
     };
-    fb.db.collection('parties').doc(partyId)
-      .collection('queue').doc(track.id)
-      .set(reducedTrack)
+    const newTrack = fb.db
+      .collection('parties')
+      .doc(partyId)
+      .collection('queue')
+      .doc(track.id);
+
+      newTrack.set(reducedTrack)
       .then(() => {
         console.log('[Spotify] Track added!');
       })
       .catch((err : Error) => {
         console.error('[Spotify] Error adding track!', err);
+      })
+      .then(() => {
+        newTrack.collection('likes').doc(this.uuid)
+          .set({});
       });
   }
 }

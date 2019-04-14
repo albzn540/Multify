@@ -3,12 +3,12 @@ import {
   Snackbar,
   withStyles,
   IconButton,
-  CloseIcon,
 } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 // import { isMobile } from 'react-device-detect';
 
 // theme removed temporarily
-// find good spacing
+// find good padding
 const styles = () => ({
   close: {
     padding: 1,
@@ -24,6 +24,14 @@ const NotificationBar = (props) => {
   const [open, setOpen] = useState(false);
   const [messageInfo, setMessageInfo] = useState({});
   const queue = [];
+
+  // Return a function that uses message?
+  const handleActivation = (message) => {
+    queue.push({
+      message,
+      key: new Date().getTime(),
+    });
+  };
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {

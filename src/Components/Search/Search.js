@@ -30,7 +30,6 @@ class Search extends React.Component {
       noResults: false,
     };
     this.handleChange = this.handleChange.bind(this);
-    this.addTrack = this.addTrack.bind(this);
   }
 
   // Drag and drop logic starts here
@@ -46,9 +45,10 @@ class Search extends React.Component {
   };
 
   onDrop = (e) => {
+    const { spotify, partyId } = this.props;
     const droppedTrack = JSON.parse(e.dataTransfer.getData('track'));
     console.debug('Track data:', droppedTrack);
-    this.addTrack(droppedTrack);
+    spotify.addTrack(droppedTrack, partyId);
   }
 
   /**
@@ -75,13 +75,14 @@ class Search extends React.Component {
     spotify.client.searchTracks(searchStr)
       .then((data) => {
         console.info('[SearchList] Found tracks', data);
-        if (data.tracks.items.length === 0) {
+        const searchResult = data.tracks.items;
+        if (searchResult.length === 0) {
           this.setState({
             noResults: true,
             loading: false,
           });
         } else {
-          data.tracks.items.forEach((track) => {
+          searchResult.forEach((track) => {
             const item = {
               album: track.album,
               artists: track.artists,

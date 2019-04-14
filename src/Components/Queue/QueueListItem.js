@@ -159,20 +159,22 @@ const QueueListItem = (props) => {
           aria-label="Downvote"
           onClick={() => toggleVote(false)}
         >
-          <Downvote className={{
-            [classes.buttonSelected]: vote === false,
-            [classes.buttonDeselected]: vote !== false,
-          }}
+          <Downvote className={vote === false ? (
+            classes.buttonSelected
+          ) : (
+            classes.buttonDeselected
+          )}
           />
         </IconButton>
         <IconButton
           aria-label="Upvote"
           onClick={() => toggleVote(true)}
         >
-          <Upvote className={{
-            [classes.buttonSelected]: vote === true,
-            [classes.buttonDeselected]: vote !== true,
-          }}
+          <Downvote className={vote === true ? (
+            classes.buttonSelected
+          ) : (
+            classes.buttonDeselected
+          )}
           />
         </IconButton>
       </ListItemSecondaryAction>

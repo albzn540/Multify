@@ -41,7 +41,7 @@ const styles = theme => ({
 });
 
 const MobileDrawer = (props) => {
-  const { classes, open, handleClose } = props;
+  const { classes, open, handleOpen, handleClose } = props;
 
   const handleDrawerClose = () => {
     handleClose();
@@ -51,6 +51,7 @@ const MobileDrawer = (props) => {
     <SwipeableDrawer
       open={open}
       onClose={handleDrawerClose}
+      onOpen={handleOpen}
     >
       <div className={classes.drawerHeader} />
       <Divider />
@@ -61,8 +62,6 @@ const MobileDrawer = (props) => {
           </ListItem>
         ))}
       </List>
-
-
     </SwipeableDrawer>
   );
 };

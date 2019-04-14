@@ -139,6 +139,7 @@ class Navigation extends Component {
         {isMobile ? (
           <MobileDrawer
             open={drawerOpen}
+            handleOpen={this.handleDrawerOpen}
             handleClose={this.handleDrawerClose}
           />
         ) : (

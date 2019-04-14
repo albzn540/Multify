@@ -217,15 +217,6 @@ export const pushQueueToSpotify = functions.https.onRequest(async (req, res) => 
     });
 });
 
-// export const test = functions.https.onRequest((req, res) => {
-//   const party = req.body.party;
-//   pushQueueToSpotify(party).then(data => {
-//     res.status(200).send(data);
-//   }).catch(err => {
-//     res.status(500).send(err);
-//   });
-// });
-
 export const songLikedCallback = functions.firestore
   .document('parties/{partyId}/queue/{songId}/likes/{userId}')
   .onWrite((change, context) => {

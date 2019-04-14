@@ -24,7 +24,7 @@ const styles = theme => ({
     display: 'flex',
     overflowY: 'scroll',
     // flexGrow: '1', // might not be needed
-    height: '100vh',
+    // height: '100vh',
     backgroundColor: theme.palette.background.main,
   },
   hide: {

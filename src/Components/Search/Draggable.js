@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import { compose } from 'recompose';
 import Add from '../../Constants/Icons/Add';
+import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
   listText: {
@@ -30,8 +31,9 @@ const Draggable = (props) => {
     name,
     uri,
     classes,
-    addTrack,
     onDragStart,
+    spotify,
+    partyId,
   } = props;
 
   const track = {
@@ -68,7 +70,7 @@ const Draggable = (props) => {
       />
       <ListItemSecondaryAction>
         <IconButton
-          onClick={() => addTrack(track)}
+          onClick={() => spotify.addTrack(track, partyId)}
         >
           <Add />
         </IconButton>
@@ -79,4 +81,5 @@ const Draggable = (props) => {
 
 export default compose(
   withStyles(styles),
+  withSpotify,
 )(Draggable);

@@ -40,6 +40,9 @@ const NotificationBar = (props) => {
     setOpen(false);
   };
 
+  /**
+   * Move the notification queue forward one step
+   */
   const handleExited = () => {
     if (queue.length > 0) {
       setMessageInfo(queue.shift());

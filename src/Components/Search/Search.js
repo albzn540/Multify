@@ -26,15 +26,11 @@ class Search extends React.Component {
     super(props);
     this.state = {
       tracks: [],
-      partyId: props.partyId,
       loading: false,
       noResults: false,
     };
     this.handleChange = this.handleChange.bind(this);
-    this.addTrack = this.addTrack.bind(this);
   }
-
-  // Drag and drop logic starts here
 
   onDragStart = (e, draggedTrack) => {
     console.debug('Started dragging');
@@ -47,9 +43,10 @@ class Search extends React.Component {
   };
 
   onDrop = (e) => {
+    const { spotify, partyId } = this.props;
     const droppedTrack = JSON.parse(e.dataTransfer.getData('track'));
     console.debug('Track data:', droppedTrack);
-    this.addTrack(droppedTrack);
+    spotify.addTrack(droppedTrack, partyId);
   }
 
   /**
@@ -76,13 +73,14 @@ class Search extends React.Component {
     spotify.client.searchTracks(searchStr)
       .then((data) => {
         console.info('[SearchList] Found tracks', data);
-        if (data.tracks.items.length === 0) {
+        const searchResult = data.tracks.items;
+        if (searchResult.length === 0) {
           this.setState({
             noResults: true,
             loading: false,
           });
         } else {
-          data.tracks.items.forEach((track) => {
+          searchResult.forEach((track) => {
             const item = {
               album: track.album,
               artists: track.artists,
@@ -100,36 +98,6 @@ class Search extends React.Component {
         }
       }, (err) => {
         console.error('[SearchList] Search error:', err);
-      });
-  }
-
-  /**
-   * A track has its important features stripped and added to firestore
-   * @param {Object} track
-   */
-  addTrack(track) {
-    const { partyId } = this.state;
-    const reducedTrack = {
-      id: track.id,
-      uri: track.uri,
-      artists: track.artists.map(artist => artist.name),
-      name: track.name,
-      likes: 0,
-      album: {
-        images: track.album.images,
-        name: track.album.name,
-      },
-      timeStamp: Date.now(),
-    };
-    const { firebase } = this.props;
-    firebase.db.collection('parties').doc(partyId)
-      .collection('queue').doc(track.id)
-      .set(reducedTrack)
-      .then(() => {
-        console.log('[Search] Track added!');
-      })
-      .catch((err) => {
-        console.error('[Search] Error adding track!', err);
       });
   }
 
@@ -191,8 +159,8 @@ class Search extends React.Component {
                   >
                     <SearchList
                       tracks={tracks}
-                      addTrack={this.addTrack}
                       onDragStart={this.onDragStart}
+                      partyId={partyId}
                     />
                   </Grid>
                 )}

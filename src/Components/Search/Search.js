@@ -138,57 +138,59 @@ class Search extends React.Component {
     return (
       <Grid
         container
-        direction="column"
+        direction="row"
         alignItems="center"
         justify="center"
         className={classes.root}
-        spacing={16}
+        spacing={24}
       >
-        <SearchBar onChange={this.handleChange} keyPress={this.keyPress} />
-        <Grid
-          container
-          justify="center"
-        >
-          <Grid item xs={6}>
-            <DropContainer
-              onDragOver={this.onDragOver}
-              onDrop={this.onDrop}
-            />
+        <Grid item xs={6}>
+          <DropContainer
+            onDragOver={this.onDragOver}
+            onDrop={this.onDrop}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <Grid
+            container
+            alignItems="center"
+            justify="center"
+          >
+            <SearchBar onChange={this.handleChange} keyPress={this.keyPress} />
           </Grid>
-          <Grid item xs={6}>
-            {loading ? (
-              <Grid
-                container
-                justify="center"
-              >
-                <CircularProgress color="primary" />
-              </Grid>
-            ) : (
-              <div>
-                {noResults ? (
-                  <Grid
-                    container
-                    justify="center"
-                  >
-                    <Typography>No results</Typography>
-                  </Grid>
-                ) : (
-                  <Grid
-                    container
-                    justify="center"
-                  >
-                    <Grid item xs={6}>
-                      <SearchList
-                        tracks={tracks}
-                        addTrack={this.addTrack}
-                        onDragStart={this.onDragStart}
-                      />
-                    </Grid>
-                  </Grid>
-                )}
-              </div>
-            )}
-          </Grid>
+          {loading ? (
+            <Grid
+              container
+              alignItems="center"
+              justify="center"
+            >
+              <CircularProgress color="primary" />
+            </Grid>
+          ) : (
+            <div>
+              {noResults ? (
+                <Grid
+                  container
+                  alignItems="center"
+                  justify="center"
+                >
+                  <Typography>No results</Typography>
+                </Grid>
+              ) : (
+                <Grid
+                  container
+                  alignItems="center"
+                  justify="center"
+                >
+                  <SearchList
+                    tracks={tracks}
+                    addTrack={this.addTrack}
+                    onDragStart={this.onDragStart}
+                  />
+                </Grid>
+              )}
+            </div>
+          )}
         </Grid>
       </Grid>
     );

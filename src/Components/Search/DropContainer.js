@@ -4,11 +4,13 @@ import { withStyles, Grid, Typography } from '@material-ui/core';
 
 const styles = theme => ({
   root: {
-    width: '500px',
+    width: '100%',
+    maxHeight: '100%',
     height: '80px',
-    position: 'relative',
     backgroundColor: theme.palette.common.grey,
+    overflow: 'auto',
   },
+  text: {},
 });
 
 const DropContainer = (props) => {

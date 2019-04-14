@@ -7,8 +7,9 @@ declare class Firebase {
   functions: firebase.functions.Functions;
   auth: firebase.auth.Auth;
   currentUser(): null | firebase.User;
-  partyRef(): firebase.firestore.DocumentReference;
+  partyRef(id: string): firebase.firestore.DocumentReference;
   partiesRef(): firebase.firestore.CollectionReference;
+  partyQueueRef(id: string): firebase.firestore.CollectionReference;
   addUser(user: firebase.User, name: string, token: string, spotifyId: string): Promise<void>;
 }
 
@@ -274,6 +275,24 @@ class Spotify {
       } else { 
         return Promise.reject(`Could not find party with code=${code}`);
       }
+    });
+  };
+
+  /**
+   * @param trackId
+   * @param partyId
+   * @returns Track object or null if track was not in queue
+   */
+  getTrackFromQueue = (trackId: string, partyId: string) => {
+    console.debug(`[Spotify][getTrackFromQueue] Retrieving track "${trackId}" from queue...`);
+    return fb.partyQueueRef(partyId).get().then(queueSnap => {
+      let found = null;
+      queueSnap.forEach(track => {
+        if(track.id === trackId) {
+          found = track;
+        }
+      });
+      return found;
     });
   };
 

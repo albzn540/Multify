@@ -7,15 +7,10 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { withFirebase } from '../../Firebase';
-import { SongListItem, SongItem } from '../SongItem';
+import { SongListItem } from '../SongItem';
 
 const styles = theme => ({
-  root: {
-    // display: 'flex',
-    // flexGrow: '1',
-    // height: `calc(100% - ${theme.spacing.unit * 16}px)`,
-    // padding: theme.spacing.unit,
-  },
+  root: {},
   text: {
     color: theme.palette.common.white,
   },
@@ -27,6 +22,13 @@ const Queue = (props) => {
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  /**
+   * Compares two tracks based on number of upvotes.
+   * If upvotes are equal the track added earliest
+   * is the track selected by a .sort function.
+   * @param {Object} track1
+   * @param {Object} track2
+   */
   const compare = (track1, track2) => {
     if (track1.likes > track2.likes) {
       return -1;

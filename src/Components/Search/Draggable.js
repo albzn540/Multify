@@ -17,9 +17,12 @@ const styles = theme => ({
   listSubText: {
     color: theme.palette.common.lightGrey,
   },
+  listItem: {
+    backgroundColor: theme.palette.common.grey,
+  },
 });
 
-const SearchListItem = (props) => {
+const Draggable = (props) => {
   const {
     album,
     artists,
@@ -28,10 +31,24 @@ const SearchListItem = (props) => {
     uri,
     classes,
     addTrack,
+    onDragStart,
   } = props;
 
+  const track = {
+    id,
+    artists,
+    uri,
+    name,
+    album,
+  };
+
   return (
-    <ListItem>
+    <ListItem
+      onDragStart={e => onDragStart(e, track)}
+      draggable="true"
+      className={classes.listItem}
+      divider="true"
+    >
       <ListItemText
         disableTypography
         primary={(
@@ -47,17 +64,11 @@ const SearchListItem = (props) => {
           >
             {`${album.name} -${artists.map(artist => ` ${artist.name}`)}`}
           </Typography>
-        )}
+          )}
       />
       <ListItemSecondaryAction>
         <IconButton
-          onClick={() => addTrack({
-            id,
-            artists,
-            uri,
-            name,
-            album,
-          })}
+          onClick={() => addTrack(track)}
         >
           <Add />
         </IconButton>
@@ -68,4 +79,4 @@ const SearchListItem = (props) => {
 
 export default compose(
   withStyles(styles),
-)(SearchListItem);
+)(Draggable);

@@ -8,6 +8,7 @@ import {
 } from '@material-ui/core';
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
+import DropContainer from './DropContainer';
 import { withSpotify } from '../../Spotify';
 import { withFirebase } from '../../Firebase';
 
@@ -31,6 +32,27 @@ class Search extends React.Component {
     this.addTrack = this.addTrack.bind(this);
   }
 
+  // Drag and drop logic starts here
+
+  onDragStart = (e, draggedTrack) => {
+    console.debug('Started dragging');
+    const stringified = JSON.stringify(draggedTrack);
+    e.dataTransfer.setData('track', stringified);
+  };
+
+  onDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  onDrop = (e) => {
+    const droppedTrack = JSON.parse(e.dataTransfer.getData('track'));
+    console.debug('Track data:', droppedTrack);
+    this.addTrack(droppedTrack);
+  }
+
+  /**
+   * Initiates loading when user has pressed enter to confirm search
+   */
   keyPress = (event, onChange) => {
     if (event.key === 'Enter') {
       onChange(event.target);
@@ -41,6 +63,10 @@ class Search extends React.Component {
     }
   };
 
+  /**
+   * Searches for tracks when the keyPress function is fired
+   * @param {Event} event
+   */
   handleChange(event) {
     const searchStr = event.value;
     const { spotify } = this.props;
@@ -75,6 +101,10 @@ class Search extends React.Component {
       });
   }
 
+  /**
+   * A track has its important features stripped and added to firestore
+   * @param {Object} track
+   */
   addTrack(track) {
     const { partyId } = this.state;
     const reducedTrack = {
@@ -108,24 +138,60 @@ class Search extends React.Component {
     return (
       <Grid
         container
-        direction="column"
+        direction="row"
         alignItems="center"
         justify="center"
         className={classes.root}
-        spacing={16}
+        spacing={24}
       >
-        <SearchBar onChange={this.handleChange} keyPress={this.keyPress} />
-        {loading ? (
-          <CircularProgress color="primary" />
-        ) : (
-          <div>
-            {noResults ? (
-              <Typography>No results</Typography>
-            ) : (
-              <SearchList tracks={tracks} addTrack={this.addTrack} />
-            )}
-          </div>
-        )}
+        <Grid item xs={6}>
+          <DropContainer
+            onDragOver={this.onDragOver}
+            onDrop={this.onDrop}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <Grid
+            container
+            alignItems="center"
+            justify="center"
+          >
+            <SearchBar onChange={this.handleChange} keyPress={this.keyPress} />
+          </Grid>
+          {loading ? (
+            <Grid
+              container
+              alignItems="center"
+              justify="center"
+            >
+              <CircularProgress color="primary" />
+            </Grid>
+          ) : (
+            <div>
+              {noResults ? (
+                <Grid
+                  container
+                  alignItems="center"
+                  justify="center"
+                >
+                  <Typography>No results</Typography>
+                </Grid>
+              ) : (
+                <Grid
+                  container
+                  alignItems="center"
+                  justify="center"
+                >
+                  <SearchList
+                    tracks={tracks}
+                    addTrack={this.addTrack}
+                    onDragStart={this.onDragStart}
+                  />
+                </Grid>
+              )}
+            </div>
+          )}
+        </Grid>
       </Grid>
     );
   }

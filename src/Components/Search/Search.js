@@ -26,7 +26,6 @@ class Search extends React.Component {
     super(props);
     this.state = {
       tracks: [],
-      partyId: props.partyId,
       loading: false,
       noResults: false,
     };
@@ -103,36 +102,6 @@ class Search extends React.Component {
       });
   }
 
-  /**
-   * A track has its important features stripped and added to firestore
-   * @param {Object} track
-   */
-  addTrack(track) {
-    const { partyId } = this.state;
-    const reducedTrack = {
-      id: track.id,
-      uri: track.uri,
-      artists: track.artists.map(artist => artist.name),
-      name: track.name,
-      likes: 0,
-      album: {
-        images: track.album.images,
-        name: track.album.name,
-      },
-      timeStamp: Date.now(),
-    };
-    const { firebase } = this.props;
-    firebase.db.collection('parties').doc(partyId)
-      .collection('queue').doc(track.id)
-      .set(reducedTrack)
-      .then(() => {
-        console.log('[Search] Track added!');
-      })
-      .catch((err) => {
-        console.error('[Search] Error adding track!', err);
-      });
-  }
-
   render() {
     const { classes, partyId } = this.props;
     const { tracks, loading, noResults } = this.state;
@@ -191,8 +160,8 @@ class Search extends React.Component {
                   >
                     <SearchList
                       tracks={tracks}
-                      addTrack={this.addTrack}
                       onDragStart={this.onDragStart}
+                      partyId={partyId}
                     />
                   </Grid>
                 )}

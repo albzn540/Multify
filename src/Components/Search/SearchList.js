@@ -22,9 +22,9 @@ const styles = () => ({
 const SearchList = (props) => {
   const {
     tracks,
-    addTrack,
     classes,
     onDragStart,
+    partyId,
   } = props;
 
   return (
@@ -40,8 +40,8 @@ const SearchList = (props) => {
             id={track.id}
             name={track.name}
             uri={track.uri}
-            addTrack={addTrack}
             onDragStart={onDragStart}
+            partyId={partyId}
           />
         ))}
       </List>

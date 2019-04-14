@@ -14,6 +14,7 @@ const ListItemHeight = 60;
 const styles = theme => ({
   root: {
     height: `${ListItemHeight}px`,
+    width: '90vw',
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
     paddingLeft: theme.spacing.unit,
@@ -34,9 +35,12 @@ const styles = theme => ({
   secondaryText: {
     color: theme.palette.common.white,
   },
+  row: {
+    width: '90%',
+  },
 });
 
-const SongListItem = (props) => {
+const QueueListItem = (props) => {
   const {
     classes,
     name,
@@ -62,7 +66,7 @@ const SongListItem = (props) => {
   let isLiked = null;
 
   const countLikes = () => {
-    // console.debug(`[SongListItem][countLikes] Track ${id} have ${likes - dislikes} likes`);
+    // console.debug(`[QueueListItem][countLikes] Track ${id} have ${likes - dislikes} likes`);
     setLikes(id, likes - dislikes);
   };
 
@@ -77,7 +81,7 @@ const SongListItem = (props) => {
         }
       });
       if (isLiked === null) {
-        // console.debug('[SongListItem][useEffect] First render, setting like', isLiked);
+        // console.debug('[QueueListItem][useEffect] First render, setting like', isLiked);
         setVote(liked);
         isLiked = liked;
       }
@@ -94,7 +98,7 @@ const SongListItem = (props) => {
         }
       });
       if (isLiked === null) {
-        // console.debug('[SongListItem][useEffect] First render, setting like', isLiked);
+        // console.debug('[QueueListItem][useEffect] First render, setting like', isLiked);
         setVote(liked);
         isLiked = liked;
       }
@@ -147,7 +151,8 @@ const SongListItem = (props) => {
       <ListItemText
         primary={name}
         secondary={artistAndAlbum}
-        primaryTypographyProps={{ className: classes.primaryText }}
+        primaryTypographyProps={{ className: classes.primaryText, noWrap: true }}
+        secondaryTypographyProps={{ className: classes.row, noWrap: true }}
       />
       <ListItemSecondaryAction>
         <IconButton
@@ -178,4 +183,4 @@ const SongListItem = (props) => {
 export default compose(
   withStyles(styles, { withTheme: true }),
   withSpotify,
-)(SongListItem);
+)(QueueListItem);

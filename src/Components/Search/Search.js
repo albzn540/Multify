@@ -10,6 +10,7 @@ import isMobile from 'react-device-detect';
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
 import DropContainer from './DropContainer';
+import Queue from '../Queue';
 import { withSpotify } from '../../Spotify';
 import { withFirebase } from '../../Firebase';
 
@@ -133,7 +134,7 @@ class Search extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, partyId } = this.props;
     const { tracks, loading, noResults } = this.state;
 
     return (
@@ -160,6 +161,7 @@ class Search extends React.Component {
                 onDragOver={this.onDragOver}
                 onDrop={this.onDrop}
               />
+              <Queue partyId={partyId} />
             </Grid>
           )}
           <Grid item xs={6}>

@@ -305,7 +305,7 @@ class Spotify {
 
   /**
    * A track has its important features stripped and added to firestore
-   * @param {Object} track
+   * @param track
    */
   addTrack(track : any, partyId : string) {
     const reducedTrack = {

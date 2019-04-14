@@ -32,8 +32,6 @@ class Search extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  // Drag and drop logic starts here
-
   onDragStart = (e, draggedTrack) => {
     console.debug('Started dragging');
     const stringified = JSON.stringify(draggedTrack);

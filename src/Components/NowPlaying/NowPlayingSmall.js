@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { compose } from 'recompose';
 import {
-  withStyles, ListItem, ListItemText, Typography, FormHelperText,
+  withStyles, ListItem, ListItemText, Typography,
 } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
 
@@ -10,6 +10,7 @@ const ListItemHeight = 60;
 const styles = theme => ({
   root: {
     height: `${ListItemHeight}px`,
+    width: '90vw',
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
     paddingLeft: theme.spacing.unit,
@@ -17,9 +18,6 @@ const styles = theme => ({
   img: {
     maxHeight: `${ListItemHeight - 2 * theme.spacing.unit}px`,
     width: 'auto',
-  },
-  voteButton: {
-    color: theme.palette.common.white,
   },
   primaryText: {
     color: theme.palette.common.white,
@@ -52,6 +50,9 @@ const NowPlayingSmall = (props) => {
 
   const getCurrentlyPlaying = () => {
     spotify.nowPlaying().then((newTrack) => {
+      if (typeof newTrack === 'string' && newTrack.length === 0) {
+        return;
+      }
       let timeLeft = newTrack.item.duration_ms - newTrack.progress_ms;
       // We want to check the currently playing track often in case the track
       // is manually skipped, fast fowarded or something similar
@@ -83,7 +84,8 @@ const NowPlayingSmall = (props) => {
         <ListItemText
           primary={track.name}
           secondary={track.artistAndAlbum}
-          primaryTypographyProps={{ className: classes.primaryText }}
+          primaryTypographyProps={{ className: classes.primaryText, noWrap: true }}
+          secondaryTypographyProps={{ noWrap: true }}
         />
       </ListItem>
     ) : (

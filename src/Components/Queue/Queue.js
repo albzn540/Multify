@@ -7,7 +7,7 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { withFirebase } from '../../Firebase';
-import { SongListItem } from '../SongItem';
+import { QueueListItem } from './';
 
 const styles = theme => ({
   root: {},
@@ -91,7 +91,7 @@ const Queue = (props) => {
       ) : (
         <List>
           {tracks.map(track => (
-            <SongListItem
+            <QueueListItem
               key={track.id}
               name={track.name}
               artists={track.artists}

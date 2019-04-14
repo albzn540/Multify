@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { compose } from 'recompose';
 import {
-  withStyles, ListItem, ListItemText, Typography, FormHelperText,
+  withStyles, ListItem, ListItemText, Typography,
 } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
 
@@ -52,6 +52,9 @@ const NowPlayingSmall = (props) => {
 
   const getCurrentlyPlaying = () => {
     spotify.nowPlaying().then((newTrack) => {
+      if (typeof newTrack === 'string' && newTrack.length === 0) {
+        return;
+      }
       let timeLeft = newTrack.item.duration_ms - newTrack.progress_ms;
       // We want to check the currently playing track often in case the track
       // is manually skipped, fast fowarded or something similar

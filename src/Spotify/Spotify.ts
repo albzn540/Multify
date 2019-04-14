@@ -324,10 +324,10 @@ class Spotify {
       .collection('queue').doc(track.id)
       .set(reducedTrack)
       .then(() => {
-        console.log('[Search] Track added!');
+        console.log('[Spotify] Track added!');
       })
       .catch((err : Error) => {
-        console.error('[Search] Error adding track!', err);
+        console.error('[Spotify] Error adding track!', err);
       });
   }
 }

@@ -320,12 +320,15 @@ class Spotify {
       },
       timeStamp: Date.now(),
     };
+
     const newTrack = fb.db
       .collection('parties')
       .doc(partyId)
       .collection('queue')
       .doc(track.id);
 
+    const trackExists = this.getTrackFromQueue(track.id, partyId);
+    if (trackExists) {
       newTrack.set(reducedTrack)
       .then(() => {
         console.log('[Spotify] Track added!');
@@ -337,6 +340,10 @@ class Spotify {
         newTrack.collection('likes').doc(this.uuid)
           .set({});
       });
+    } else {
+      newTrack.collection('likes').doc(this.uuid)
+        .set({});
+    }
   }
 }
 

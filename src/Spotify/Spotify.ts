@@ -283,6 +283,34 @@ class Spotify {
   nowPlaying = async () => {
     return this.client.getMyCurrentPlayingTrack()
   };
+
+  /**
+   * A track has its important features stripped and added to firestore
+   * @param {Object} track
+   */
+  addTrack(track : any, partyId : string) {
+    const reducedTrack = {
+      id: track.id,
+      uri: track.uri,
+      artists: track.artists.map((artist : any) => artist.name),
+      name: track.name,
+      likes: 0,
+      album: {
+        images: track.album.images,
+        name: track.album.name,
+      },
+      timeStamp: Date.now(),
+    };
+    fb.db.collection('parties').doc(partyId)
+      .collection('queue').doc(track.id)
+      .set(reducedTrack)
+      .then(() => {
+        console.log('[Search] Track added!');
+      })
+      .catch((err : Error) => {
+        console.error('[Search] Error adding track!', err);
+      });
+  }
 }
 
 export default Spotify;

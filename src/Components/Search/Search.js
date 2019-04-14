@@ -6,9 +6,11 @@ import {
   CircularProgress,
   Typography,
 } from '@material-ui/core';
+import isMobile from 'react-device-detect';
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
 import DropContainer from './DropContainer';
+import Queue from '../Queue';
 import { withSpotify } from '../../Spotify';
 import { withFirebase } from '../../Firebase';
 
@@ -132,65 +134,71 @@ class Search extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, partyId } = this.props;
     const { tracks, loading, noResults } = this.state;
 
     return (
       <Grid
         container
-        direction="row"
+        direction="column"
         alignItems="center"
-        justify="center"
         className={classes.root}
         spacing={24}
       >
-        <Grid item xs={6}>
-          <DropContainer
-            onDragOver={this.onDragOver}
-            onDrop={this.onDrop}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <Grid
-            container
-            alignItems="center"
-            justify="center"
-          >
-            <SearchBar onChange={this.handleChange} keyPress={this.keyPress} />
-          </Grid>
-          {loading ? (
-            <Grid
-              container
-              alignItems="center"
-              justify="center"
-            >
-              <CircularProgress color="primary" />
-            </Grid>
+        <SearchBar onChange={this.handleChange} keyPress={this.keyPress} />
+        <Grid
+          container
+          direction="row"
+          alignItems="center"
+          justify="center"
+          spacing={24}
+        >
+          {isMobile ? (
+            <div />
           ) : (
-            <div>
-              {noResults ? (
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="center"
-                >
-                  <Typography>No results</Typography>
-                </Grid>
-              ) : (
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="center"
-                >
-                  <SearchList
-                    tracks={tracks}
-                    addTrack={this.addTrack}
-                    onDragStart={this.onDragStart}
-                  />
-                </Grid>
-              )}
-            </div>
+            <Grid item xs={6}>
+              <DropContainer
+                onDragOver={this.onDragOver}
+                onDrop={this.onDrop}
+              />
+              <Queue partyId={partyId} />
+            </Grid>
           )}
+          <Grid item xs={6}>
+            {loading ? (
+              <Grid
+                container
+                alignItems="center"
+                justify="center"
+              >
+                <CircularProgress color="primary" />
+              </Grid>
+            ) : (
+              <div>
+                {noResults ? (
+                  <Grid
+                    container
+                    alignItems="center"
+                    justify="center"
+                  >
+                    <Typography>No results</Typography>
+                  </Grid>
+                ) : (
+                  <Grid
+                    container
+                    alignItems="center"
+                    justify="center"
+                  >
+                    <SearchList
+                      tracks={tracks}
+                      addTrack={this.addTrack}
+                      onDragStart={this.onDragStart}
+                    />
+                  </Grid>
+                )}
+              </div>
+            )}
+          </Grid>
         </Grid>
       </Grid>
     );

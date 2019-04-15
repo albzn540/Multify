@@ -6,6 +6,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { compose } from 'recompose';
 import Queue from '../Queue';
 import NowPlayingSmall from '../NowPlaying';
+import Search from '../Search';
 
 const styles = theme => ({
   root: {
@@ -30,7 +31,6 @@ const styles = theme => ({
 const Party = (props) => {
   const {
     classes,
-    startSearch,
     match: { params: { partyId } },
   } = props;
 
@@ -46,13 +46,14 @@ const Party = (props) => {
             Now playing
           </Typography>
           <NowPlayingSmall />
-          <Queue match={{ params: { partyId } }} />
+          <Queue partyId={partyId} />
         </Grid>
       </Grid>
       <Fab
         aria-label="Add"
         className={classes.fab}
-        onClick={startSearch}
+        component={Search}
+        // onClick={startSearch}
       >
         <AddIcon />
       </Fab>

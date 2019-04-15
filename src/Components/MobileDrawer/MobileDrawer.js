@@ -1,9 +1,9 @@
 import React from 'react';
 import { compose } from 'recompose';
 import {
-  Divider, List, ListItem, ListItemText, withStyles,
-  SwipeableDrawer,
+  Divider, List, ListItem, ListItemText, withStyles, SwipeableDrawer,
 } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -41,7 +41,9 @@ const styles = theme => ({
 });
 
 const MobileDrawer = (props) => {
-  const { classes, open, handleOpen, handleClose } = props;
+  const {
+    classes, open, handleOpen, handleClose,
+  } = props;
 
   const handleDrawerClose = () => {
     handleClose();
@@ -56,11 +58,12 @@ const MobileDrawer = (props) => {
       <div className={classes.drawerHeader} />
       <Divider />
       <List>
-        {['Queue', 'Party Settings', 'Logout'].map(text => (
-          <ListItem button key={text}>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
+        <ListItem button key="queue" component={Link} to="/party">
+          <ListItemText primary="Queue" />
+        </ListItem>
+        <ListItem button key="share" component={Link} to="/share">
+          <ListItemText primary="Share" />
+        </ListItem>
       </List>
     </SwipeableDrawer>
   );

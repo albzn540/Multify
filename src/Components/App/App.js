@@ -12,7 +12,7 @@ import Login from '../Login';
 import Search from '../Search';
 import Queue from '../Queue';
 import Navigation from '../Navigation';
-import Party from '../Party';
+import Party, { RedirectParty } from '../Party';
 import ShareParty from '../ShareParty';
 
 const theme = createMuiTheme({
@@ -49,11 +49,15 @@ const App = () => (
       <MuiThemeProvider theme={theme}>
         <FirebaseContext.Provider value={firebase}>
           <SpotifyContext.Provider value={spotify}>
+            {/* Rerouting thingys */}
             <Route exact path="/" component={Landing} />
+            <Route exact path="/party" component={RedirectParty} />
+
+            {/* Does not require a party */}
             <Route path="/login" component={Login} />
             <Route path="/joinparty" component={JoinParty} />
-            <Route path="/search" component={Search} />
-            <Route path="/queue" component={Queue} />
+
+            {/* Requires a party */}
             <Route path="/party/:partyId" component={Navigation} />
             <Route exact path="/party/:partyId" component={Party} />
             <Route path="/party/:partyId/share" component={ShareParty} />

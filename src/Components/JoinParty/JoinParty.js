@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { compose } from 'recompose';
 import { withStyles, Grid, TextField } from '@material-ui/core';
-// import { Link } from 'react-router-dom';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 import SpotifyButton from '../SpotifyButton';
 import { withFirebase } from '../../Firebase';

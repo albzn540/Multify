@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { compose } from 'recompose';
 import { withStyles, Grid, CircularProgress } from '@material-ui/core';
+import { withRouter } from 'react-router-dom';
 import { withSpotify } from '../../Spotify';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 
@@ -21,7 +22,7 @@ const styles = theme => ({
 
 const Login = (props) => {
   const {
-    spotify, classes, location,
+    spotify, classes, location, history,
   } = props;
 
   useEffect(() => {
@@ -32,7 +33,7 @@ const Login = (props) => {
         const { data: { code } } = partyData;
         console.debug('[Login] Party created', partyData);
         spotify.getPartyId(code).then((partyId) => {
-          window.location.assign(`/party/${partyId}`);
+          history.replace({ pathname: `/party/${partyId}` });
         });
       });
     }).catch((e) => {
@@ -61,4 +62,5 @@ const Login = (props) => {
 export default compose(
   withStyles(styles),
   withSpotify,
+  withRouter,
 )(Login);

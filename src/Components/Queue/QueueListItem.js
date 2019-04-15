@@ -66,7 +66,7 @@ const QueueListItem = (props) => {
   let isLiked = null;
 
   const countLikes = () => {
-    // console.debug(`[QueueListItem][countLikes] Track ${id} have ${likes - dislikes} likes`);
+    console.debug(`[QueueListItem][countLikes] Track ${id} have ${likes - dislikes} likes`);
     setLikes(id, likes - dislikes);
   };
 
@@ -81,7 +81,7 @@ const QueueListItem = (props) => {
         }
       });
       if (isLiked === null) {
-        // console.debug('[QueueListItem][useEffect] First render, setting like', isLiked);
+        console.debug('[QueueListItem][useEffect] First render, setting like', isLiked);
         setVote(liked);
         isLiked = liked;
       }
@@ -98,7 +98,7 @@ const QueueListItem = (props) => {
         }
       });
       if (isLiked === null) {
-        // console.debug('[QueueListItem][useEffect] First render, setting like', isLiked);
+        console.debug('[QueueListItem][useEffect] First render, setting like', isLiked);
         setVote(liked);
         isLiked = liked;
       }
@@ -170,7 +170,7 @@ const QueueListItem = (props) => {
           aria-label="Upvote"
           onClick={() => toggleVote(true)}
         >
-          <Upvote className={vote === true ? (
+          <Downvote className={vote === true ? (
             classes.buttonSelected
           ) : (
             classes.buttonDeselected

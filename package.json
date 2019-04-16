@@ -39,6 +39,7 @@
   ],
   "devDependencies": {
     "@types/simple-oauth2": "^2.2.1",
+    "@types/react-router-dom": "^4.3.2",
     "@types/uuid": "^3.4.4",
     "@types/recompose": "^0.30.5",
     "eslint-config-airbnb": "^17.1.0",

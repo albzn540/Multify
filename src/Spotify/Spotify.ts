@@ -215,6 +215,9 @@ class Spotify {
     };
 
     localStorage.setItem('spotify_data', JSON.stringify(localStorageData));
+    if(this.party) {
+      localStorage.setItem('last_party', JSON.stringify(this.party.id));
+    }
     localStorage.setItem('uuid', this.uuid);
   };
 
@@ -274,7 +277,7 @@ class Spotify {
         id = doc.id;
         this.party = { name, code, id, doc };
       });
-
+      this.saveToLocalStorage();
       if(id) {
         return Promise.resolve(id);
       } else { 
@@ -292,12 +295,14 @@ class Spotify {
     return fb.partyRef(id).get().then(partyDoc => {
       const party = partyDoc.data();
       if(party) {
-        return Promise.resolve(this.party = {
+        this.party = {
           id: partyDoc.id,
           name: party.name,
           code: party.code,
           doc: partyDoc
-        });
+        }
+        this.saveToLocalStorage();
+        return Promise.resolve(this.party);
       }
       return Promise.reject("No such party");
     });

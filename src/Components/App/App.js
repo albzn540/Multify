@@ -9,11 +9,8 @@ import Spotify, { SpotifyContext } from '../../Spotify';
 import JoinParty from '../JoinParty';
 import Landing from '../Landing';
 import Login from '../Login';
-import Search from '../Search';
-import Queue from '../Queue';
-import Navigation from '../Navigation';
-import Party from '../Party';
-import ShareParty from '../ShareParty';
+import Party, { RedirectParty } from '../Party';
+import { SearchPage } from '../Search';
 
 const theme = createMuiTheme({
   palette: {
@@ -49,14 +46,15 @@ const App = () => (
       <MuiThemeProvider theme={theme}>
         <FirebaseContext.Provider value={firebase}>
           <SpotifyContext.Provider value={spotify}>
+            {/* Rerouting thingys */}
             <Route exact path="/" component={Landing} />
+            <Route exact path="/party" component={RedirectParty} />
+            <Route path="/party/:partyId" component={Party} />
+            <Route path="/search/:partyId" component={SearchPage} />
+
+            {/* Does not require a party */}
             <Route path="/login" component={Login} />
             <Route path="/joinparty" component={JoinParty} />
-            <Route path="/search" component={Search} />
-            <Route path="/queue" component={Queue} />
-            <Route path="/party/:partyId" component={Navigation} />
-            <Route exact path="/party/:partyId" component={Party} />
-            <Route path="/party/:partyId/share" component={ShareParty} />
           </SpotifyContext.Provider>
         </FirebaseContext.Provider>
       </MuiThemeProvider>

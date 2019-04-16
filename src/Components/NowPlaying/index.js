@@ -1,3 +1,6 @@
+import NowPlaying from './NowPlaying';
 import NowPlayingSmall from './NowPlayingSmall';
 
-export default NowPlayingSmall;
+export { NowPlayingSmall };
+
+export default NowPlaying;

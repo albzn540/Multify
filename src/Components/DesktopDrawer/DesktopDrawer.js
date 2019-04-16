@@ -5,6 +5,7 @@ import {
   Drawer, Divider, List, ListItem, ListItemText, IconButton, withStyles,
 } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -42,7 +43,9 @@ const styles = theme => ({
 });
 
 const DesktopDrawer = (props) => {
-  const { classes, open, handleClose } = props;
+  const {
+    classes, open, handleClose, partyId,
+  } = props;
 
   const handleDrawerClose = () => {
     handleClose();
@@ -72,11 +75,12 @@ const DesktopDrawer = (props) => {
       <Divider />
 
       <List>
-        {['Queue', 'Party Settings', 'Logout'].map(text => (
-          <ListItem button key={text}>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
+        <ListItem button key="queue" component={Link} to={`/party/${partyId}`}>
+          <ListItemText primary="Queue" />
+        </ListItem>
+        <ListItem button key="share" component={Link} to={`/party/${partyId}/share`}>
+          <ListItemText primary="Share" />
+        </ListItem>
       </List>
     </Drawer>
   );

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { compose } from 'recompose';
 import { withStyles, Grid, TextField } from '@material-ui/core';
-// import { Link } from 'react-router-dom';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 import SpotifyButton from '../SpotifyButton';
 import NotificationBar from '../NotificationBar';
@@ -43,7 +42,6 @@ const JoinParty = (props) => {
   const { classes, spotify } = props;
   const [partyCode, setPartyCode] = useState('');
   const [notifs, setNotifs] = useState([]);
-  console.debug('yo', notifs);
 
   /**
    * Redirects user to selected party if partycode exists
@@ -53,7 +51,6 @@ const JoinParty = (props) => {
     e.preventDefault(); // prevents page refreshing
 
     spotify.getPartyId(partyCode).then((partyId) => {
-      // TODO: Use withRouter instead
       window.location.assign(`/party/${partyId}`);
     }).catch((err) => {
       console.error(err);

@@ -43,6 +43,7 @@ class Spotify {
     name: string,
     doc: firebase.firestore.DocumentSnapshot,
   } | undefined;
+  currentlyPlaying: any
 
   constructor(firebase: Firebase) {
     // Initialize private stuff
@@ -79,7 +80,7 @@ class Spotify {
     console.debug('[Spotify] Anonymous user', this.uuid);
 
     this.nowPlaying().then((res) => {
-      console.debug('[Spotify] Currently playing response', res);
+      console.debug('[Spotify] Currently playing, response', res);
     })
   }
 
@@ -309,6 +310,21 @@ class Spotify {
     });
   };
 
+  changePartyName = (name: string) => {
+    const party = this.party;
+    if(!party) {
+      console.error('Party is not defined');
+      return 
+    }
+    const partyDoc = party.doc.ref;
+    if(partyDoc) {
+      partyDoc.update({ name });
+    } else {
+      console.error('You dont have a party')
+    }
+    
+  };
+
   /**
    * @param trackId
    * @param partyId
@@ -316,9 +332,9 @@ class Spotify {
    */
   getTrackFromQueue = (trackId: string, partyId: string) => {
     console.debug(`[Spotify][getTrackFromQueue] Retrieving track "${trackId}" from queue...`);
-    return fb.partyQueueRef(partyId).get().then(queueSnap => {
+    return fb.partyQueueRef(partyId).get().then((queueSnap: any) => {
       let found = null;
-      queueSnap.forEach(track => {
+      queueSnap.forEach((track: any) => {
         if(track.id === trackId) {
           found = track;
         }

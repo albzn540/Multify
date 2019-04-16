@@ -5,9 +5,10 @@ import {
   Grid,
   CircularProgress,
   Typography,
+  TextField,
+  Hidden,
 } from '@material-ui/core';
 // import isMobile from 'react-device-detect';
-import SearchBar from './SearchBar';
 import SearchList from './SearchList';
 import DropContainer from './DropContainer';
 import Queue from '../Queue';
@@ -17,8 +18,34 @@ import { withFirebase } from '../../Firebase';
 const isMobile = false;
 
 const styles = theme => ({
-  root: {
-    backgroundColor: theme.palette.background.main,
+  textField: {
+    marginTop: theme.spacing.unit * 2,
+    marginBottom: theme.spacing.unit,
+    width: '90vw',
+  },
+  cssLabel: {
+    color: theme.palette.secondary.main,
+  },
+  cssOutlinedInput: {
+    '&$cssFocused $notchedOutline': {
+      borderColor: `${theme.palette.common.green} !important`,
+    },
+  },
+  cssFocused: {},
+  notchedOutline: {
+    borderWidth: '1px',
+    borderColor: `${theme.palette.secondary.main} !important`,
+  },
+  multilineColor: {
+    color: theme.palette.secondary.main,
+  },
+  progressWrapper: {
+    height: '80vh',
+  },
+  desktopWrapper: {
+    width: '100vw',
+    paddingLeft: theme.spacing.unit * 8,
+    paddingRight: theme.spacing.unit * 8,
   },
 });
 
@@ -27,10 +54,9 @@ class Search extends React.Component {
     super(props);
     this.state = {
       tracks: [],
-      loading: false,
-      noResults: false,
+      isLoading: false,
+      searchQuery: '',
     };
-    this.handleChange = this.handleChange.bind(this);
   }
 
   onDragStart = (e, draggedTrack) => {
@@ -51,34 +77,23 @@ class Search extends React.Component {
   }
 
   /**
-   * Initiates loading when user has pressed enter to confirm search
+   * Handles searches
    */
-  keyPress = (event, onChange) => {
-    if (event.key === 'Enter') {
-      onChange(event.target);
-      this.setState({
-        loading: true,
-      });
-      event.preventDefault();
-    }
-  };
-
-  /**
-   * Searches for tracks when the keyPress function is fired
-   * @param {Event} event
-   */
-  handleChange(event) {
-    const searchStr = event.value;
+  formSubmit = (event) => {
+    event.preventDefault();
+    this.setState({ isLoading: true });
+    const { searchQuery } = this.state;
     const { spotify } = this.props;
+
     const items = [];
-    spotify.client.searchTracks(searchStr)
+    spotify.client.searchTracks(searchQuery)
       .then((data) => {
         console.info('[SearchList] Found tracks', data);
         const searchResult = data.tracks.items;
         if (searchResult.length === 0) {
           this.setState({
-            noResults: true,
-            loading: false,
+            tracks: [],
+            isLoading: false,
           });
         } else {
           searchResult.forEach((track) => {
@@ -93,84 +108,91 @@ class Search extends React.Component {
           });
           this.setState({
             tracks: items,
-            loading: false,
-            noResults: false,
+            isLoading: false,
           });
         }
       }, (err) => {
         console.error('[SearchList] Search error:', err);
       });
-  }
+  };
 
   render() {
-    const {
-      classes,
-      partyId,
-    } = this.props;
-    const { tracks, loading, noResults } = this.state;
+    const { classes, partyId } = this.props;
+    const { tracks, isLoading, searchQuery } = this.state;
 
     return (
       <Grid
         container
         direction="column"
         alignItems="center"
-        className={classes.root}
       >
-        <SearchBar onChange={this.handleChange} keyPress={this.keyPress} />
-        <Grid
-          container
-          direction="row"
-          alignItems="center"
-          justify="center"
-          spacing={24}
-        >
-          {isMobile ? (
-            null
-          ) : (
-            <Grid item xs={6}>
-              <DropContainer
-                onDragOver={this.onDragOver}
-                onDrop={this.onDrop}
-              />
-              <Queue partyId={partyId} />
-            </Grid>
-          )}
-          <Grid item xs={12} md={12}>
-            {loading ? (
-              <Grid
-                container
-                alignItems="center"
-                justify="center"
-              >
-                <CircularProgress color="primary" />
-              </Grid>
-            ) : (
-              <div>
-                {noResults ? (
-                  <Grid
-                    container
-                    alignItems="center"
-                    justify="center"
-                  >
-                    <Typography>No results</Typography>
-                  </Grid>
-                ) : (
-                  <Grid
-                    container
-                    alignItems="center"
-                    justify="center"
-                  >
-                    <SearchList
-                      tracks={tracks}
-                      onDragStart={this.onDragStart}
-                      partyId={partyId}
-                    />
-                  </Grid>
-                )}
-              </div>
-            )}
-          </Grid>
+        <Grid item>
+          <form onSubmit={e => this.formSubmit(e)}>
+            <TextField
+              id="search-field"
+              label="Search"
+              variant="outlined"
+              value={searchQuery}
+              onChange={e => this.setState({ searchQuery: e.target.value })}
+              className={classes.textField}
+              InputLabelProps={{
+                classes: {
+                  root: classes.cssLabel,
+                  focused: classes.cssFocused,
+                },
+              }}
+              InputProps={{
+                classes: {
+                  root: classes.cssOutlinedInput,
+                  focused: classes.cssFocused,
+                  notchedOutline: classes.notchedOutline,
+                  input: classes.multilineColor,
+                },
+              }}
+            />
+          </form>
         </Grid>
+
+        {isLoading ? <CircularProgress color="primary" /> : null}
+
+        <Hidden only={['sm', 'xs']}>
+          <div className={classes.desktopWrapper}>
+            <Grid
+              container
+              direction="row"
+              spacing={32}
+            >
+              <Grid item md={6}>
+                <Queue partyId={partyId} />
+              </Grid>
+              <Grid item md={6}>
+                {tracks.length > 0 ? (
+                  <SearchList
+                    tracks={tracks}
+                    onDragStart={this.onDragStart}
+                    partyId={partyId}
+                  />
+                ) : (
+                  <Typography color="primary">No results</Typography>
+                )}
+              </Grid>
+            </Grid>
+          </div>
+        </Hidden>
+
+        <Hidden only={['lg', 'md', 'xl']}>
+          <Grid item xs={12}>
+            {tracks.length > 0 ? (
+              <SearchList
+                tracks={tracks}
+                onDragStart={this.onDragStart}
+                partyId={partyId}
+              />
+            ) : (
+                <Typography color="primary">No results</Typography>
+              )}
+          </Grid>
+        </Hidden>
       </Grid>
     );
   }

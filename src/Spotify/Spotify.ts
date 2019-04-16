@@ -25,6 +25,7 @@ const config = {
 if(process.env.NODE_ENV === 'development') {
   console.log('[Spotify] Running in dev mode, setting spotify redirect uri to localhost:3000');
   config.redirectUri = 'http://localhost:3000/login/';
+  // config.redirectUri = 'http://192.168.43.45:3000/login/';
 }
 
 const authClient = new oauth2(config);

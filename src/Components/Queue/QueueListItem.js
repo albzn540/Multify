@@ -170,7 +170,7 @@ const QueueListItem = (props) => {
           aria-label="Upvote"
           onClick={() => toggleVote(true)}
         >
-          <Downvote className={vote === true ? (
+          <Upvote className={vote === true ? (
             classes.buttonSelected
           ) : (
             classes.buttonDeselected

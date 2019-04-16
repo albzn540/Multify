@@ -46,10 +46,11 @@ const Draggable = (props) => {
 
   return (
     <ListItem
+      key={id}
       onDragStart={e => onDragStart(e, track)}
       draggable="true"
       className={classes.listItem}
-      divider="true"
+      divider
     >
       <ListItemText
         disableTypography

@@ -5,7 +5,6 @@ import AddIcon from '@material-ui/icons/Add';
 import { compose } from 'recompose';
 import NowPlaying from '../NowPlaying';
 import Queue from '../Queue';
-import Search from '../Search';
 
 const styles = theme => ({
   root: {

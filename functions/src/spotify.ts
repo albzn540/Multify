@@ -170,9 +170,7 @@ export const createParty = functions.https.onCall(async (data, context) => {
   });
 });
 
-export const pushQueueToSpotify = functions.https.onRequest(async (req, res) => {
-  const partyId = req.body.id;
-  
+export const pushQueueToSpotify = async (partyId: string) => {
   const promises = [];
   const playlistData = partiesRef.doc(partyId).get().then(doc => {
     return doc.data();
@@ -215,7 +213,7 @@ export const pushQueueToSpotify = functions.https.onRequest(async (req, res) => 
     .catch(err => {
       return Promise.reject(err)
     });
-});
+};
 
 export const songLikedCallback = functions.firestore
   .document('parties/{partyId}/queue/{songId}/likes/{userId}')
@@ -247,4 +245,11 @@ export const songDislikedCallback = functions.firestore
     return Promise.all([likes, dislikes]).then(resolved => {
       trackRef.update({likes: resolved[0] - resolved[1]})
     })
+  });
+
+export const pushTest = functions.firestore 
+  .document('parties/{partyId}/queue/{songId}')
+  .onWrite((change, context) => {
+    const partyId = context.params.partyId;
+    return pushQueueToSpotify(partyId);
   });

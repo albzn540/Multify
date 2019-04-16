@@ -6,7 +6,7 @@ import {
   CircularProgress,
   Typography,
 } from '@material-ui/core';
-import isMobile from 'react-device-detect';
+// import isMobile from 'react-device-detect';
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
 import DropContainer from './DropContainer';
@@ -14,9 +14,10 @@ import Queue from '../Queue';
 import { withSpotify } from '../../Spotify';
 import { withFirebase } from '../../Firebase';
 
+const isMobile = false;
+
 const styles = theme => ({
   root: {
-    height: '100vh',
     backgroundColor: theme.palette.background.main,
   },
 });
@@ -114,7 +115,6 @@ class Search extends React.Component {
         direction="column"
         alignItems="center"
         className={classes.root}
-        spacing={24}
       >
         <SearchBar onChange={this.handleChange} keyPress={this.keyPress} />
         <Grid
@@ -125,7 +125,7 @@ class Search extends React.Component {
           spacing={24}
         >
           {isMobile ? (
-            <div />
+            null
           ) : (
             <Grid item xs={6}>
               <DropContainer
@@ -135,7 +135,7 @@ class Search extends React.Component {
               <Queue partyId={partyId} />
             </Grid>
           )}
-          <Grid item xs={6}>
+          <Grid item xs={12} md={12}>
             {loading ? (
               <Grid
                 container

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { compose } from 'recompose';
 import classNames from 'classnames';
 import {
-  withStyles, AppBar, Toolbar, IconButton, Typography, Grid,
+  withStyles, AppBar, Toolbar, IconButton, Typography,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 // import { isMobile } from 'react-device-detect';
@@ -10,7 +10,6 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { withSpotify } from '../../Spotify';
 import DesktopDrawer from '../DesktopDrawer';
 import MobileDrawer from '../MobileDrawer';
-import Search from '../Search';
 
 const drawerWidth = 240;
 const isMobile = true;

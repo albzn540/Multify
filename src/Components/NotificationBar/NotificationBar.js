@@ -1,83 +1,97 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Snackbar,
   withStyles,
   IconButton,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-// import { isMobile } from 'react-device-detect';
+import { isMobile } from 'react-device-detect';
 
-// theme removed temporarily
-// find good padding
-const styles = () => ({
+const styles = theme => ({
   close: {
     padding: 1,
   },
 });
 
-const NotificationBar = (props) => {
-  const { classes } = props;
+class NotificationBar extends React.Component {
+  queue = [];
 
-  const isMobile = false;
-  const direction = isMobile ? 'center' : 'left';
+  state = {
+    open: false,
+    messageInfo: {},
+  };
 
-  const [open, setOpen] = useState(false);
-  const [messageInfo, setMessageInfo] = useState({});
-  const queue = [];
-
-  // Return a function that uses message?
-  const handleActivation = (message) => {
-    queue.push({
+  handleClick = message => () => {
+    const { open } = this.state;
+    this.queue.push({
       message,
       key: new Date().getTime(),
     });
+
+    if (open) {
+      // immediately begin dismissing current message
+      // to start showing new one
+      this.setState({ open: false });
+    } else {
+      this.processQueue();
+    }
   };
 
-  const handleClose = (event, reason) => {
+  processQueue = () => {
+    if (this.queue.length > 0) {
+      this.setState({
+        messageInfo: this.queue.shift(),
+        open: true,
+      });
+    }
+  };
+
+  handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
-    setOpen(false);
+    this.setState({ open: false });
   };
 
-  /**
-   * Move the notification queue forward one step
-   */
-  const handleExited = () => {
-    if (queue.length > 0) {
-      setMessageInfo(queue.shift());
-      setOpen(true);
-    }
+  handleExited = () => {
+    this.processQueue();
   };
 
-  return (
-    <Snackbar
-      key={messageInfo.key}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: direction,
-      }}
-      open={open}
-      autoHideDuration={6000}
-      onClose={handleClose}
-      onExited={handleExited}
-      ContentProps={{
-        'aria-describedby': 'message-id',
-      }}
-      message={<span id="message-id">{messageInfo.message}</span>}
-      action={[
-        <IconButton
-          key="close"
-          aria-label="Close"
-          color="inherit"
-          className={classes.close}
-          onClick={handleClose}
-        >
-          <CloseIcon />
-        </IconButton>,
-      ]}
-    />
-  );
-};
+  render() {
+    const { classes } = this.props;
+    const { messageInfo, open } = this.state;
+
+    const direction = isMobile ? 'center' : 'left';
+
+    return (
+      <Snackbar
+        key={messageInfo.key}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: direction,
+        }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={this.handleClose}
+        onExited={this.handleExited}
+        ContentProps={{
+          'aria-describedby': 'message-id',
+        }}
+        message={<span id="message-id">{messageInfo.message}</span>}
+        action={[
+          <IconButton
+            key="close"
+            aria-label="Close"
+            color="inherit"
+            className={classes.close}
+            onClick={this.handleClose}
+          >
+            <CloseIcon />
+          </IconButton>,
+        ]}
+      />
+    );
+  }
+}
 
 export default withStyles(styles)(NotificationBar);

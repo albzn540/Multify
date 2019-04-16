@@ -344,7 +344,6 @@ class Spotify {
       uri: track.uri,
       artists: track.artists.map((artist : any) => artist.name),
       name: track.name,
-      likes: 0,
       album: {
         images: track.album.images,
         name: track.album.name,

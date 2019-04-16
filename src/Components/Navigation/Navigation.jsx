@@ -56,19 +56,18 @@ class Navigation extends Component {
   constructor(props) {
     super(props);
 
+    const { partyId } = this.props;
+
     this.state = {
       drawerOpen: false,
-      hideQueue: false,
-      hideSearch: true,
+      backButton: false,
       partyName: '',
+      partyId,
     };
   }
 
   componentDidMount() {
-    const {
-      spotify,
-      match: { params: { partyId } },
-    } = this.props;
+    const { spotify, partyId } = this.props;
 
     spotify.getParty(partyId).then((party) => {
       this.setState({ partyName: party.name });
@@ -85,18 +84,20 @@ class Navigation extends Component {
     this.setState({ drawerOpen: false });
   };
 
-  handleSwitchView = () => {
-    const { hideQueue, hideSearch } = this.state;
-    this.setState({
-      hideQueue: !hideQueue,
-      hideSearch: !hideSearch,
-    });
+  toggleButton = (str) => {
+    if (str === 'back') {
+      this.setState({ backButton: true });
+    } else if (str === 'hamburger') {
+      this.setState({ backButton: false });
+    } else {
+      this.setState({ backButton: false });
+    }
   };
 
   render() {
     const { classes } = this.props;
     const {
-      drawerOpen, hideSearch, partyName, partyId,
+      drawerOpen, partyName, partyId, backButton,
     } = this.state;
 
     return (
@@ -108,7 +109,7 @@ class Navigation extends Component {
           })}
         >
           <Toolbar disableGutters={isMobile ? true : !drawerOpen}>
-            {hideSearch ? (
+            {!backButton ? (
               <IconButton
                 aria-label="Open dawer"
                 color="inherit"
@@ -121,9 +122,9 @@ class Navigation extends Component {
               </IconButton>
             ) : (
               <IconButton
-                aria-label="Back to party"
+                aria-label="Back"
                 color="inherit"
-                onClick={this.handleSwitchView}
+                onClick={() => this.toggleButton('back')}
                 className={classes.toolbarButton}
               >
                 <ChevronLeftIcon />
@@ -138,6 +139,7 @@ class Navigation extends Component {
 
         {isMobile ? (
           <MobileDrawer
+            partyId={partyId}
             open={drawerOpen}
             handleOpen={this.handleDrawerOpen}
             handleClose={this.handleDrawerClose}
@@ -145,24 +147,9 @@ class Navigation extends Component {
         ) : (
           <DesktopDrawer
             open={drawerOpen}
+            partyId={partyId}
             handleClose={this.handleDrawerClose}
           />
-        )}
-
-        {hideSearch ? (
-          null
-        ) : (
-          <main className={classes.content}>
-            <div className={classes.toolbar} />
-            <Grid
-              container
-              justify="center"
-            >
-              <Grid item xs={12} sm={8} md={6}>
-                <Search partyId={partyId} />
-              </Grid>
-            </Grid>
-          </main>
         )}
       </div>
     );

@@ -102,7 +102,10 @@ class Search extends React.Component {
   }
 
   render() {
-    const { classes, partyId } = this.props;
+    const {
+      classes,
+      partyId,
+    } = this.props;
     const { tracks, loading, noResults } = this.state;
 
     return (

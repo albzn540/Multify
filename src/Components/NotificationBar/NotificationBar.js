@@ -8,39 +8,36 @@ import CloseIcon from '@material-ui/icons/Close';
 import { isMobile } from 'react-device-detect';
 
 const styles = theme => ({
+  root: {
+    background: theme.palette.common.grey,
+  },
   close: {
-    padding: 1,
+    padding: 5,
+    color: theme.palette.common.lightGrey,
+  },
+  message: {
+    color: theme.palette.secondary.main,
   },
 });
 
 class NotificationBar extends React.Component {
-  queue = [];
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+      messageInfo: {},
+    };
+  }
 
-  state = {
-    open: false,
-    messageInfo: {},
-  };
-
-  handleClick = message => () => {
-    const { open } = this.state;
-    this.queue.push({
-      message,
-      key: new Date().getTime(),
-    });
-
-    if (open) {
-      // immediately begin dismissing current message
-      // to start showing new one
-      this.setState({ open: false });
-    } else {
-      this.processQueue();
-    }
-  };
+  componentDidUpdate() {
+    this.processQueue();
+  }
 
   processQueue = () => {
-    if (this.queue.length > 0) {
+    const { queue } = this.props;
+    if (queue.length > 0) {
       this.setState({
-        messageInfo: this.queue.shift(),
+        messageInfo: queue.shift(),
         open: true,
       });
     }
@@ -75,14 +72,16 @@ class NotificationBar extends React.Component {
         onClose={this.handleClose}
         onExited={this.handleExited}
         ContentProps={{
-          'aria-describedby': 'message-id',
+          classes: {
+            root: classes.root,
+            message: classes.message,
+          },
         }}
         message={<span id="message-id">{messageInfo.message}</span>}
         action={[
           <IconButton
             key="close"
             aria-label="Close"
-            color="inherit"
             className={classes.close}
             onClick={this.handleClose}
           >

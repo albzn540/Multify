@@ -47,7 +47,7 @@ const styles = theme => ({
   },
   toolbarButton: {
     marginLeft: 12,
-    marginRight: 36,
+    marginRight: 12,
   },
 });
 

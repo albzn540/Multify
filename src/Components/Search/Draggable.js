@@ -18,9 +18,6 @@ const styles = theme => ({
   listSubText: {
     color: theme.palette.common.lightGrey,
   },
-  listItem: {
-    backgroundColor: theme.palette.common.grey,
-  },
 });
 
 const Draggable = (props) => {
@@ -49,7 +46,6 @@ const Draggable = (props) => {
       key={id}
       onDragStart={e => onDragStart(e, track)}
       draggable="true"
-      className={classes.listItem}
       divider
     >
       <ListItemText
@@ -57,6 +53,7 @@ const Draggable = (props) => {
         primary={(
           <Typography
             className={classes.listText}
+            noWrap
           >
             {name}
           </Typography>
@@ -64,6 +61,7 @@ const Draggable = (props) => {
         secondary={(
           <Typography
             className={classes.listSubText}
+            noWrap
           >
             {`${album.name} -${artists.map(artist => ` ${artist.name}`)}`}
           </Typography>

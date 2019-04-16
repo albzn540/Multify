@@ -11,11 +11,7 @@ import Draggable from './Draggable';
 
 const styles = () => ({
   root: {
-    width: '100%',
-    maxWidth: '50vw',
-    position: 'relative',
-    overflow: 'auto',
-    maxHeight: '50vh',
+    width: '95%',
   },
 });
 
@@ -28,25 +24,23 @@ const SearchList = (props) => {
   } = props;
 
   return (
-    <Grid item>
-      <List
-        dense={false}
-        className={classes.root}
-      >
-        {tracks.map(track => (
-          <Draggable
-            key={track.id}
-            album={track.album}
-            artists={track.artists}
-            id={track.id}
-            name={track.name}
-            uri={track.uri}
-            onDragStart={onDragStart}
-            partyId={partyId}
-          />
-        ))}
-      </List>
-    </Grid>
+    <List
+      dense={false}
+      className={classes.root}
+    >
+      {tracks.map(track => (
+        <Draggable
+          key={track.id}
+          album={track.album}
+          artists={track.artists}
+          id={track.id}
+          name={track.name}
+          uri={track.uri}
+          onDragStart={onDragStart}
+          partyId={partyId}
+        />
+      ))}
+    </List>
   );
 };
 

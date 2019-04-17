@@ -4,6 +4,7 @@ import {
   Divider, List, ListItem, ListItemText, withStyles, SwipeableDrawer,
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
+import { withSpotify } from '../../Spotify';
 
 const drawerWidth = 240;
 
@@ -42,7 +43,7 @@ const styles = theme => ({
 
 const MobileDrawer = (props) => {
   const {
-    classes, open, handleOpen, handleClose, partyId,
+    classes, open, handleOpen, handleClose, partyId, spotify,
   } = props;
 
   const handleDrawerClose = () => {
@@ -64,6 +65,15 @@ const MobileDrawer = (props) => {
         <ListItem button key="share" component={Link} to={`/party/${partyId}/share`}>
           <ListItemText primary="Share" />
         </ListItem>
+        <ListItem button key="settings" component={Link} to={`/party/${partyId}/settings`}>
+          <ListItemText primary="Settings" />
+        </ListItem>
+
+        {spotify.isHost() ? (
+          <ListItem button key="admin" component={Link} to={`/party/${partyId}/admin`}>
+            <ListItemText primary="Admin" />
+          </ListItem>
+        ) : null };
       </List>
     </SwipeableDrawer>
   );
@@ -71,4 +81,5 @@ const MobileDrawer = (props) => {
 
 export default compose(
   withStyles(styles),
+  withSpotify,
 )(MobileDrawer);

@@ -7,6 +7,7 @@ import Search from '../Search';
 import Navigation from '../Navigation';
 import ShareParty from '../ShareParty';
 import Settings from '../Settings';
+import Admin from '../Admin';
 
 const styles = theme => ({
   root: {
@@ -48,6 +49,7 @@ const Party = (props) => {
       <Route path={`${basePath}/:partyId/search`} component={Search} />
       <Route path={`${basePath}/:partyId/share`} component={ShareParty} />
       <Route path={`${basePath}/:partyId/settings`} component={Settings} />
+      <Route path={`${basePath}/:partyId/admin`} component={Admin} />
     </main>
   );
 };

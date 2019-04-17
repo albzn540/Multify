@@ -58,10 +58,13 @@ class Navigation extends Component {
   constructor(props) {
     super(props);
 
+    const { partyId } = props;
+
     this.state = {
       drawerOpen: false,
       backButton: false,
       partyName: '',
+      partyId,
     };
   }
 
@@ -149,9 +152,6 @@ class Navigation extends Component {
               onChange={e => this.setState({ partyName: e.target.value })}
               onBlur={e => this.handlePartyNameChange(e)}
             />
-            {/* <Typography variant="h5">
-              {partyName}
-            </Typography> */}
           </Toolbar>
         </AppBar>
 

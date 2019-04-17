@@ -55,6 +55,7 @@ class Spotify {
     doc: firebase.firestore.DocumentSnapshot,
     host: string,
     spotifyId: string
+    playlistUri: string
   } | undefined;
   currentlyPlaying: SpotifyApi.CurrentPlaybackResponse | undefined;
   queue: any[];
@@ -108,6 +109,7 @@ class Spotify {
         accessToken: partyData.spotifyToken,
         host: partyData.host,
         spotifyId: partyData.spotifyId,
+        playlistUri: partyData.playlistUri,
         doc
       }
     }
@@ -538,6 +540,7 @@ class Spotify {
           accessToken: party.spotifyToken,
           code: party.code,
           doc,
+          playlistUri: party.playlistUri,
           spotifyId: party.spotifyId,
           host: party.host
         };
@@ -567,6 +570,7 @@ class Spotify {
           accessToken: party.spotifyToken,
           code: party.code,
           doc: partyDoc,
+          playlistUri: party.playlistUri,
           host: party.host,
           spotifyId: party.spotifyId,
         };
@@ -707,6 +711,19 @@ class Spotify {
       dislikeRef.doc(this.uuid).set({});
     }
     console.log(`${this.uuid} voted ${vote} on track "${trackId}"`);
+  }
+
+  startParty = () => {
+    if(this.party) {
+      console.log('[Spotify][startParty] Starting party!');
+      this.client.setRepeat('context');
+      this.client.setShuffle(false);
+      this.client.play({
+        context_uri: this.party.playlistUri
+      });
+    } else {
+      console.error("[Spotify][startParty] You can't start a party when you dont have one");
+    }
   }
 
   /**

@@ -8,7 +8,6 @@ import Queue from '../Queue';
 
 const styles = theme => ({
   root: {
-    backgroundColor: theme.palette.background.main,
     flexGrow: 1,
     padding: theme.spacing.unit * 2,
   },
@@ -45,6 +44,7 @@ const PartyHome = (props) => {
           <Queue partyId={partyId} />
         </Grid>
       </Grid>
+
 
       <Fab
         aria-label="Add"

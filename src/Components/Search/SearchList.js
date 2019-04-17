@@ -8,14 +8,15 @@ import {
 import { withSpotify } from '../../Spotify';
 // import SearchListItem from './SearchListItem';
 import Draggable from './Draggable';
+// import Draggable2 from './Draggable2';
 
 const styles = () => ({
   root: {
-    width: '100%',
-    maxWidth: '50vw',
-    position: 'relative',
     overflow: 'auto',
-    maxHeight: '50vh',
+    listStyleType: 'none',
+  },
+  item: {
+    position: 'realtive',
   },
 });
 
@@ -23,16 +24,17 @@ const SearchList = (props) => {
   const {
     tracks,
     classes,
-    onDragStart,
     partyId,
+    top,
+    bottom,
+    right,
+    left,
+    onDragStart,
   } = props;
 
   return (
     <Grid item>
-      <List
-        dense={false}
-        className={classes.root}
-      >
+      <List className={classes.root}>
         {tracks.map(track => (
           <Draggable
             key={track.id}
@@ -41,8 +43,12 @@ const SearchList = (props) => {
             id={track.id}
             name={track.name}
             uri={track.uri}
-            onDragStart={onDragStart}
             partyId={partyId}
+            top={top}
+            bottom={bottom}
+            right={right}
+            left={left}
+            onDragStart={onDragStart}
           />
         ))}
       </List>

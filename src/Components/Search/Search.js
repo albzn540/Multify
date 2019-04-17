@@ -13,6 +13,7 @@ import DropContainer from './DropContainer';
 import Queue from '../Queue';
 import { withSpotify } from '../../Spotify';
 import { withFirebase } from '../../Firebase';
+// import Draggable2 from './Draggable2';
 
 const isMobile = false;
 
@@ -67,7 +68,7 @@ class Search extends React.Component {
    * Searches for tracks when the keyPress function is fired
    * @param {Event} event
    */
-  handleChange(event) {
+  handleChange = (event) => {
     const searchStr = event.value;
     const { spotify } = this.props;
     const items = [];
@@ -102,12 +103,43 @@ class Search extends React.Component {
       });
   }
 
+  getCoords = () => {
+    const el = document.getElementById('DropWrapper');
+    let coords = null;
+    if (el) {
+      coords = el.getBoundingClientRect();
+      this.setState({
+        top: coords.top,
+        bottom: coords.bottom,
+        right: coords.right,
+        left: coords.left,
+      });
+    }
+  }
+
+  componentDidMount = () => {
+    this.getCoords();
+    window.addEventListener('resize', this.getCoords);
+  }
+
+  componentWillUnmount = () => {
+    window.removeEventListener('resize', this.getCoords);
+  }
+
   render() {
     const {
       classes,
       partyId,
     } = this.props;
-    const { tracks, loading, noResults } = this.state;
+    const {
+      tracks,
+      loading,
+      noResults,
+      top,
+      bottom,
+      right,
+      left,
+    } = this.state;
 
     return (
       <Grid
@@ -128,10 +160,12 @@ class Search extends React.Component {
             null
           ) : (
             <Grid item xs={6}>
-              <DropContainer
-                onDragOver={this.onDragOver}
-                onDrop={this.onDrop}
-              />
+              <div id="DropWrapper">
+                <DropContainer
+                  onDragOver={this.onDragOver}
+                  onDrop={this.onDrop}
+                />
+              </div>
               <Queue partyId={partyId} />
             </Grid>
           )}
@@ -164,6 +198,10 @@ class Search extends React.Component {
                       tracks={tracks}
                       onDragStart={this.onDragStart}
                       partyId={partyId}
+                      top={top}
+                      bottom={bottom}
+                      right={right}
+                      left={left}
                     />
                   </Grid>
                 )}

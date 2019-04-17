@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   withStyles,
   ListItem,
@@ -44,13 +44,19 @@ const Draggable = (props) => {
     album,
   };
 
+  // const [hidden, setHidden] = useState(false);
+
   return (
     <ListItem
       key={id}
-      onDragStart={e => onDragStart(e, track)}
+      onDragStart={(e) => {
+        // setHidden(true);
+        onDragStart(e, track);
+      }}
       draggable="true"
       className={classes.listItem}
       divider
+      // hidden={hidden}
     >
       <ListItemText
         disableTypography

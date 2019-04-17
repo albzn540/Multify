@@ -68,7 +68,7 @@ class Navigation extends Component {
       partyId,
     };
 
-    this.PartyHomeLink = props => <Link to={`/party/${partyId}`} {...props} />;
+    this.PartyHomeLink = linkProps => <Link to={`/party/${partyId}`} {...linkProps} />;
   }
 
   componentDidMount() {

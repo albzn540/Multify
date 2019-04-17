@@ -44,6 +44,7 @@ let refreshToken: null | string;
 let tokenExpiresIn: number;
 let observers: { observerFunction: any, action: string[] }[];
 let firestoreSubscriptions: any[] = [];
+let speaker: string | undefined;
 
 /*
 * Observable actions:
@@ -105,6 +106,10 @@ class Spotify {
     //Anoymous user, use old uuid if there is one
     this.uuid = uuid || this.uuid;
     console.debug('[Spotify] User', this.uuid);
+
+    this.client.getMyDevices().then(dev => {
+      console.log(dev);
+    })
   }
 
   handlePartyUpdate = async (doc: firebase.firestore.DocumentSnapshot) => {
@@ -308,13 +313,15 @@ class Spotify {
     this.client.getMyCurrentPlaybackState()
       .then(currentState => {
         if (!currentState || !currentState.item || !currentState.progress_ms) {
+          setTimeout(this.nowPlayingListener, 1000);
           return console.error('Couldnt process current playback state');
         }
 
         this.currentlyPlaying = currentState;
         if(lastState && lastState.item && lastState.item.name !== currentState.item.name) {
-          this.notifyObservers('nowplaying');
+          // this.notifyObservers('nowplaying');
         }
+        this.notifyObservers('nowplaying');
 
         let timeLeft = currentState.item.duration_ms - currentState.progress_ms;
         // We want to check the currently playing track often in case the track
@@ -343,7 +350,6 @@ class Spotify {
    * @param {string} trackId
    */
   removeSubsequentTracks = (trackId: string) => {
-    console.log('track id', trackId);
     const trackIndex = this.queue.findIndex(track => track.id === trackId);
     if(trackIndex === -1)
     return;
@@ -728,7 +734,8 @@ class Spotify {
       this.client.setRepeat('context');
       this.client.setShuffle(false);
       this.client.play({
-        context_uri: this.party.playlistUri
+        context_uri: this.party.playlistUri,
+        device_id: speaker
       });
     } else {
       console.error("[Spotify][startParty] You can't start a party when you dont have one");
@@ -756,6 +763,15 @@ class Spotify {
       return 1;
     }
     return 0;
+  };
+
+  setSpeaker = (id: string) => {
+    speaker = id;
+    if(this.currentlyPlaying) {
+      this.client.play({
+        device_id: speaker
+      });
+    }
   };
 }
 

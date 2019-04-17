@@ -49,7 +49,7 @@ const NowPlayingSmall = (props) => {
   };
 
   const updatePlaying = () => {
-    console.log('Handle new track', spotify.currentlyPlaying.item);
+    // console.log('Handle new track', spotify.currentlyPlaying.item);
     handleTrack(spotify.currentlyPlaying.item);
   };
 

@@ -82,11 +82,7 @@ class Search extends React.Component {
     });
   }
 
-  /**
-   * Handles searches
-   */
-  formSubmit = (event) => {
-    event.preventDefault();
+  sendSearchQuery = () => {
     this.setState({ isLoading: true });
     const { searchQuery, notifs } = this.state;
     const { spotify } = this.props;
@@ -122,12 +118,29 @@ class Search extends React.Component {
       }, (err) => {
         console.error('[SearchList] Search error:', err);
         this.setState({
+          isLoading: false,
           notifs: [{
             message: 'Could not search for tracks',
             key: new Date().getTime(),
           }, ...notifs],
         });
       });
+  };
+
+  /**
+   * Handles searches
+   */
+  formSubmit = (event) => {
+    event.preventDefault();
+    this.sendSearchQuery();
+  };
+
+  handleSearchQuery = (e) => {
+    if (this.timeouteHandle) {
+      clearTimeout(this.timeouteHandle);
+    }
+    setTimeout(this.sendSearchQuery, 100);
+    this.setState({ searchQuery: e.target.value });
   };
 
   render() {
@@ -153,7 +166,7 @@ class Search extends React.Component {
               label="Search"
               variant="outlined"
               value={searchQuery}
-              onChange={e => this.setState({ searchQuery: e.target.value })}
+              onChange={e => this.handleSearchQuery(e)}
               className={classes.textField}
               InputLabelProps={{
                 classes: {

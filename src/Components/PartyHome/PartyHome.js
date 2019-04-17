@@ -32,7 +32,7 @@ const PartyHome = (props) => {
     match: { params: { partyId } },
   } = props;
 
-  const SearchLink = props => <Link to={`/search/${partyId}`} {...props} />;
+  const SearchLink = searchProps => <Link to={`/search/${partyId}`} {...searchProps} />;
 
   return (
     <Fragment>

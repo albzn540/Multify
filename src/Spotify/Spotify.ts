@@ -748,6 +748,15 @@ class Spotify {
     }
     return 0;
   };
+
+  getUserPlaylists = () => {
+    this.client.getUserPlaylists(this.uuid)
+      .then((data) => {
+        console.debug('playlists', data);
+      }, (err) => {
+        console.debug('error', err);
+      });
+  };
 }
 
 export default Spotify;

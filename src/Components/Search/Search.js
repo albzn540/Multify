@@ -8,15 +8,11 @@ import {
   TextField,
   Hidden,
 } from '@material-ui/core';
-// import isMobile from 'react-device-detect';
-import SearchList from './SearchList';
 import DropContainer from './DropContainer';
+import SearchList from './SearchList';
 import Queue from '../Queue';
 import { withSpotify } from '../../Spotify';
 import { withFirebase } from '../../Firebase';
-// import Draggable2 from './Draggable2';
-
-const isMobile = false;
 
 const styles = theme => ({
   textField: {
@@ -57,6 +53,7 @@ class Search extends React.Component {
       tracks: [],
       isLoading: false,
       searchQuery: '',
+      noResults: false,
     };
   }
 
@@ -95,6 +92,7 @@ class Search extends React.Component {
           this.setState({
             tracks: [],
             isLoading: false,
+            noResults: true,
           });
         } else {
           searchResult.forEach((track) => {
@@ -110,6 +108,7 @@ class Search extends React.Component {
           this.setState({
             tracks: items,
             isLoading: false,
+            noResults: false,
           });
         }
       }, (err) => {
@@ -117,39 +116,12 @@ class Search extends React.Component {
       });
   };
 
-  getCoords = () => {
-    const el = document.getElementById('DropWrapper');
-    let coords = null;
-    if (el) {
-      coords = el.getBoundingClientRect();
-      this.setState({
-        top: coords.top,
-        bottom: coords.bottom,
-        right: coords.right,
-        left: coords.left,
-      });
-    }
-  }
-
-  componentDidMount = () => {
-    this.getCoords();
-    window.addEventListener('resize', this.getCoords);
-  }
-
-  componentWillUnmount = () => {
-    window.removeEventListener('resize', this.getCoords);
-  }
-
   render() {
     const {
       tracks,
       isLoading,
       searchQuery,
       noResults,
-      top,
-      bottom,
-      right,
-      left,
     } = this.state;
     const { classes, partyId } = this.props;
 
@@ -186,8 +158,6 @@ class Search extends React.Component {
           </form>
         </Grid>
 
-        {isLoading ? <CircularProgress color="primary" /> : null}
-
         <Hidden only={['sm', 'xs']}>
           <div className={classes.desktopWrapper}>
             <Grid
@@ -196,17 +166,27 @@ class Search extends React.Component {
               spacing={32}
             >
               <Grid item md={6}>
+                <DropContainer
+                  onDragOver={this.onDragOver}
+                  onDrop={this.onDrop}
+                />
                 <Queue partyId={partyId} />
               </Grid>
               <Grid item md={6}>
-                {tracks.length > 0 ? (
-                  <SearchList
-                    tracks={tracks}
-                    onDragStart={this.onDragStart}
-                    partyId={partyId}
-                  />
+                {isLoading ? (
+                  <CircularProgress color="primary" />
                 ) : (
-                  <Typography color="primary">No results</Typography>
+                  <div>
+                    {noResults ? (
+                      <Typography color="primary">No results</Typography>
+                    ) : (
+                      <SearchList
+                        tracks={tracks}
+                        onDragStart={this.onDragStart}
+                        partyId={partyId}
+                      />
+                    )}
+                  </div>
                 )}
               </Grid>
             </Grid>
@@ -215,14 +195,20 @@ class Search extends React.Component {
 
         <Hidden only={['lg', 'md', 'xl']}>
           <Grid item xs={12}>
-            {tracks.length > 0 ? (
-              <SearchList
-                tracks={tracks}
-                onDragStart={this.onDragStart}
-                partyId={partyId}
-              />
+            {isLoading ? (
+              <CircularProgress color="primary" />
             ) : (
-              <Typography color="primary">No results</Typography>
+              <div>
+                {noResults ? (
+                  <Typography color="primary">No results</Typography>
+                ) : (
+                  <SearchList
+                    tracks={tracks}
+                    onDragStart={this.onDragStart}
+                    partyId={partyId}
+                  />
+                )}
+              </div>
             )}
           </Grid>
         </Hidden>

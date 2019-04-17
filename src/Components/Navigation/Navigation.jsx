@@ -105,7 +105,6 @@ class Navigation extends Component {
       this.setState({ backButton: false });
     }
   };
-  
 
   render() {
     const { classes } = this.props;

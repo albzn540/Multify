@@ -6,15 +6,20 @@ const styles = theme => ({
   root: {
     width: '100%',
     maxHeight: '100%',
-    height: '80px',
+    height: '120px',
     backgroundColor: theme.palette.common.grey,
     overflow: 'auto',
+    border: '1px dashed #fff',
   },
   text: {},
 });
 
 const DropContainer = (props) => {
-  const { classes, onDragOver, onDrop } = props;
+  const {
+    classes,
+    onDragOver,
+    onDrop,
+  } = props;
 
   return (
     <Grid

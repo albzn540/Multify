@@ -11,6 +11,7 @@ import {
 import DropContainer from './DropContainer';
 import SearchList from './SearchList';
 import Queue from '../Queue';
+import NotificationBar from '../NotificationBar';
 import { withSpotify } from '../../Spotify';
 import { withFirebase } from '../../Firebase';
 
@@ -54,11 +55,11 @@ class Search extends React.Component {
       isLoading: false,
       searchQuery: '',
       noResults: false,
+      notifs: [],
     };
   }
 
   onDragStart = (e, draggedTrack) => {
-    console.debug('Started dragging');
     const stringified = JSON.stringify(draggedTrack);
     e.dataTransfer.setData('track', stringified);
   };
@@ -68,10 +69,17 @@ class Search extends React.Component {
   };
 
   onDrop = (e) => {
+    const { notifs } = this.state;
     const { spotify, partyId } = this.props;
     const droppedTrack = JSON.parse(e.dataTransfer.getData('track'));
     console.debug('Track data:', droppedTrack);
     spotify.addTrack(droppedTrack, partyId);
+    this.setState({
+      notifs: [{
+        message: 'Track added',
+        key: new Date().getTime(),
+      }, ...notifs],
+    });
   }
 
   /**
@@ -80,7 +88,7 @@ class Search extends React.Component {
   formSubmit = (event) => {
     event.preventDefault();
     this.setState({ isLoading: true });
-    const { searchQuery } = this.state;
+    const { searchQuery, notifs } = this.state;
     const { spotify } = this.props;
 
     const items = [];
@@ -113,6 +121,12 @@ class Search extends React.Component {
         }
       }, (err) => {
         console.error('[SearchList] Search error:', err);
+        this.setState({
+          notifs: [{
+            message: 'Could not search for tracks',
+            key: new Date().getTime(),
+          }, ...notifs],
+        });
       });
   };
 
@@ -122,6 +136,7 @@ class Search extends React.Component {
       isLoading,
       searchQuery,
       noResults,
+      notifs,
     } = this.state;
     const { classes, partyId } = this.props;
 
@@ -212,6 +227,7 @@ class Search extends React.Component {
             )}
           </Grid>
         </Hidden>
+        <NotificationBar queue={notifs} />
       </Grid>
     );
   }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   withStyles,
   ListItem,
@@ -8,6 +8,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { compose } from 'recompose';
+import NotificationBar from '../NotificationBar';
 import Add from '../../Constants/Icons/Add';
 import { withSpotify } from '../../Spotify';
 
@@ -40,6 +41,7 @@ const Draggable = (props) => {
     name,
     album,
   };
+  const [notifs, setNotifs] = useState([]);
 
   return (
     <ListItem
@@ -69,11 +71,18 @@ const Draggable = (props) => {
       />
       <ListItemSecondaryAction>
         <IconButton
-          onClick={() => spotify.addTrack(track, partyId)}
+          onClick={() => {
+            spotify.addTrack(track, partyId);
+            setNotifs([{
+              message: 'Track added!',
+              key: new Date().getTime(),
+            }, ...notifs]);
+          }}
         >
           <Add />
         </IconButton>
       </ListItemSecondaryAction>
+      <NotificationBar queue={notifs} />
     </ListItem>
   );
 };

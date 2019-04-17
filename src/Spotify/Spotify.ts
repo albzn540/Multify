@@ -1,6 +1,7 @@
 import SpotifyWebApi from 'spotify-web-api-js';
 import oauth2 from 'client-oauth2';
 import uuidv4 from 'uuid/v4';
+import { async } from 'q';
 
 declare class Firebase {
   db: firebase.firestore.Firestore;
@@ -19,9 +20,6 @@ const config = {
   authorizationUri: 'https://accounts.spotify.com/authorize',
   accessTokenUri: 'https://accounts.spotify.com/api/token',
   redirectUri: 'https://multify-d5371.firebaseapp.com/login/',
-<<<<<<< HEAD
-  scopes: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email', 'user-read-playback-state', 'user-read-currently-playing', 'playlist-read-private', 'playlist-modify-private'],
-=======
   scopes: [
     'playlist-modify-public',
     'playlist-modify-private',
@@ -31,7 +29,6 @@ const config = {
     'user-read-playback-state',
     'user-read-currently-playing',
   ],
->>>>>>> ee7f1489dbdcba2fef45f23b8ea70877edbd3416
 };
 
 if (process.env.NODE_ENV === 'development') {
@@ -759,36 +756,6 @@ class Spotify {
       return 1;
     }
     return 0;
-  };
-
-  getUserPlaylists = () => {
-<<<<<<< HEAD
-    const options = {
-      limit: 50,
-    };
-    this.client.getUserPlaylists(undefined, JSON.stringify(options))
-      .then((data) => {
-        let accumulatedLists = [];
-        do {
-          const nextList = this.getNext(data.next);
-        } while(nextList.hasNext);
-        
-=======
-    this.client.getUserPlaylists()
-    .then((data) => {
-      this.client.getGeneric(data.next).then(lel => console.log(lel));
-        console.debug('playlists', data);
->>>>>>> ee7f1489dbdcba2fef45f23b8ea70877edbd3416
-      }, (err) => {
-        console.debug('error', err);
-      });
-  };
-
-  getNext = (url: string) => {
-    this.client.getGeneric(url)
-      .then((data) => {
-        console.debug('pls', data.items);
-      });
   };
 }
 

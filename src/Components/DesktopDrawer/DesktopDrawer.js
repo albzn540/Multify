@@ -6,7 +6,9 @@ import {
 } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { Link } from 'react-router-dom';
-import { PlaylistAdd, PlaylistPlayOutlined, PlaylistPlaySharp, PlaylistPlayRounded, ShareRounded, SettingsApplicationsRounded, SettingsRounded, AddCommentOutlined } from '@material-ui/icons';
+import {
+  PlaylistPlayRounded, ShareRounded, SettingsRounded,
+} from '@material-ui/icons';
 import { withSpotify } from '../../Spotify';
 
 const drawerWidth = 240;

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { compose } from 'recompose';
 import classNames from 'classnames';
 import {
-  withStyles, AppBar, Toolbar, IconButton, Typography,
+  withStyles, AppBar, Toolbar, IconButton, Typography, InputBase,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 // import { isMobile } from 'react-device-detect';
@@ -47,7 +47,10 @@ const styles = theme => ({
   },
   toolbarButton: {
     marginLeft: 12,
-    marginRight: 36,
+    marginRight: 12,
+  },
+  partyNameField: {
+    fontSize: 20,
   },
 });
 
@@ -81,6 +84,13 @@ class Navigation extends Component {
 
   handleDrawerClose = () => {
     this.setState({ drawerOpen: false });
+  };
+
+  handlePartyNameChange = (event) => {
+    event.preventDefault();
+    const { spotify } = this.props;
+    const { partyName } = this.state;
+    spotify.changePartyName(partyName);
   };
 
   toggleButton = (str) => {
@@ -130,9 +140,15 @@ class Navigation extends Component {
               </IconButton>
             )}
 
-            <Typography variant="h5">
+            <InputBase
+              className={classes.partyNameField}
+              value={partyName}
+              onChange={e => this.setState({ partyName: e.target.value })}
+              onBlur={e => this.handlePartyNameChange(e)}
+            />
+            {/* <Typography variant="h5">
               {partyName}
-            </Typography>
+            </Typography> */}
           </Toolbar>
         </AppBar>
 

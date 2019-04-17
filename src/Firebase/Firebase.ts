@@ -58,7 +58,6 @@ class Firebase {
   }
 
   test = () => {
-
   };
 }
 

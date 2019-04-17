@@ -14,7 +14,7 @@ const ListItemHeight = 60;
 const styles = theme => ({
   root: {
     height: `${ListItemHeight}px`,
-    width: '90vw',
+    width: '90%',
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
     paddingLeft: theme.spacing.unit,
@@ -34,9 +34,6 @@ const styles = theme => ({
   },
   secondaryText: {
     color: theme.palette.common.white,
-  },
-  row: {
-    width: '90%',
   },
 });
 
@@ -152,7 +149,7 @@ const QueueListItem = (props) => {
         primary={name}
         secondary={artistAndAlbum}
         primaryTypographyProps={{ className: classes.primaryText, noWrap: true }}
-        secondaryTypographyProps={{ className: classes.row, noWrap: true }}
+        secondaryTypographyProps={{ noWrap: true }}
       />
       <ListItemSecondaryAction>
         <IconButton

@@ -4,9 +4,8 @@ import { withStyles, Grid, Typography } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
-  root: {
-    height: '100vh',
-    backgroundColor: theme.palette.background.main,
+  descriptionText: {
+    marginBottom: '20px',
   },
 });
 
@@ -34,17 +33,11 @@ const ShareParty = (props) => {
       justify="center"
       alignItems="center"
     >
-      <Typography
-        variant="h5"
-      >
-        Paty Code:
+      <Typography align="center" variant="h5" className={classes.descriptionText}>
+        Share this party with your friends and let them put their favourite songs into the queue!
       </Typography>
-      <Typography
-        variant="h5"
-        color="primary"
-      >
-        {code}
-      </Typography>
+      <Typography variant="h5">Party Code:</Typography>
+      <Typography variant="h5" color="primary">{code}</Typography>
     </Grid>
   );
 };

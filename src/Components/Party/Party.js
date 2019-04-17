@@ -5,6 +5,7 @@ import { compose } from 'recompose';
 import PartyHome from '../PartyHome';
 import Search from '../Search';
 import Navigation from '../Navigation';
+import ShareParty from '../ShareParty';
 
 const styles = theme => ({
   root: {
@@ -44,6 +45,7 @@ const Party = (props) => {
       {/* Screen content */}
       <Route exact path={`${basePath}/:partyId`} component={PartyHome} />
       <Route path={`${basePath}/:partyId/search`} component={Search} />
+      <Route path={`${basePath}/:partyId/share`} component={ShareParty} />
     </main>
   );
 };

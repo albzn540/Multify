@@ -27,7 +27,7 @@ const spotifyClient = new SpotifyWebApi({
 // Firestore references
 const partiesRef = admin.firestore().collection('parties');
 
-const compare = (track1: any, track2: any) => {
+const compareTracks = (track1: any, track2: any) => {
   if (track1.likes > track2.likes) {
     return -1;
   }
@@ -170,86 +170,71 @@ export const createParty = functions.https.onCall(async (data, context) => {
   });
 });
 
-export const pushQueueToSpotify = async (partyId: string) => {
-  const promises = [];
-  const playlistData = partiesRef.doc(partyId).get().then(doc => {
-    return doc.data();
-  })
-  promises.push(playlistData);
+export const pushQueueToSpotify = async (partyRef: FirebaseFirestore.DocumentReference) => {
+  const queueRef = partyRef.collection('queue');
+  const queue = await queueRef.get();
+    const likePromises = [];
+    const dislikePromises = [];
+    const queueTracks = [];
+    queue.forEach(trackDoc => {
+      // Get track likes
+      const likePromise = trackDoc.ref.collection('likes').get()
+        .then(likesDoc => likesDoc.size);
 
-  const queue = partiesRef.doc(partyId).collection('queue').get()
-    .then(queueSnap => {
-      const trackIds = [];
-      queueSnap.forEach(trackDoc => {
-        console.log(trackDoc.data())
-        const track = {
-          uri: trackDoc.data().uri,
-          likes: trackDoc.data().likes
-        };
-        trackIds.push(track);
-      });
-
-      // Sort track by likes
-      trackIds.sort(compare);
-
-      // return a list with sorted uris
-      return trackIds.map(track => track.uri);
+      // Get track dislikes
+      const dislikePromise = trackDoc.ref.collection('dislikes').get()
+        .then(likesDoc => likesDoc.size);
+      
+      queueTracks.push(trackDoc.data());
+      likePromises.push(likePromise)
+      dislikePromises.push(dislikePromise)
     });
-  promises.push(queue);
 
-  return Promise.all(promises)
-    .then(resolvedPromises => {
-      console.log(resolvedPromises)
-      const accessToken = resolvedPromises[0].spotifyToken;
-      const playlistId = resolvedPromises[0].playlistId;
-      const uris = resolvedPromises[1];
+    const partyData = await partyRef.get()
+    .then(partyDoc => partyDoc.data());
+    
 
-      spotifyClient.setAccessToken(accessToken);
-      spotifyClient.replaceTracksInPlaylist(playlistId, uris, (a: any) => {
-        console.log("Cool", a)
+    // Wait for all tracks to compute likes and dislikes
+    await Promise.all(likePromises).then(upvotes => {
+      queueTracks.forEach((val, index) => {
+        val.upvotes = upvotes[index];
       });
-      return Promise.resolve("Done")
-    })
-    .catch(err => {
-      return Promise.reject(err)
     });
+
+    await Promise.all(dislikePromises).then(downvotes => {
+      queueTracks.forEach((val, index) => {
+        val.downvotes = downvotes[index];
+      });
+    });
+
+    const processedTracks = queueTracks.map(track => (
+      { ...track, likes: track.upvotes - track.downvotes }
+    ));
+    processedTracks.sort(compareTracks); // sort by likes and timestamps
+
+    const trackIds = processedTracks.map(track => track.uri); // get uris
+    console.log('Track ids', trackIds);
+    console.log('Processed tracks', processedTracks);
+    
+    const accessToken = partyData.spotifyToken;
+    const playlistId = partyData.playlistId;
+    spotifyClient.setAccessToken(accessToken);
+    spotifyClient.replaceTracksInPlaylist(playlistId, trackIds, (ans: any) => {
+      console.log('Spotify response', ans);
+    });
+    return Promise.resolve('Tracks should have been added to Spotify playlist');
 };
 
 export const songLikedCallback = functions.firestore
   .document('parties/{partyId}/queue/{songId}/likes/{userId}')
-  .onWrite((change, context) => {
-    const trackRef = change.after.ref.parent.parent;
-    const likes = trackRef.collection('likes').get().then(likeDocs => {
-      return likeDocs.size;
-    });
-    const dislikes = trackRef.collection('dislikes').get().then(dislikeDocs => {
-      return dislikeDocs.size;
-    });
-
-    return Promise.all([likes, dislikes]).then(resolved => {
-      trackRef.update({likes: resolved[0] - resolved[1]})
-    })
+  .onWrite(async (change, context) => {
+    const partyRef = change.after.ref.parent.parent.parent.parent;
+    return pushQueueToSpotify(partyRef);
   });
 
 export const songDislikedCallback = functions.firestore
   .document('parties/{partyId}/queue/{songId}/dislikes/{userId}')
-  .onWrite((change, context) => {
-    const trackRef = change.after.ref.parent.parent;
-    const likes = trackRef.collection('likes').get().then(likeDocs => {
-      return likeDocs.size;
-    });
-    const dislikes = trackRef.collection('dislikes').get().then(dislikeDocs => {
-      return dislikeDocs.size;
-    });
-
-    return Promise.all([likes, dislikes]).then(resolved => {
-      trackRef.update({likes: resolved[0] - resolved[1]})
-    })
-  });
-
-export const pushTest = functions.firestore 
-  .document('parties/{partyId}/queue/{songId}')
-  .onWrite((change, context) => {
-    const partyId = context.params.partyId;
-    return pushQueueToSpotify(partyId);
+  .onWrite(async (change, context) => {
+    const partyRef = change.after.ref.parent.parent.parent.parent;
+    return pushQueueToSpotify(partyRef);
   });

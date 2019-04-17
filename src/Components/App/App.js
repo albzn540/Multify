@@ -39,7 +39,7 @@ const firebase = new Firebase();
 const spotify = new Spotify(firebase);
 
 const App = () => (
-  <div>
+  <div style={{ background: '#191414', height: '100vh' }}>
     <CssBaseline />
     <Router history={history}>
       {/* Could put header here */}

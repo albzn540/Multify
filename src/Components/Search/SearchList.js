@@ -12,11 +12,7 @@ import Draggable from './Draggable';
 
 const styles = () => ({
   root: {
-    overflow: 'auto',
-    listStyleType: 'none',
-  },
-  item: {
-    position: 'realtive',
+    width: '95%',
   },
 });
 
@@ -33,26 +29,23 @@ const SearchList = (props) => {
   } = props;
 
   return (
-    <Grid item>
-      <List className={classes.root}>
-        {tracks.map(track => (
-          <Draggable
-            key={track.id}
-            album={track.album}
-            artists={track.artists}
-            id={track.id}
-            name={track.name}
-            uri={track.uri}
-            partyId={partyId}
-            top={top}
-            bottom={bottom}
-            right={right}
-            left={left}
-            onDragStart={onDragStart}
-          />
-        ))}
-      </List>
-    </Grid>
+    <List
+      dense={false}
+      className={classes.root}
+    >
+      {tracks.map(track => (
+        <Draggable
+          key={track.id}
+          album={track.album}
+          artists={track.artists}
+          id={track.id}
+          name={track.name}
+          uri={track.uri}
+          onDragStart={onDragStart}
+          partyId={partyId}
+        />
+      ))}
+    </List>
   );
 };
 

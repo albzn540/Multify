@@ -82,6 +82,11 @@ class UserPlaylists extends React.Component {
       });
   };
 
+  selectFallbackPlaylist = (id) => {
+    const { spotify } = this.props;
+    spotify.addFallbackTracks(id);
+  };
+
   render() {
     const { classes } = this.props;
     const { playlists, hasNext, next } = this.state;
@@ -144,7 +149,7 @@ class UserPlaylists extends React.Component {
                 <ListItemSecondaryAction>
                   <IconButton
                     onClick={() => {
-                      console.debug('Added, but not actually');
+                      this.selectFallbackPlaylist(list.id);
                     }}
                   >
                     <Add />

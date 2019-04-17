@@ -4,6 +4,7 @@ import { Typography, withStyles, Grid } from '@material-ui/core';
 import SpotifyButton from '../SpotifyButton';
 import { withSpotify } from '../../Spotify';
 import Connect from '../Connect';
+import UserPlaylists from '../UserPlaylists';
 
 const styles = theme => ({
   header: {
@@ -27,6 +28,7 @@ const Settings = (props) => {
       </Grid>
       <Connect />
       <Typography variant="h5">Fallback playlist</Typography>
+      <UserPlaylists />
     </div>
   );
 };

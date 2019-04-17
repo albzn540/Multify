@@ -728,6 +728,9 @@ class Spotify {
     console.log(`${this.uuid} voted ${vote} on track "${trackId}"`);
   }
 
+  /**
+   * Starts the party music on selected speakers
+   */
   startParty = () => {
     if(this.party) {
       console.log('[Spotify][startParty] Starting party!');
@@ -741,6 +744,19 @@ class Spotify {
       console.error("[Spotify][startParty] You can't start a party when you dont have one");
     }
   }
+
+  /**
+   * Adds tracks from playlist to party as fallback tracks 
+   */
+  addFallbackTracks = (playlistId: string) => {
+    this.client.getPlaylistTracks(playlistId).then(playlist => {
+      const trackUris = playlist.items.map(track => track.track.uri);
+      if(!this.partyId) {
+        return;
+      }
+      fb.partyRef(this.partyId).update({ fallbackTracks: trackUris });
+    })
+  };
 
   /**
    * Compares two tracks based on number of upvotes.

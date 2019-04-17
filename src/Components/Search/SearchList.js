@@ -2,13 +2,11 @@ import React from 'react';
 import { compose } from 'recompose';
 import {
   withStyles,
-  Grid,
   List,
 } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
 // import SearchListItem from './SearchListItem';
 import Draggable from './Draggable';
-// import Draggable2 from './Draggable2';
 
 const styles = () => ({
   root: {
@@ -21,10 +19,6 @@ const SearchList = (props) => {
     tracks,
     classes,
     partyId,
-    top,
-    bottom,
-    right,
-    left,
     onDragStart,
   } = props;
 

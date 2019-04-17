@@ -48,29 +48,24 @@ const NowPlayingSmall = (props) => {
     });
   };
 
-  const getCurrentlyPlaying = () => {
-    spotify.nowPlaying().then((newTrack) => {
-      if (typeof newTrack === 'string' && newTrack.length === 0) {
-        return;
-      }
-      let timeLeft = newTrack.item.duration_ms - newTrack.progress_ms;
-      // We want to check the currently playing track often in case the track
-      // is manually skipped, fast fowarded or something similar
-      timeLeft = timeLeft < 1000 ? timeLeft : 1000;
-
-      if (timeLeft > 1000) {
-        // We don't want to flood the console
-        console.log(`[NowPlayingSmall][getCurrentlyPlaying] Now playing "${newTrack.item.name}"`, newTrack);
-        console.debug(`[NowPlayingSmall][getCurrentlyPlaying] Fetching again in ${timeLeft} ms`);
-      }
-
-      setTimeout(getCurrentlyPlaying, timeLeft);
-      handleTrack(newTrack.item);
-    });
+  const updatePlaying = () => {
+    console.log("Handle new track", spotify.currentlyPlaying.item);
+    handleTrack(spotify.currentlyPlaying.item);
   };
 
   useEffect(() => {
-    getCurrentlyPlaying();
+    // check if a track is playing right now
+    spotify.client.getMyCurrentPlaybackState().then((newTrack) => {
+      if (newTrack.is_playing) {
+        handleTrack(newTrack.item);
+      }
+    });
+
+    // set up listener
+    const currentlyPlayingSub = spotify.addObserver(updatePlaying, ['nowplaying']);
+    return () => {
+      currentlyPlayingSub();
+    };
   }, []);
 
   return (

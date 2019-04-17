@@ -53,7 +53,8 @@ class Spotify {
     name: string,
     accessToken: string,
     doc: firebase.firestore.DocumentSnapshot,
-    host: string
+    host: string,
+    spotifyId: string
   } | undefined;
   currentlyPlaying: SpotifyApi.CurrentPlaybackResponse | undefined;
   queue: any[];
@@ -68,12 +69,11 @@ class Spotify {
     this.client = new SpotifyWebApi();
     this.uuid = uuidv4();
     this.queue = [];
+    this.partyId = null;
 
-    this.client.getMyCurrentPlaybackState();
     // Check for stored data
     const storedData = localStorage.getItem('spotify_data');
     const uuid = localStorage.getItem('uuid');
-    this.partyId = localStorage.getItem('party_id');
 
     if (storedData) {
       // Stored data exists, user has logged in before
@@ -86,6 +86,7 @@ class Spotify {
         console.info('[Spotify] Token expires in', tokenExpiresIn);
         refreshToken = spotifyData.refresh_token;
         this.refreshTokenCallback();
+        this.client.setAccessToken(spotifyData.access_token);
         this.getNewSpotifyUser();
       } else {
         console.log('[Spotify] Token has expired');
@@ -93,17 +94,7 @@ class Spotify {
     }
     //Anoymous user, use old uuid if there is one
     this.uuid = uuid || this.uuid;
-    console.debug('[Spotify] Anonymous user', this.uuid);
-
-    // setup tracklistener for removing playing tracks from the queue
-    this.nowPlayingListener();
-
-    if (this.partyId) {
-      this.subscribeFirestore();
-    }
-
-    this.addObserver(this.cleanQueue, ['nowplaying']);
-
+    console.debug('[Spotify] User', this.uuid);
   }
 
   handlePartyUpdate = async (doc: firebase.firestore.DocumentSnapshot) => {
@@ -116,6 +107,7 @@ class Spotify {
         name: partyData.name,
         accessToken: partyData.spotifyToken,
         host: partyData.host,
+        spotifyId: partyData.spotifyId,
         doc
       }
     }
@@ -239,8 +231,11 @@ class Spotify {
    * functions updating the internal states of the Spotify instance.
    */
   setParty = (id: string) => {
+    console.log('[Spotify][setParty]', id);
     this.partyId = id;
     this.getParty(id);
+    this.nowPlayingListener();
+    this.addObserver(this.cleanQueue, ['nowplaying']);
     this.subscribeFirestore();
     this.saveToLocalStorage();
   };
@@ -514,7 +509,7 @@ class Spotify {
 
     if (!this.spotifyUser) {
       console.error("[Spotify][createParty] Can't create party if you're not logged in");
-      return Promise.reject("You don't seem to be logged in");
+      return Promise.reject("Please login to create a party");
     }
 
     return createPartyFunc({
@@ -535,15 +530,21 @@ class Spotify {
     return fb.partiesRef().where('code', '==', code).get().then((snap) => {
       let id = undefined;
       snap.forEach(doc => {
-        const name = doc.data().name;
-        const accessToken = doc.data().spotifyToken;
-        const host = doc.data().host;
+        const party = doc.data();
         id = doc.id;
-        this.partyId = id;
-        this.party = { name, code, accessToken, doc, host };
-        this.client.setAccessToken(accessToken)
+        this.partyId = doc.id;
+        this.party = {
+          name: party.name,
+          accessToken: party.spotifyToken,
+          code: party.code,
+          doc,
+          spotifyId: party.spotifyId,
+          host: party.host
+        };
+        this.client.setAccessToken(this.party.accessToken);
+        this.saveToLocalStorage();
+        this.notifyObservers('party');
       });
-      this.saveToLocalStorage();
       if (id) {
         return Promise.resolve(id);
       } else {
@@ -566,40 +567,55 @@ class Spotify {
           accessToken: party.spotifyToken,
           code: party.code,
           doc: partyDoc,
-          host: party.host
+          host: party.host,
+          spotifyId: party.spotifyId,
         };
         this.client.setAccessToken(party.spotifyToken);
+        this.notifyObservers('party');
         this.saveToLocalStorage();
         return Promise.resolve(this.party);
       }
       return Promise.reject("No such party");
     });
   };
+  
+  /**
+   * Returns true if current user is party host
+   */
+  isHost = () => {
+    if(this.party) {
+      return this.party.spotifyId === this.uuid;
+    }
+    return false;
+  };
 
+  /**
+   * Change name of current party
+   * You have to be host to have permission
+   */
   changePartyName = (name: string) => {
-    const party = this.party;
-    if (!party) {
-      console.error('Party is not defined');
+    if(!this.isHost()) {
+      console.error('You have to be party host to change party name');
+      return;
+    }
+
+    if (!this.party) {
+      console.error('You are not in a party!');
       return
     }
-    const partyDoc = party.doc.ref;
-    if (partyDoc) {
-      partyDoc.update({ name });
-    } else {
-      console.error('You dont have a party')
-    }
 
+    return this.party.doc.ref.update({ name });
   };
 
   /**
    * @param trackId
    * @returns {firebase.firestore.QueryDocumentSnapshot | null} Track object or null if track was not in queue
    */
-  getTrackFromQueue = async (trackId: string) => {
+  getTrackFromQueue = (trackId: string) => {
     console.debug(`[Spotify][getTrackFromQueue] Retrieving track "${trackId}" from queue...`);
     if (!this.partyId) {
       console.error('Cant fetch track from a queue that does not exist')
-      return;
+      return null;
     }
     return fb.partyQueueRef(this.partyId).get().then(queueSnap => {
       let found: firebase.firestore.QueryDocumentSnapshot | null = null;
@@ -629,13 +645,6 @@ class Spotify {
       return tracks.sort(this.compareTrack);
     });
   }
-
-  /**
-   * @return A promise resolving to the current playing track
-   */
-  nowPlaying = async () => {
-    return this.client.getMyCurrentPlayingTrack()
-  };
 
   /**
    * A track has its important features stripped and added to firestore

@@ -58,13 +58,10 @@ class Navigation extends Component {
   constructor(props) {
     super(props);
 
-    const { partyId } = this.props;
-
     this.state = {
       drawerOpen: false,
       backButton: false,
       partyName: '',
-      partyId,
     };
   }
 
@@ -77,6 +74,11 @@ class Navigation extends Component {
 
   componentWillUnmount() {
     this.unsubscribeName();
+  }
+
+  updateName = () => {
+    const { spotify } = this.props;
+    this.setState({ partyName: spotify.party.name });
   }
 
   handleDrawerOpen = () => {
@@ -103,11 +105,7 @@ class Navigation extends Component {
       this.setState({ backButton: false });
     }
   };
-
-  updateName() {
-    const { spotify } = this.props;
-    this.setState({ partyName: spotify.party.name });
-  }
+  
 
   render() {
     const { classes } = this.props;

@@ -4,6 +4,7 @@ import { withStyles, Grid, TextField } from '@material-ui/core';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 import SpotifyButton from '../SpotifyButton';
 import NotificationBar from '../NotificationBar';
+import { withRouter } from 'react-router-dom';
 import { withFirebase } from '../../Firebase';
 import { withSpotify } from '../../Spotify';
 
@@ -39,7 +40,7 @@ const styles = theme => ({
 });
 
 const JoinParty = (props) => {
-  const { classes, spotify } = props;
+  const { classes, spotify, history } = props;
   const [partyCode, setPartyCode] = useState('');
   const [notifs, setNotifs] = useState([]);
 
@@ -51,7 +52,7 @@ const JoinParty = (props) => {
     e.preventDefault(); // prevents page refreshing
 
     spotify.getPartyId(partyCode).then((partyId) => {
-      window.location.assign(`/party/${partyId}`);
+      history.push({ pathname: `/party/${partyId}` });
     }).catch((err) => {
       console.error(err);
       const newNotifs = [{

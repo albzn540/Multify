@@ -6,6 +6,7 @@ import {
 } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { Link } from 'react-router-dom';
+import { withSpotify } from '../../Spotify';
 
 const drawerWidth = 240;
 
@@ -44,7 +45,7 @@ const styles = theme => ({
 
 const DesktopDrawer = (props) => {
   const {
-    classes, open, handleClose, partyId,
+    classes, open, handleClose, partyId, spotify,
   } = props;
 
   const handleDrawerClose = () => {
@@ -81,6 +82,15 @@ const DesktopDrawer = (props) => {
         <ListItem button key="share" component={Link} to={`/party/${partyId}/share`}>
           <ListItemText primary="Share" />
         </ListItem>
+        <ListItem button key="settings" component={Link} to={`/party/${partyId}/settings`}>
+          <ListItemText primary="Settings" />
+        </ListItem>
+
+        {spotify.isHost() ? (
+          <ListItem button key="admin" component={Link} to={`/party/${partyId}/admin`}>
+            <ListItemText primary="Admin" />
+          </ListItem>
+        ) : null };
       </List>
     </Drawer>
   );
@@ -88,4 +98,5 @@ const DesktopDrawer = (props) => {
 
 export default compose(
   withStyles(styles),
+  withSpotify,
 )(DesktopDrawer);

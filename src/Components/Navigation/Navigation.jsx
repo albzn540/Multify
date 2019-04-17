@@ -5,22 +5,18 @@ import {
   withStyles, AppBar, Toolbar, IconButton, InputBase,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-// import { isMobile } from 'react-device-detect';
+import { isMobile } from 'react-device-detect';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { withSpotify } from '../../Spotify';
 import DesktopDrawer from '../DesktopDrawer';
 import MobileDrawer from '../MobileDrawer';
 
 const drawerWidth = 240;
-const isMobile = true;
 
 const styles = theme => ({
   root: {
     display: 'flex',
-    overflowY: 'scroll',
-    width: '100%',
     // flexGrow: '1', // might not be needed
-    // height: '100vh',
     backgroundColor: theme.palette.background.main,
   },
   hide: {
@@ -58,10 +54,13 @@ class Navigation extends Component {
   constructor(props) {
     super(props);
 
+    const { partyId } = props;
+
     this.state = {
       drawerOpen: false,
       backButton: false,
       partyName: '',
+      partyId,
     };
   }
 
@@ -149,9 +148,6 @@ class Navigation extends Component {
               onChange={e => this.setState({ partyName: e.target.value })}
               onBlur={e => this.handlePartyNameChange(e)}
             />
-            {/* <Typography variant="h5">
-              {partyName}
-            </Typography> */}
           </Toolbar>
         </AppBar>
 

@@ -11,6 +11,7 @@ import {
 import DropContainer from './DropContainer';
 import SearchList from './SearchList';
 import Queue from '../Queue';
+import UserPlaylists from '../UserPlaylists';
 import NotificationBar from '../NotificationBar';
 import { withSpotify } from '../../Spotify';
 import { withFirebase } from '../../Firebase';
@@ -172,6 +173,8 @@ class Search extends React.Component {
             />
           </form>
         </Grid>
+
+        <UserPlaylists />
 
         <Hidden only={['sm', 'xs']}>
           <div className={classes.desktopWrapper}>

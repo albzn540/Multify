@@ -1,24 +1,15 @@
 import React, { Fragment } from 'react';
-import { compose } from 'recompose';
-import { Typography, withStyles } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import NowPlayingSmall from './NowPlayingSmall';
 
-const styles = theme => ({
-});
 
-const NowPlaying = (props) => {
-  const { classes } = props;
+const NowPlaying = () => (
+  <Fragment>
+    <Typography variant="h6">
+      Now playing
+    </Typography>
+    <NowPlayingSmall />
+  </Fragment>
+);
 
-  return (
-    <Fragment>
-      <Typography variant="h6" className={classes.text}>
-        Now playing
-      </Typography>
-      <NowPlayingSmall />
-    </Fragment>
-  );
-};
-
-export default compose(
-  withStyles(styles),
-)(NowPlaying);
+export default NowPlaying;

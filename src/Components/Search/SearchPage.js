@@ -3,13 +3,11 @@ import { compose } from 'recompose';
 import {
   withStyles, AppBar, Toolbar, IconButton, Typography,
 } from '@material-ui/core';
-// import { isMobile } from 'react-device-detect';
+import { isMobile } from 'react-device-detect';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { Link } from 'react-router-dom';
 import { withSpotify } from '../../Spotify';
 import Search from './Search';
-
-const isMobile = true;
 
 const styles = theme => ({
   root: {

@@ -10,7 +10,7 @@ const ListItemHeight = 60;
 const styles = theme => ({
   root: {
     height: `${ListItemHeight}px`,
-    width: '90vw',
+    width: '100%',
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
     paddingLeft: theme.spacing.unit,
@@ -49,7 +49,7 @@ const NowPlayingSmall = (props) => {
   };
 
   const updatePlaying = () => {
-    console.log("Handle new track", spotify.currentlyPlaying.item);
+    console.log('Handle new track', spotify.currentlyPlaying.item);
     handleTrack(spotify.currentlyPlaying.item);
   };
 

@@ -7,16 +7,17 @@ import Search from '../Search';
 import Navigation from '../Navigation';
 import ShareParty from '../ShareParty';
 import Settings from '../Settings';
+import Admin from '../Admin';
 
 const styles = theme => ({
   root: {
-    backgroundColor: theme.palette.background.main,
+    display: 'flex',
+  },
+  content: {
     flexGrow: 1,
     padding: theme.spacing.unit * 2,
   },
-  toolbar: {
-    ...theme.mixins.toolbar,
-  },
+  toolbar: theme.mixins.toolbar,
   fab: {
     zIndex: theme.zIndex.appBar,
     position: 'fixed',
@@ -38,16 +39,18 @@ const Party = (props) => {
 
   return (
     <main className={classes.root}>
-      <div className={classes.toolbar} />
-
       {/* Navigation panels (Appbar and drawer) */}
       <Navigation partyId={partyId} />
 
-      {/* Screen content */}
-      <Route exact path={`${basePath}/:partyId`} component={PartyHome} />
-      <Route path={`${basePath}/:partyId/search`} component={Search} />
-      <Route path={`${basePath}/:partyId/share`} component={ShareParty} />
-      <Route path={`${basePath}/:partyId/settings`} component={Settings} />
+      <div className={classes.content}>
+        <div className={classes.toolbar} />
+        {/* Screen content */}
+        <Route exact path={`${basePath}/:partyId`} component={PartyHome} />
+        <Route path={`${basePath}/:partyId/search`} component={Search} />
+        <Route path={`${basePath}/:partyId/share`} component={ShareParty} />
+        <Route path={`${basePath}/:partyId/settings`} component={Settings} />
+        <Route path={`${basePath}/:partyId/admin`} component={Admin} />
+      </div>
     </main>
   );
 };

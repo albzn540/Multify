@@ -19,7 +19,19 @@ const config = {
   authorizationUri: 'https://accounts.spotify.com/authorize',
   accessTokenUri: 'https://accounts.spotify.com/api/token',
   redirectUri: 'https://multify-d5371.firebaseapp.com/login/',
+<<<<<<< HEAD
   scopes: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email', 'user-read-playback-state', 'user-read-currently-playing', 'playlist-read-private', 'playlist-modify-private'],
+=======
+  scopes: [
+    'playlist-modify-public',
+    'playlist-modify-private',
+    'playlist-read-private',
+    'user-modify-playback-state',
+    'user-read-email',
+    'user-read-playback-state',
+    'user-read-currently-playing',
+  ],
+>>>>>>> ee7f1489dbdcba2fef45f23b8ea70877edbd3416
 };
 
 if (process.env.NODE_ENV === 'development') {
@@ -55,6 +67,7 @@ class Spotify {
     doc: firebase.firestore.DocumentSnapshot,
     host: string,
     spotifyId: string
+    playlistUri: string
   } | undefined;
   currentlyPlaying: SpotifyApi.CurrentPlaybackResponse | undefined;
   queue: any[];
@@ -108,6 +121,7 @@ class Spotify {
         accessToken: partyData.spotifyToken,
         host: partyData.host,
         spotifyId: partyData.spotifyId,
+        playlistUri: partyData.playlistUri,
         doc
       }
     }
@@ -538,6 +552,7 @@ class Spotify {
           accessToken: party.spotifyToken,
           code: party.code,
           doc,
+          playlistUri: party.playlistUri,
           spotifyId: party.spotifyId,
           host: party.host
         };
@@ -567,6 +582,7 @@ class Spotify {
           accessToken: party.spotifyToken,
           code: party.code,
           doc: partyDoc,
+          playlistUri: party.playlistUri,
           host: party.host,
           spotifyId: party.spotifyId,
         };
@@ -709,6 +725,19 @@ class Spotify {
     console.log(`${this.uuid} voted ${vote} on track "${trackId}"`);
   }
 
+  startParty = () => {
+    if(this.party) {
+      console.log('[Spotify][startParty] Starting party!');
+      this.client.setRepeat('context');
+      this.client.setShuffle(false);
+      this.client.play({
+        context_uri: this.party.playlistUri
+      });
+    } else {
+      console.error("[Spotify][startParty] You can't start a party when you dont have one");
+    }
+  }
+
   /**
    * Compares two tracks based on number of upvotes.
    * If upvotes are equal the track added earliest
@@ -733,6 +762,7 @@ class Spotify {
   };
 
   getUserPlaylists = () => {
+<<<<<<< HEAD
     const options = {
       limit: 50,
     };
@@ -743,6 +773,12 @@ class Spotify {
           const nextList = this.getNext(data.next);
         } while(nextList.hasNext);
         
+=======
+    this.client.getUserPlaylists()
+    .then((data) => {
+      this.client.getGeneric(data.next).then(lel => console.log(lel));
+        console.debug('playlists', data);
+>>>>>>> ee7f1489dbdcba2fef45f23b8ea70877edbd3416
       }, (err) => {
         console.debug('error', err);
       });

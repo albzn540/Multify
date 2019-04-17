@@ -71,11 +71,12 @@ class Navigation extends Component {
   componentDidMount() {
     const { spotify, partyId } = this.props;
 
-    spotify.getParty(partyId).then((party) => {
-      this.setState({ partyName: party.name });
-    }).catch((err) => {
-      console.error('[Navigation]', err);
-    });
+    spotify.setParty(partyId);
+    this.unsubscribeName = spotify.addObserver(this.updateName, ['party']);
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeName();
   }
 
   handleDrawerOpen = () => {
@@ -102,6 +103,11 @@ class Navigation extends Component {
       this.setState({ backButton: false });
     }
   };
+
+  updateName() {
+    const { spotify } = this.props;
+    this.setState({ partyName: spotify.party.name });
+  }
 
   render() {
     const { classes } = this.props;

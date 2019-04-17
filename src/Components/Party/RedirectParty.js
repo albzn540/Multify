@@ -5,7 +5,7 @@ import { withSpotify } from '../../Spotify';
 
 const RedirectParty = (props) => {
   // Check cookies for last party
-  const lastParty = localStorage.getItem('last_party');
+  const lastParty = localStorage.getItem('party_id');
   let url = '/';
   if (lastParty) {
     const partyId = lastParty.replace(/"/g, '');

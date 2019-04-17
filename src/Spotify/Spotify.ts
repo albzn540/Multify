@@ -51,13 +51,12 @@ class Spotify {
   party: {
     code: string,
     name: string,
+    accessToken: string,
     doc: firebase.firestore.DocumentSnapshot,
+    host: string
   } | undefined;
   currentlyPlaying: SpotifyApi.CurrentPlaybackResponse | undefined;
-  queue: {
-    id: string,
-    album: string,
-  }[];
+  queue: any[];
 
   constructor(firebase: Firebase) {
     // Initialize private stuff
@@ -86,8 +85,7 @@ class Spotify {
         // token has not yet expired
         console.info('[Spotify] Token expires in', tokenExpiresIn);
         refreshToken = spotifyData.refresh_token;
-        setTimeout(this.refreshTokenCallback, tokenExpiresIn * 1000 - 3000);
-        this.client.setAccessToken(spotifyData.access_token);
+        this.refreshTokenCallback();
         this.getNewSpotifyUser();
       } else {
         console.log('[Spotify] Token has expired');
@@ -104,12 +102,30 @@ class Spotify {
       this.subscribeFirestore();
     }
 
+    this.addObserver(this.cleanQueue, ['nowplaying']);
+
   }
 
-  handlePartyUpdate = (doc: any) => {
+  handlePartyUpdate = async (doc: firebase.firestore.DocumentSnapshot) => {
+    this.partyId = doc.id;
+    const partyData = doc.data();
 
+    if(partyData) {
+      this.party = {
+        code: partyData.code,
+        name: partyData.name,
+        accessToken: partyData.spotifyToken,
+        host: partyData.host,
+        doc
+      }
+    }
   };
 
+  /**
+   * Firestore onSnapshot callback function. Retrieves all the current tracks
+   * in the queue and their vote status, sorts them, places them in the
+   * Spotify instance and calls observables
+   */
   handleQueueUpdate = async (doc: firebase.firestore.QuerySnapshot) => {
     const newTracks: any[] = [];
     const upvotePromises: Promise<{ isLiked: boolean; likes: number; }>[] = [];
@@ -224,7 +240,9 @@ class Spotify {
    */
   setParty = (id: string) => {
     this.partyId = id;
+    this.getParty(id);
     this.subscribeFirestore();
+    this.saveToLocalStorage();
   };
 
   currentPartyRef = () => {
@@ -280,18 +298,38 @@ class Spotify {
    * Notify action: nowplaying
    */
   nowPlayingListener = async () => {
+    const lastState = this.currentlyPlaying;
     this.client.getMyCurrentPlaybackState()
       .then(currentState => {
         if (!currentState || !currentState.item || !currentState.progress_ms) {
           return console.error('Couldnt process current playback state');
         }
+
+        this.currentlyPlaying = currentState;
+        if(lastState && lastState.item && lastState.item.name !== currentState.item.name) {
+          this.notifyObservers('nowplaying');
+        }
+
         let timeLeft = currentState.item.duration_ms - currentState.progress_ms;
         // We want to check the currently playing track often in case the track
         // is manually skipped, fast fowarded or something similar
         timeLeft = timeLeft < 1000 ? timeLeft : 1000;
         setTimeout(this.nowPlayingListener, timeLeft);
-        this.notifyObservers('nowplaying');
       });
+  };
+
+  cleanQueue = () => {
+    if(!this.currentlyPlaying) {
+      console.error('[Spotify][cleanQueue] Error');
+      return;
+    };
+    if(!this.currentlyPlaying.item) {
+      console.error('[Spotify][cleanQueue] Error');
+      return;
+    };
+
+    const trackId = this.currentlyPlaying.item.id;
+    this.removeSubsequentTracks(trackId);
   };
 
   /**
@@ -300,10 +338,13 @@ class Spotify {
    */
   removeSubsequentTracks = (trackId: string) => {
     console.log('track id', trackId);
-    this.getQueue().then(queue => {
-      console.log(queue);
-    }).catch(err => {
-      console.error(err);
+    const trackIndex = this.queue.findIndex(track => track.id === trackId);
+    if(trackIndex === -1)
+    return;
+    const removedTracks = this.queue.filter((track, index) => index <= trackIndex);
+    removedTracks.forEach(track => {
+      if(!this.partyId) return;
+      fb.partyQueueRef(this.partyId).doc(track.id).delete();
     })
   };
 
@@ -435,7 +476,7 @@ class Spotify {
     };
 
     localStorage.setItem('spotify_data', JSON.stringify(localStorageData));
-    if (this.party) {
+    if (this.partyId) {
       localStorage.setItem('party_id', JSON.stringify(this.partyId));
     }
     localStorage.setItem('uuid', this.uuid);
@@ -452,8 +493,9 @@ class Spotify {
     refreshFunction({ refreshToken }).then(res => {
       const { data } = res;
       tokenExpiresIn = data.expires_in;
-      this.client.setAccessToken(data.access_token);
-      this.saveToLocalStorage();
+      if(!this.partyId)
+        return;
+      fb.partyRef(this.partyId).update({ spotifyToken: data.access_token });
       console.info('[Spotify][refreshTokenCallback] New access token', data.access_token);
     });
 
@@ -494,9 +536,12 @@ class Spotify {
       let id = undefined;
       snap.forEach(doc => {
         const name = doc.data().name;
+        const accessToken = doc.data().spotifyToken;
+        const host = doc.data().host;
         id = doc.id;
         this.partyId = id;
-        this.party = { name, code, doc };
+        this.party = { name, code, accessToken, doc, host };
+        this.client.setAccessToken(accessToken)
       });
       this.saveToLocalStorage();
       if (id) {
@@ -518,9 +563,12 @@ class Spotify {
       if (party) {
         this.party = {
           name: party.name,
+          accessToken: party.spotifyToken,
           code: party.code,
-          doc: partyDoc
-        }
+          doc: partyDoc,
+          host: party.host
+        };
+        this.client.setAccessToken(party.spotifyToken);
         this.saveToLocalStorage();
         return Promise.resolve(this.party);
       }
@@ -617,7 +665,7 @@ class Spotify {
     } else {
       trackRef.set(reducedTrack)
         .then(() => {
-          console.log(`[Spotify][addTrack] ${track.name} added by ${this.uuid}`);
+          console.log(`[Spotify][addTrack] "${track.name}" added by ${this.uuid}`);
         })
         .then(() => {
           trackRef.collection('likes').doc(this.uuid).set({});

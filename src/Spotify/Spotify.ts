@@ -349,7 +349,6 @@ class Spotify {
    * @param {string} trackId
    */
   removeSubsequentTracks = (trackId: string) => {
-    console.log('track id', trackId);
     const trackIndex = this.queue.findIndex(track => track.id === trackId);
     if(trackIndex === -1)
     return;

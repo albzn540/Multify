@@ -149,6 +149,7 @@ export const createParty = functions.https.onCall(async (data, context) => {
       code,
       name,
       spotifyToken,
+      spotifyId,
       playlistId: spotifyRes.body.id,
       playlistUri: spotifyRes.body.uri,
       host: context.auth.uid

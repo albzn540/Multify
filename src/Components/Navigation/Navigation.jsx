@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { compose } from 'recompose';
 import classNames from 'classnames';
 import {
-  withStyles, AppBar, Toolbar, IconButton, Typography, InputBase,
+  withStyles, AppBar, Toolbar, IconButton, InputBase,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 // import { isMobile } from 'react-device-detect';

@@ -593,7 +593,9 @@ class Spotify {
    * A track has its important features stripped and added to firestore
    * @param track
    */
-  addTrack = async (track: any, partyId: string) => {
+  addTrack = async (track: any) => {
+    if(!this.partyId) return;
+
     const reducedTrack = {
       id: track.id,
       uri: track.uri,
@@ -606,7 +608,7 @@ class Spotify {
       timeStamp: Date.now(),
     };
 
-    const trackRef = fb.partyQueueRef(partyId).doc(track.id);
+    const trackRef = fb.partyQueueRef(this.partyId).doc(track.id);
     const trackExists = await this.getTrackFromQueue(track.id);
 
     if (trackExists) {
@@ -615,11 +617,10 @@ class Spotify {
     } else {
       trackRef.set(reducedTrack)
         .then(() => {
-          console.log('[Spotify][addTrack] Track added!', track);
+          console.log(`[Spotify][addTrack] ${track.name} added by ${this.uuid}`);
         })
         .then(() => {
-          trackRef.collection('likes').doc(this.uuid)
-            .set({});
+          trackRef.collection('likes').doc(this.uuid).set({});
         })
         .catch((err: Error) => {
           console.error('[Spotify][addTrack] Error adding track!', err);

@@ -3,6 +3,7 @@ import { compose } from 'recompose';
 import { Typography, withStyles, Grid } from '@material-ui/core';
 import SpotifyButton from '../SpotifyButton';
 import { withSpotify } from '../../Spotify';
+import Connect from '../Connect';
 
 const styles = theme => ({
   header: {
@@ -24,6 +25,8 @@ const Settings = (props) => {
           <SpotifyButton value="Start party" onClick={startParty} />
         </Grid>
       </Grid>
+      <Connect />
+      <Typography variant="h5">Fallback playlist</Typography>
     </div>
   );
 };

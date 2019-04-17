@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { compose } from 'recompose';
 import { withStyles, Grid, TextField } from '@material-ui/core';
+import { withRouter } from 'react-router-dom';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 import SpotifyButton from '../SpotifyButton';
 import NotificationBar from '../NotificationBar';
-import { withRouter } from 'react-router-dom';
 import { withFirebase } from '../../Firebase';
 import { withSpotify } from '../../Spotify';
 
@@ -55,11 +55,10 @@ const JoinParty = (props) => {
       history.push({ pathname: `/party/${partyId}` });
     }).catch((err) => {
       console.error(err);
-      const newNotifs = [{
+      setNotifs([{
         message: 'Could not find party',
         key: new Date().getTime(),
-      }, ...notifs];
-      setNotifs(newNotifs);
+      }, ...notifs]);
     });
   };
 
@@ -121,4 +120,5 @@ export default compose(
   withStyles(styles),
   withFirebase,
   withSpotify,
+  withRouter,
 )(JoinParty);

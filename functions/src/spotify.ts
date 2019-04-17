@@ -11,7 +11,15 @@ const config = {
   authorizationUri: 'https://accounts.spotify.com/authorize/',
   accessTokenUri: 'https://accounts.spotify.com/api/token/',
   redirectUri: callbackUrl,
-  scopes: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email'],
+  scopes: [
+    'playlist-modify-public',
+    'playlist-modify-private',
+    'playlist-read-private',
+    'user-modify-playback-state',
+    'user-read-email',
+    'user-read-playback-state',
+    'user-read-currently-playing',
+  ],
 };
 
 // Oauth2 client

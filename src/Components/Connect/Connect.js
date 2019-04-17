@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { compose } from 'recompose';
-import { Typography, withStyles, Grid, Card, CardMedia, Paper, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { withSpotify } from '../../Spotify';
 import { SpeakerRounded } from '@material-ui/icons';
+import {
+  Typography, withStyles, List, ListItem, ListItemIcon, ListItemText,
+} from '@material-ui/core';
+import { withSpotify } from '../../Spotify';
 
 
 const styles = theme => ({

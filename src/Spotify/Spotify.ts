@@ -22,41 +22,59 @@ const config = {
   scopes: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email', 'user-read-playback-state', 'user-read-currently-playing'],
 };
 
-if(process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development') {
   console.log('[Spotify] Running in dev mode, setting spotify redirect uri to localhost:3000');
   config.redirectUri = 'http://localhost:3000/login/';
   // config.redirectUri = 'http://192.168.43.45:3000/login/';
 }
 
+// Private stuff
 const authClient = new oauth2(config);
 let fb: Firebase;
 let refreshToken: null | string;
 let tokenExpiresIn: number;
+let observers: { observerFunction: any, action: string[] }[];
+let firestoreSubscriptions: any[] = [];
+
+/*
+* Observable actions:
+*   queue
+*   nowplaying
+*   party
+*/
 
 class Spotify {
   client: SpotifyWebApi.SpotifyWebApiJs;
   spotifyUser: SpotifyApi.CurrentUsersProfileResponse | undefined;
   uuid: string;
+  partyId: string | null;
   party: {
     code: string,
-    id: string | null,
     name: string,
     doc: firebase.firestore.DocumentSnapshot,
   } | undefined;
-  currentlyPlaying: any
+  currentlyPlaying: SpotifyApi.CurrentPlaybackResponse | undefined;
+  queue: {
+    id: string,
+    album: string,
+  }[];
 
   constructor(firebase: Firebase) {
     // Initialize private stuff
     fb = firebase;
     tokenExpiresIn = 0;
+    observers = [];
 
     // Public stuff
     this.client = new SpotifyWebApi();
     this.uuid = uuidv4();
+    this.queue = [];
 
+    this.client.getMyCurrentPlaybackState();
     // Check for stored data
     const storedData = localStorage.getItem('spotify_data');
     const uuid = localStorage.getItem('uuid');
+    this.partyId = localStorage.getItem('party_id');
 
     if (storedData) {
       // Stored data exists, user has logged in before
@@ -79,10 +97,199 @@ class Spotify {
     this.uuid = uuid || this.uuid;
     console.debug('[Spotify] Anonymous user', this.uuid);
 
-    this.nowPlaying().then((res) => {
-      console.debug('[Spotify] Currently playing, response', res);
-    })
+    // setup tracklistener for removing playing tracks from the queue
+    this.nowPlayingListener();
+
+    if (this.partyId) {
+      this.subscribeFirestore();
+    }
+
   }
+
+  handlePartyUpdate = (doc: any) => {
+
+  };
+
+  handleQueueUpdate = async (doc: firebase.firestore.QuerySnapshot) => {
+    const newTracks: any[] = [];
+    const upvotePromises: Promise<{ isLiked: boolean; likes: number; }>[] = [];
+    const downvotePromises: Promise<{ isDisliked: boolean; dislikes: number; }>[] = [];
+    doc.forEach(track => {
+      if (!this.partyId) {
+        return;
+      }
+
+      const upvotes = fb.partyQueueRef(this.partyId).doc(track.id)
+        .collection('likes').get().then(likes => {
+          let isLiked = false;
+          likes.forEach(likedoc => {
+            if(likedoc.id === this.uuid) {
+              isLiked = true;
+            }
+          });
+          return {
+            isLiked,
+            likes: likes.size
+          }
+        });
+      const downvotes = fb.partyQueueRef(this.partyId).doc(track.id)
+        .collection('dislikes').get().then(dislikes => {
+          let isDisliked = false;
+          dislikes.forEach(dislikedoc => {
+            if(dislikedoc.id === this.uuid) {
+              isDisliked = true;
+            }
+          });
+          return {
+            isDisliked,
+            dislikes: dislikes.size
+          }
+        });
+      const newTrack = {
+        id: track.id,
+        ...track.data(),
+        ref: track.ref
+      }
+
+      newTracks.push(newTrack);
+      upvotePromises.push(upvotes);
+      downvotePromises.push(downvotes);
+    });
+
+    // Wait for all tracks to compute likes and dislikes
+    await Promise.all(upvotePromises).then(upvotes => {
+      newTracks.forEach((val, index) => {
+        val.upvotes = upvotes[index].likes;
+        val.vote = upvotes[index].isLiked ? true : null;
+      });
+    });
+
+    await Promise.all(downvotePromises).then(downvotes => {
+      newTracks.forEach((val, index) => {
+        val.downvotes = downvotes[index].dislikes;
+        val.vote = downvotes[index].isDisliked ? false : val.vote;
+      });
+    });
+
+    const processedTracks = newTracks.map(track => (
+      {
+        ...track,
+        likes: track.upvotes - track.downvotes
+      }
+    ));
+    processedTracks.sort(this.compareTrack); // sort by likes and timestamps
+
+    this.queue = processedTracks;
+    console.log('[Spotify] New tracks', processedTracks);
+    console.log('[Spotify] Notifying observers - queue');
+    this.notifyObservers('queue');
+  }
+
+  subscribeFirestore = () => {
+    console.log('[Spotify] Setting up firestore listeners');
+    if (!this.partyId) {
+      console.error('No party id');
+      return;
+    }
+
+    if (firestoreSubscriptions.length > 0) {
+      firestoreSubscriptions.map(unsub => unsub());
+    }
+
+    const partySub = fb.partyRef(this.partyId).onSnapshot(this.handlePartyUpdate);
+    const queueSub = fb.partyQueueRef(this.partyId).onSnapshot(this.handleQueueUpdate);
+    firestoreSubscriptions.push(partySub);
+    firestoreSubscriptions.push(queueSub);
+  };
+
+  /**
+   * Sets the party id in the Spotify instance, triggering a cascade of 
+   * functions updating the internal states of the Spotify instance.
+   */
+  setParty = (id: string) => {
+    this.partyId = id;
+    this.subscribeFirestore();
+  };
+
+  currentPartyRef = () => {
+    if (!this.partyId) {
+      console.error('Cant fetch current party when there is none');
+      return;
+    }
+    return fb.partyRef(this.partyId);
+  }
+
+  currentPartyQueueRef = () => {
+    if (!this.partyId) {
+      console.error('Cant fetch current party when there is none');
+      return;
+    }
+    return fb.partyQueueRef(this.partyId)
+  }
+
+  /**
+   * Adds an observable update function to Spotify instance
+   */
+  addObserver = (updateFunc: any, action: string[]) => {
+    observers.push({
+      observerFunction: updateFunc,
+      action
+    });
+    return () => this.removeObserver(updateFunc)
+  };
+
+  /**
+   * Removes an update function from Spotify instance
+   */
+  removeObserver = (updateFunc: any) => {
+    observers = observers.filter(observer => observer.observerFunction !== updateFunc);
+  }
+
+  /**
+   * Notifies observables when appropriate action is called
+   */
+  notifyObservers = (action: string) => {
+    console.log(`[Spotify] Notifying "${action}"`)
+    observers.map(observer => {
+      if (observer.action.some(obsAction => obsAction === action)) {
+        observer.observerFunction();
+      }
+    })
+  };
+
+  /**
+   * Frequently polls the current playing track from spotify.
+   * For this method to work an access token has had to been set.
+   * 
+   * Notify action: nowplaying
+   */
+  nowPlayingListener = async () => {
+    this.client.getMyCurrentPlaybackState()
+      .then(currentState => {
+        if (!currentState || !currentState.item || !currentState.progress_ms) {
+          return console.error('Couldnt process current playback state');
+        }
+        let timeLeft = currentState.item.duration_ms - currentState.progress_ms;
+        // We want to check the currently playing track often in case the track
+        // is manually skipped, fast fowarded or something similar
+        timeLeft = timeLeft < 1000 ? timeLeft : 1000;
+        setTimeout(this.nowPlayingListener, timeLeft);
+        this.notifyObservers('nowplaying');
+      });
+  };
+
+  /**
+   * Removes all track that comes after given track in the queue
+   * @param {string} trackId
+   */
+  removeSubsequentTracks = (trackId: string) => {
+    console.log('track id', trackId);
+    this.getQueue().then(queue => {
+      console.log(queue);
+    }).catch(err => {
+      console.error(err);
+    })
+  };
 
   /**
    * Requests Spotify user data and saves it to Spotify instance
@@ -109,7 +316,7 @@ class Spotify {
   authorizeWithSpotify = async (url: string = '') => {
     console.log('[Spotify][authorizeWithSpotify]');
 
-    if(this.spotifyUser) {
+    if (this.spotifyUser) {
       return Promise.resolve('Already authenticated');
     }
 
@@ -117,11 +324,6 @@ class Spotify {
       // code was missing from url
       const uri = authClient.code.getUri();
       window.location.assign(uri);
-      // Uncomment if you're experiencing a refresh loop  
-      // console.log("Right now, since we have to pay Firebase, we need to restrict the number of requests");
-      // console.log("In the future this way of authentication will be removed");
-      // console.log("Paste this url into the browser: ", uri);
-      // console.info('[Spotify][authorizeWithSpotify] Not yet authorizing. Now autorizing...');
     }
 
     // Get firebase function
@@ -148,7 +350,7 @@ class Spotify {
    */
   loginUser = async (url: string = '') => {
 
-    if(!this.spotifyUser) {
+    if (!this.spotifyUser) {
       // Log in spotify user to retrieve access token
       console.log('[Spotify][loginUser] Retrieve accesstoken...', this.spotifyUser);
       await this.authorizeWithSpotify(url).catch(err => {
@@ -157,20 +359,20 @@ class Spotify {
       console.log('[Spotify][loginUser] Retrieved accesstoken!', this.client.getAccessToken());
     }
 
-    if(fb.currentUser()) {
+    if (fb.currentUser()) {
       return Promise.resolve(fb.currentUser());
     }
 
     // Log into Firebase
-    if(!this.spotifyUser) {
+    if (!this.spotifyUser) {
       // Make sure we got the data needed
       await this.getNewSpotifyUser().catch(err => {
         console.error(err);
         return Promise.reject()
       });
     }
-    
-    if(!this.spotifyUser) {
+
+    if (!this.spotifyUser) {
       // Check again that we have the needed data
       return Promise.reject("Could not log in");
     }
@@ -217,8 +419,8 @@ class Spotify {
     };
 
     localStorage.setItem('spotify_data', JSON.stringify(localStorageData));
-    if(this.party) {
-      localStorage.setItem('last_party', JSON.stringify(this.party.id));
+    if (this.party) {
+      localStorage.setItem('party_id', JSON.stringify(this.partyId));
     }
     localStorage.setItem('uuid', this.uuid);
   };
@@ -252,7 +454,7 @@ class Spotify {
     console.debug(`[Spotify][createParty] Creating party "${partyname}"`);
     const createPartyFunc = fb.functions.httpsCallable('createParty');
 
-    if(!this.spotifyUser) {
+    if (!this.spotifyUser) {
       console.error("[Spotify][createParty] Can't create party if you're not logged in");
       return Promise.reject("You don't seem to be logged in");
     }
@@ -277,12 +479,13 @@ class Spotify {
       snap.forEach(doc => {
         const name = doc.data().name;
         id = doc.id;
-        this.party = { name, code, id, doc };
+        this.partyId = id;
+        this.party = { name, code, doc };
       });
       this.saveToLocalStorage();
-      if(id) {
+      if (id) {
         return Promise.resolve(id);
-      } else { 
+      } else {
         return Promise.reject(`Could not find party with code=${code}`);
       }
     });
@@ -296,9 +499,8 @@ class Spotify {
   getParty = async (id: string) => {
     return fb.partyRef(id).get().then(partyDoc => {
       const party = partyDoc.data();
-      if(party) {
+      if (party) {
         this.party = {
-          id: partyDoc.id,
           name: party.name,
           code: party.code,
           doc: partyDoc
@@ -312,36 +514,57 @@ class Spotify {
 
   changePartyName = (name: string) => {
     const party = this.party;
-    if(!party) {
+    if (!party) {
       console.error('Party is not defined');
-      return 
+      return
     }
     const partyDoc = party.doc.ref;
-    if(partyDoc) {
+    if (partyDoc) {
       partyDoc.update({ name });
     } else {
       console.error('You dont have a party')
     }
-    
+
   };
 
   /**
    * @param trackId
-   * @param partyId
-   * @returns Track object or null if track was not in queue
+   * @returns {firebase.firestore.QueryDocumentSnapshot | null} Track object or null if track was not in queue
    */
-  getTrackFromQueue = (trackId: string, partyId: string) => {
+  getTrackFromQueue = async (trackId: string) => {
     console.debug(`[Spotify][getTrackFromQueue] Retrieving track "${trackId}" from queue...`);
-    return fb.partyQueueRef(partyId).get().then((queueSnap: any) => {
-      let found = null;
-      queueSnap.forEach((track: any) => {
-        if(track.id === trackId) {
+    if (!this.partyId) {
+      console.error('Cant fetch track from a queue that does not exist')
+      return;
+    }
+    return fb.partyQueueRef(this.partyId).get().then(queueSnap => {
+      let found: firebase.firestore.QueryDocumentSnapshot | null = null;
+      queueSnap.forEach(track => {
+        if (track.id === trackId) {
           found = track;
         }
       });
       return found;
     });
   };
+
+  /**
+   * @returns The current party's queue, sorted on likes and timestamps
+   */
+  getQueue = async () => {
+    const cParty = this.party;
+    if (!cParty) {
+      return Promise.reject('[Spotify][getQueue] No party instanciated');
+    }
+
+    return cParty.doc.ref.collection('queue').get().then(queueDoc => {
+      const tracks: any[] = []
+      queueDoc.forEach(track => {
+        tracks.push(track.data());
+      })
+      return tracks.sort(this.compareTrack);
+    });
+  }
 
   /**
    * @return A promise resolving to the current playing track
@@ -358,7 +581,7 @@ class Spotify {
     const reducedTrack = {
       id: track.id,
       uri: track.uri,
-      artists: track.artists.map((artist : any) => artist.name),
+      artists: track.artists.map((artist: any) => artist.name),
       name: track.name,
       album: {
         images: track.album.images,
@@ -368,25 +591,72 @@ class Spotify {
     };
 
     const trackRef = fb.partyQueueRef(partyId).doc(track.id);
-    const trackExists = await this.getTrackFromQueue(track.id, partyId);
-    
+    const trackExists = await this.getTrackFromQueue(track.id);
+
     if (trackExists) {
       trackRef.collection('likes').doc(this.uuid)
         .set({});
     } else {
       trackRef.set(reducedTrack)
-      .then(() => {
-        console.log('[Spotify][addTrack] Track added!', track);
-      })
-      .then(() => {
-        trackRef.collection('likes').doc(this.uuid)
-          .set({});
-      })
-      .catch((err : Error) => {
-        console.error('[Spotify][addTrack] Error adding track!', err);
-      });
+        .then(() => {
+          console.log('[Spotify][addTrack] Track added!', track);
+        })
+        .then(() => {
+          trackRef.collection('likes').doc(this.uuid)
+            .set({});
+        })
+        .catch((err: Error) => {
+          console.error('[Spotify][addTrack] Error adding track!', err);
+        });
     }
   }
+
+  /**
+   * Votes on a track in the party queue
+   * @param {string} trackId
+   * @param {boolean | undefined} vote
+   */
+  voteTrack = (trackId: string, vote: boolean | undefined) => {
+    const queueRef = this.currentPartyQueueRef();
+    if(!queueRef) {
+      console.error('[Spotify][voteTrack] No party instanciated');
+      return;
+    }
+    const likeRef = queueRef.doc(trackId).collection('likes');
+    const dislikeRef = queueRef.doc(trackId).collection('dislikes');
+
+    likeRef.doc(this.uuid).delete();
+    dislikeRef.doc(this.uuid).delete();
+    if (vote) {
+      likeRef.doc(this.uuid).set({});
+    } else if (vote === false) {
+      dislikeRef.doc(this.uuid).set({});
+    }
+    console.log(`${this.uuid} voted ${vote} on track "${trackId}"`);
+  }
+
+  /**
+   * Compares two tracks based on number of upvotes.
+   * If upvotes are equal the track added earliest
+   * is the track selected by a .sort function.
+   * @param {Object} track1
+   * @param {Object} track2
+   */
+  compareTrack = (track1: any, track2: any) => {
+    if (track1.likes > track2.likes) {
+      return -1;
+    }
+    if (track1.likes < track2.likes) {
+      return 1;
+    }
+    if (track1.timeStamp < track2.timeStamp) {
+      return -1;
+    }
+    if (track1.timeStamp > track2.timeStamp) {
+      return 1;
+    }
+    return 0;
+  };
 }
 
 export default Spotify;

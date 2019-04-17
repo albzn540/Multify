@@ -6,8 +6,8 @@ import {
   List,
   CircularProgress,
 } from '@material-ui/core';
-import { withFirebase } from '../../Firebase';
 import { QueueListItem } from '.';
+import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
   root: {},
@@ -18,70 +18,24 @@ const styles = theme => ({
 
 const Queue = (props) => {
   const {
-    classes, firebase, partyId,
+    classes, spotify, partyId,
   } = props;
 
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  /**
-   * Compares two tracks based on number of upvotes.
-   * If upvotes are equal the track added earliest
-   * is the track selected by a .sort function.
-   * @param {Object} track1
-   * @param {Object} track2
-   */
-  const compare = (track1, track2) => {
-    if (track1.likes > track2.likes) {
-      return -1;
-    }
-    if (track1.likes < track2.likes) {
-      return 1;
-    }
-    if (track1.timeStamp < track2.timeStamp) {
-      return -1;
-    }
-    if (track1.timeStamp > track2.timeStamp) {
-      return 1;
-    }
-    return 0;
+  const update = () => {
+    setLoading(false);
+    setTracks(spotify.queue);
   };
 
   useEffect(() => {
-    const handleQueueSongs = (queueSnap) => {
-      const newTracks = [];
-      queueSnap.forEach((queueDoc) => {
-        const trackData = queueDoc.data();
-        trackData.id = queueDoc.id;
-        trackData.ref = queueDoc.ref;
-        newTracks.push(trackData);
-      });
-      newTracks.sort(compare);
-      setTracks(newTracks);
-      setLoading(false);
-      console.debug('[Queue][useEffect] New tracks', newTracks);
-    };
-
-    const unsubscribeParty = firebase.partyQueueRef(partyId)
-      .onSnapshot(snap => handleQueueSongs(snap));
-
+    spotify.setParty(partyId);
+    const subscribeQueue = spotify.addObserver(update, ['queue']);
     return () => {
-      unsubscribeParty();
+      subscribeQueue();
     };
   }, []);
-
-  const setLikes = (trackId, likes) => {
-    const allTracks = tracks.filter(cTrack => cTrack.id !== trackId);
-    const track = tracks.find(cTrack => cTrack.id === trackId);
-    if (track) {
-      track.likes = likes;
-    } else {
-      console.error(`Could not find track ${trackId} in queue`);
-    }
-    allTracks.push(track);
-    allTracks.sort(compare);
-    setTracks(allTracks);
-  };
 
   return (
     <div className={classes.root}>
@@ -100,8 +54,7 @@ const Queue = (props) => {
               album={track.album.name}
               albumUrl={track.album.images[2].url}
               id={track.id}
-              songRef={track.ref}
-              setLikes={setLikes}
+              liked={track.vote}
             />
           ))}
         </List>
@@ -112,5 +65,5 @@ const Queue = (props) => {
 
 export default compose(
   withStyles(styles),
-  withFirebase,
+  withSpotify,
 )(Queue);

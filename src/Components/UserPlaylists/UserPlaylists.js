@@ -37,6 +37,7 @@ class UserPlaylists extends React.Component {
       next: '',
       hasNext: false,
     };
+    this.getPlaylists();
   }
 
   getPlaylists = () => {

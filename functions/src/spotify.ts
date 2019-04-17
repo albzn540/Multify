@@ -199,10 +199,14 @@ export const pushQueueToSpotify = async (partyRef: FirebaseFirestore.DocumentRef
       dislikePromises.push(dislikePromise)
     });
 
+    // add fallback tracks
+    const fallbackPlaylist = partyRef.get().then(partyDoc => {
+      return partyDoc.data().fallbackTracks;
+    })
+
     const partyData = await partyRef.get()
     .then(partyDoc => partyDoc.data());
     
-
     // Wait for all tracks to compute likes and dislikes
     await Promise.all(likePromises).then(upvotes => {
       queueTracks.forEach((val, index) => {
@@ -222,6 +226,9 @@ export const pushQueueToSpotify = async (partyRef: FirebaseFirestore.DocumentRef
     processedTracks.sort(compareTracks); // sort by likes and timestamps
 
     const trackIds = processedTracks.map(track => track.uri); // get uris
+    const fallbackTracks = await fallbackPlaylist;
+    trackIds.concat(fallbackTracks);
+
     console.log('Track ids', trackIds);
     console.log('Processed tracks', processedTracks);
     

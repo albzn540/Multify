@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { compose } from 'recompose';
 import { withStyles, Grid, CircularProgress } from '@material-ui/core';
-import { withSpotify } from '../../Spotify';
 import { withRouter } from 'react-router-dom';
+import { withSpotify } from '../../Spotify';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 
 const styles = theme => ({

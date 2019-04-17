@@ -5,7 +5,6 @@ import AddIcon from '@material-ui/icons/Add';
 import { compose } from 'recompose';
 import NowPlaying from '../NowPlaying';
 import Queue from '../Queue';
-import UserPlaylists from '../UserPlaylists';
 
 const styles = theme => ({
   root: {
@@ -37,7 +36,6 @@ const PartyHome = (props) => {
 
   return (
     <Fragment>
-      <UserPlaylists />
       <Grid
         container
         justify="center"

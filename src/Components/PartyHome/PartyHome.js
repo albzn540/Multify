@@ -5,6 +5,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { compose } from 'recompose';
 import NowPlaying from '../NowPlaying';
 import Queue from '../Queue';
+import UserPlaylists from '../UserPlaylists';
 
 const styles = theme => ({
   root: {
@@ -32,10 +33,11 @@ const PartyHome = (props) => {
     match: { params: { partyId } },
   } = props;
 
-  const SearchLink = props => <Link to={`/search/${partyId}`} {...props} />;
+  const SearchLink = searchProps => <Link to={`/search/${partyId}`} {...searchProps} />;
 
   return (
     <Fragment>
+      <UserPlaylists />
       <Grid
         container
         justify="center"

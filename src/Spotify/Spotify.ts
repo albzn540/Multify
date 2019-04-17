@@ -19,7 +19,7 @@ const config = {
   authorizationUri: 'https://accounts.spotify.com/authorize',
   accessTokenUri: 'https://accounts.spotify.com/api/token',
   redirectUri: 'https://multify-d5371.firebaseapp.com/login/',
-  scopes: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email', 'user-read-playback-state', 'user-read-currently-playing'],
+  scopes: ['playlist-modify-public', 'user-modify-playback-state', 'user-read-email', 'user-read-playback-state', 'user-read-currently-playing', 'playlist-read-private', 'playlist-modify-private'],
 };
 
 if (process.env.NODE_ENV === 'development') {
@@ -733,11 +733,25 @@ class Spotify {
   };
 
   getUserPlaylists = () => {
-    this.client.getUserPlaylists(this.uuid)
+    const options = {
+      limit: 50,
+    };
+    this.client.getUserPlaylists(undefined, JSON.stringify(options))
       .then((data) => {
-        console.debug('playlists', data);
+        let accumulatedLists = [];
+        do {
+          const nextList = this.getNext(data.next);
+        } while(nextList.hasNext);
+        
       }, (err) => {
         console.debug('error', err);
+      });
+  };
+
+  getNext = (url: string) => {
+    this.client.getGeneric(url)
+      .then((data) => {
+        console.debug('pls', data.items);
       });
   };
 }

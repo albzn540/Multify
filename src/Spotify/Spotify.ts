@@ -114,13 +114,23 @@ class Spotify {
     const newTracks: any[] = [];
     const upvotePromises: Promise<{ isLiked: boolean; likes: number; }>[] = [];
     const downvotePromises: Promise<{ isDisliked: boolean; dislikes: number; }>[] = [];
+    const likeReferences: firebase.firestore.CollectionReference[] = []
+    const dislikeReferences: firebase.firestore.CollectionReference[] = []
+
     doc.forEach(track => {
       if (!this.partyId) {
         return;
       }
 
-      const upvotes = fb.partyQueueRef(this.partyId).doc(track.id)
-        .collection('likes').get().then(likes => {
+      const likeRef = fb.partyQueueRef(this.partyId).doc(track.id)
+        .collection('likes');
+      const dislikeRef = fb.partyQueueRef(this.partyId).doc(track.id)
+        .collection('dislikes');
+
+      likeReferences.push(likeRef);
+      dislikeReferences.push(dislikeRef);
+
+      const upvotes = likeRef.get().then(likes => {
           let isLiked = false;
           likes.forEach(likedoc => {
             if(likedoc.id === this.uuid) {
@@ -132,8 +142,7 @@ class Spotify {
             likes: likes.size
           }
         });
-      const downvotes = fb.partyQueueRef(this.partyId).doc(track.id)
-        .collection('dislikes').get().then(dislikes => {
+      const downvotes = dislikeRef.get().then(dislikes => {
           let isDisliked = false;
           dislikes.forEach(dislikedoc => {
             if(dislikedoc.id === this.uuid) {
@@ -145,12 +154,14 @@ class Spotify {
             dislikes: dislikes.size
           }
         });
+        
       const newTrack = {
         id: track.id,
         ...track.data(),
         ref: track.ref
       }
 
+      //setup listener for liking disliking
       newTracks.push(newTrack);
       upvotePromises.push(upvotes);
       downvotePromises.push(downvotes);
@@ -163,28 +174,33 @@ class Spotify {
         val.vote = upvotes[index].isLiked ? true : null;
       });
     });
-
+    
     await Promise.all(downvotePromises).then(downvotes => {
       newTracks.forEach((val, index) => {
         val.downvotes = downvotes[index].dislikes;
         val.vote = downvotes[index].isDisliked ? false : val.vote;
       });
     });
-
+    
     const processedTracks = newTracks.map(track => (
       {
         ...track,
         likes: track.upvotes - track.downvotes
       }
-    ));
-    processedTracks.sort(this.compareTrack); // sort by likes and timestamps
-
+      ));
+      processedTracks.sort(this.compareTrack); // sort by likes and timestamps
+    
     this.queue = processedTracks;
     console.log('[Spotify] New tracks', processedTracks);
     console.log('[Spotify] Notifying observers - queue');
     this.notifyObservers('queue');
   }
 
+  /**
+   * Subscribes to party and queue in firestore
+   * If already subscribed when calling this method, it will unsubscribe
+   * current subscriptions first.
+   */
   subscribeFirestore = () => {
     console.log('[Spotify] Setting up firestore listeners');
     if (!this.partyId) {

@@ -44,84 +44,30 @@ const QueueListItem = (props) => {
     artists,
     album,
     albumUrl,
-    songRef,
     id,
     spotify,
-    setLikes,
+    liked,
+    trackRef,
   } = props;
 
-  const uuid = spotify.uuid;
-  const [vote, setVote] = useState(null);
+  const [vote, setVote] = useState(liked);
   const concatArtists = artists.join(', ');
   const artistAndAlbum = `${concatArtists} - ${album}`;
 
-  const likeRef = songRef.collection('likes');
-  const dislikeRef = songRef.collection('dislikes');
-
-  let likes = 0;
-  let dislikes = 0;
-  let isLiked = null;
-
-  const countLikes = () => {
-    console.debug(`[QueueListItem][countLikes] Track ${id} have ${likes - dislikes} likes`);
-    setLikes(id, likes - dislikes);
-  };
+  const likeRef = trackRef.collection('likes');
+  const dislikeRef = trackRef.collection('dislikes');
 
   useEffect(() => {
-    const handleLikeChange = (snap) => {
-      likes = 0;
-      let liked = null;
-      snap.forEach((user) => {
-        likes += 1;
-        if (user.id === uuid) {
-          liked = true;
-        }
-      });
-      if (isLiked === null) {
-        console.debug('[QueueListItem][useEffect] First render, setting like', isLiked);
-        setVote(liked);
-        isLiked = liked;
-      }
-      countLikes();
-    };
-
-    const handleDislikeChange = (snap) => {
-      dislikes = 0;
-      let liked = null;
-      snap.forEach((user) => {
-        dislikes += 1;
-        if (user.id === uuid) {
-          liked = false;
-        }
-      });
-      if (isLiked === null) {
-        console.debug('[QueueListItem][useEffect] First render, setting like', isLiked);
-        setVote(liked);
-        isLiked = liked;
-      }
-      countLikes();
-    };
-
     const unsubscribeLikeChanges = likeRef
-      .onSnapshot(likeSnap => handleLikeChange(likeSnap));
+      .onSnapshot(() => spotify.subscribeFirestore());
     const unsubscribeDislikeChanges = dislikeRef
-      .onSnapshot(dislikeSnap => handleDislikeChange(dislikeSnap));
+      .onSnapshot(() => spotify.subscribeFirestore());
 
     return () => {
       unsubscribeLikeChanges();
       unsubscribeDislikeChanges();
     };
   }, []);
-
-  const pushVoteToFirebase = (newVote) => {
-    likeRef.doc(uuid).delete();
-    dislikeRef.doc(uuid).delete();
-    if (newVote) {
-      likeRef.doc(uuid).set({});
-    } else if (newVote === false) {
-      dislikeRef.doc(uuid).set({});
-    }
-  };
 
   /**
    * Toggle an up or down vote
@@ -135,7 +81,7 @@ const QueueListItem = (props) => {
       newVote = vote !== false ? false : null;
     }
     setVote(newVote);
-    pushVoteToFirebase(newVote);
+    spotify.voteTrack(id, newVote);
   };
 
   return (

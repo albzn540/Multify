@@ -25,6 +25,7 @@ const Queue = (props) => {
   const [loading, setLoading] = useState(true);
 
   const update = () => {
+    console.log('[Queue] Update', spotify.queue);
     setLoading(false);
     setTracks(spotify.queue);
   };
@@ -55,6 +56,7 @@ const Queue = (props) => {
               albumUrl={track.album.images[2].url}
               id={track.id}
               liked={track.vote}
+              trackRef={track.ref}
             />
           ))}
         </List>

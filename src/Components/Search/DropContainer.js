@@ -1,6 +1,11 @@
 import React from 'react';
 import { compose } from 'recompose';
-import { withStyles, Grid, Typography } from '@material-ui/core';
+import {
+  withStyles,
+  Grid,
+  Typography,
+  Paper,
+} from '@material-ui/core';
 
 const styles = theme => ({
   root: {
@@ -9,7 +14,6 @@ const styles = theme => ({
     height: '120px',
     backgroundColor: theme.palette.common.grey,
     overflow: 'auto',
-    border: '1px dashed #fff',
   },
   text: {},
 });
@@ -22,18 +26,20 @@ const DropContainer = (props) => {
   } = props;
 
   return (
-    <Grid
-      container
-      className={classes.root}
-      alignItems="center"
-      justify="center"
-      onDragOver={e => onDragOver(e)}
-      onDrop={e => onDrop(e)}
-    >
-      <Typography>
-        Drag a song here or click the + to add it to the queue!
-      </Typography>
-    </Grid>
+    <Paper className={classes.root}>
+      <Grid
+        container
+        alignItems="center"
+        justify="center"
+        onDragOver={e => onDragOver(e)}
+        onDrop={e => onDrop(e)}
+        className={classes.root}
+      >
+        <Typography>
+          Drag a song here or click the + to add it to the queue!
+        </Typography>
+      </Grid>
+    </Paper>
   );
 };
 

@@ -45,6 +45,12 @@ const styles = theme => ({
     paddingLeft: theme.spacing.unit * 8,
     paddingRight: theme.spacing.unit * 8,
   },
+  mobileWrapper: {
+    height: '80vh',
+  },
+  desktopResults: {
+    height: '80vh',
+  },
 });
 
 class Search extends React.Component {
@@ -203,7 +209,7 @@ class Search extends React.Component {
                 {isLoading ? (
                   <CircularProgress color="primary" />
                 ) : (
-                  <div>
+                  <div className={classes.desktopResults}>
                     {noResults ? (
                       <Typography color="primary">No results</Typography>
                     ) : (
@@ -225,7 +231,7 @@ class Search extends React.Component {
             {isLoading ? (
               <CircularProgress color="primary" />
             ) : (
-              <div>
+              <div className={classes.mobileWrapper}>
                 {noResults ? (
                   <Typography color="primary">No results</Typography>
                 ) : (

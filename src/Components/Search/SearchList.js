@@ -10,6 +10,8 @@ import Draggable from './Draggable';
 const styles = () => ({
   root: {
     width: '95%',
+    overflow: 'auto',
+    height: '100%',
   },
 });
 
@@ -25,7 +27,6 @@ const SearchList = (props) => {
     <List
       dense={false}
       className={classes.root}
-      style={{ maxHeight: 780, overflow: 'auto' }}
     >
       {tracks.map(track => (
         <Draggable

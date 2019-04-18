@@ -20,6 +20,10 @@ const styles = theme => ({
   text: {
     color: theme.palette.common.white,
   },
+  list: {
+    maxHeight: 600,
+    overflow: 'auto',
+  },
 });
 
 const Queue = (props) => {
@@ -53,7 +57,7 @@ const Queue = (props) => {
         <CircularProgress color="primary" />
       ) : (
         <List
-          style={{ maxHeight: 600, overflow: 'auto' }}
+          className={classes.list}
         >
           {tracks.map(track => (
             <QueueListItem
@@ -74,6 +78,6 @@ const Queue = (props) => {
 };
 
 export default compose(
-  withStyles(styles),
+  withStyles(styles, { withTheme: true }),
   withSpotify,
 )(Queue);

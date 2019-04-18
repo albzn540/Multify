@@ -143,6 +143,7 @@ class Navigation extends Component {
 
             <InputBase
               className={classes.partyNameField}
+              fullWidth
               value={partyName}
               onChange={e => this.setState({ partyName: e.target.value })}
               onBlur={e => this.handlePartyNameChange(e)}

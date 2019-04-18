@@ -53,6 +53,7 @@ const Settings = (props) => {
         {devices ? devices.map(dev => (
           <ListItem
             button
+            key={dev.id}
             className={classes.listItem}
             onClick={() => selectSpeaker(dev.id)}
           >

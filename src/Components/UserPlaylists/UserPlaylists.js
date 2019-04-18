@@ -11,9 +11,9 @@ import {
   Grid,
 } from '@material-ui/core';
 import { compose } from 'recompose';
-import Add from '../../Constants/Icons/Add';
-import Left from '../../Constants/Icons/Left';
-import Right from '../../Constants/Icons/Right';
+import Add from '@material-ui/icons/Add';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import NotificationBar from '../NotificationBar';
 import { withSpotify } from '../../Spotify';
 
@@ -190,7 +190,7 @@ class UserPlaylists extends React.Component {
             className={classes.directionButton}
             color="primary"
           >
-            <Left />
+            <ChevronLeftIcon />
             Previous
           </Button>
           <Button
@@ -204,7 +204,7 @@ class UserPlaylists extends React.Component {
             color="priamry"
           >
             Next
-            <Right />
+            <ChevronRightIcon />
           </Button>
         </Grid>
         <NotificationBar queue={notifs} />

@@ -14,6 +14,7 @@ import { compose } from 'recompose';
 import Add from '../../Constants/Icons/Add';
 import Left from '../../Constants/Icons/Left';
 import Right from '../../Constants/Icons/Right';
+import NotificationBar from '../NotificationBar';
 import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
@@ -44,6 +45,7 @@ class UserPlaylists extends React.Component {
       prev: '',
       hasNext: false,
       hasPrev: false,
+      notifs: [],
     };
     this.getPlaylists();
   }
@@ -103,6 +105,7 @@ class UserPlaylists extends React.Component {
       next,
       hasPrev,
       prev,
+      notifs,
     } = this.state;
 
     return (
@@ -156,6 +159,12 @@ class UserPlaylists extends React.Component {
                   <IconButton
                     onClick={() => {
                       this.selectFallbackPlaylist(list.id);
+                      this.setState({
+                        notifs: [{
+                          message: 'Tracks added from fallback playlist',
+                          key: new Date().getTime(),
+                        }, ...notifs],
+                      });
                     }}
                   >
                     <Add />
@@ -198,6 +207,7 @@ class UserPlaylists extends React.Component {
             <Right />
           </Button>
         </Grid>
+        <NotificationBar queue={notifs} />
       </Grid>
     );
   }

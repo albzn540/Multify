@@ -118,6 +118,7 @@ class UserPlaylists extends React.Component {
         <List
           dense={false}
           className={classes.root}
+          style={{ maxHeight: 600, overflow: 'auto' }}
         >
           {playlists.map((list) => {
             let image = '';
@@ -201,7 +202,7 @@ class UserPlaylists extends React.Component {
               window.scrollTo(0, 0);
             }}
             className={classes.directionButton}
-            color="priamry"
+            color="primary"
           >
             Next
             <ChevronRightIcon />

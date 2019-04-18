@@ -46,7 +46,9 @@ const Queue = (props) => {
       {loading ? (
         <CircularProgress color="primary" />
       ) : (
-        <List>
+        <List
+          style={{ maxHeight: 600, overflow: 'auto' }}
+        >
           {tracks.map(track => (
             <QueueListItem
               key={track.id}

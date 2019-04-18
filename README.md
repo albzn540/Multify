@@ -25,7 +25,7 @@ This app requires you to have a Spotify account. If you would like to revoke the
 ### Material-UI
 Is what we use for the heavy design and layouting.
 
-## If there are any questions about .env variables
+## If there are any questions about anything
 Contact:\
 simflo@kth.se or\
 albinwi@kth.se

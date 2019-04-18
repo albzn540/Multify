@@ -116,7 +116,7 @@ const JoinParty = (props) => {
               type="submit"
             />
           </Grid>
-          {/* <Grid item>
+          <Grid item>
             <SpotifyButton
               id="back-to-home"
               value="Back to home"
@@ -126,7 +126,7 @@ const JoinParty = (props) => {
             >
               <ChevronLeftIcon />
             </SpotifyButton>
-          </Grid> */}
+          </Grid>
         </form>
       </Grid>
       <NotificationBar queue={notifs} />

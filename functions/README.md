@@ -19,7 +19,8 @@ Log in with your google account:
 To interact with Spotify you have to make a Spotify app, follow this link and create a new app. https://developer.spotify.com/dashboard/applications
 
 ## Environmental variables
-The backend requires two environmental variables, the client id and secret from your spotify app. Open up the set_environmental_variables and fill in the appropriate variables. Then, run the script. The firebase-cli-tools can be a bit slow, so just let the script take it's time
+The backend requires two environmental variables, the client id and secret from your spotify app. Open up the set_environmental_variables and fill in the appropriate variables. Then, run the script. The firebase-cli-tools can be a bit slow, so just let the script take it's time  
+When the script is done, open up .runtimeconfig.json and add the json attribute `"dev": true`.  
 
 ## Install dependencies
 `$ npm install`

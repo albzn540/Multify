@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { compose } from 'recompose';
-import { withStyles, Grid, TextField } from '@material-ui/core';
+import {
+  withStyles,
+  Grid,
+  TextField,
+} from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import SpotifyLogo from '../../Constants/SpotifyLogo';
 import SpotifyButton from '../SpotifyButton';
 import NotificationBar from '../NotificationBar';
@@ -108,6 +113,17 @@ const JoinParty = (props) => {
               value="Enter the party"
               type="submit"
             />
+          </Grid>
+          <Grid item>
+            <SpotifyButton
+              id="join-party-button"
+              value="Back to home"
+              onClick={() => {
+                history.push({ pathname: '/' });
+              }}
+            >
+              <ChevronLeftIcon />
+            </SpotifyButton>
           </Grid>
         </form>
       </Grid>

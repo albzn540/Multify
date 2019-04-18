@@ -85,11 +85,15 @@ class Spotify {
     const storedData = localStorage.getItem('spotify_data');
     const lastParty = localStorage.getItem('party');
     const uuid = localStorage.getItem('uuid');
+    //Anoymous user, use old uuid if there is one
+    this.uuid = uuid || this.uuid;
+    console.debug('[Spotify] User', this.uuid);
 
-    if(lastParty) {
+    if (lastParty) {
       const party = JSON.parse(lastParty);
       this.setParty(party.id);
-    } else if (storedData) {
+    } 
+    if (storedData) {
       // Stored data exists, user has logged in before
       const spotifyData = JSON.parse(storedData);
       console.log('[Spotify] Stored data', spotifyData);
@@ -106,10 +110,6 @@ class Spotify {
         console.log('[Spotify] Token has expired');
       }
     }
-
-    //Anoymous user, use old uuid if there is one
-    this.uuid = uuid || this.uuid;
-    console.debug('[Spotify] User', this.uuid);
   }
 
   handlePartyUpdate = async (doc: firebase.firestore.DocumentSnapshot) => {
@@ -612,6 +612,7 @@ class Spotify {
     return fb.partyRef(id).get().then(partyDoc => {
       const party = partyDoc.data();
       if (party) {
+        console.log('Retrieved party', party);
         this.party = {
           name: party.name,
           accessToken: party.spotifyToken,
@@ -621,6 +622,9 @@ class Spotify {
           host: party.host,
           spotifyId: party.spotifyId,
         };
+        if(party.spotifyId === this.uuid) {
+          this.refreshTokenCallback();
+        }
         this.client.setAccessToken(party.spotifyToken);
         this.notifyObservers('party');
         this.saveToLocalStorage();

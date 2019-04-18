@@ -19,7 +19,12 @@ import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
   root: {
-    width: '95%',
+    width: '90vw',
+  },
+  list: {
+    width: '100%',
+    height: '50vh',
+    overflow: 'auto',
   },
   listText: {
     color: theme.palette.secondary.main,
@@ -109,112 +114,113 @@ class UserPlaylists extends React.Component {
     } = this.state;
 
     return (
-      <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
-      >
-        <List
-          dense={false}
-          className={classes.root}
-          style={{ maxHeight: 600, overflow: 'auto' }}
-        >
-          {playlists.map((list) => {
-            let image = '';
-            if (list.images.length <= 0) {
-              image = 'https://spotify.i.lithium.com/t5/image/serverpage/image-id/25294i2836BD1C1A31BDF2?v=1.0';
-            } else {
-              image = list.images[0].url;
-            }
-            return (
-              <ListItem
-                key={list.id}
-                divider
-              >
-                <img
-                  alt="Album art"
-                  className={classes.img}
-                  src={image}
-                />
-                <ListItemText
-                  disableTypography
-                  primary={(
-                    <Typography
-                      className={classes.listText}
-                      noWrap
-                    >
-                      {list.name}
-                    </Typography>
-                  )}
-                  secondary={(
-                    <Typography
-                      className={classes.listSubText}
-                      noWrap
-                    >
-                      {`Created by: ${list.owner.display_name}`}
-                    </Typography>
-                    )}
-                />
-                <ListItemSecondaryAction>
-                  <IconButton
-                    onClick={() => {
-                      this.selectFallbackPlaylist(list.id);
-                      this.setState({
-                        notifs: [{
-                          message: 'Tracks added from fallback playlist',
-                          key: new Date().getTime(),
-                        }, ...notifs],
-                      });
-                    }}
-                  >
-                    <Add />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            );
-          })}
-        </List>
+      <div className={classes.root}>
         <Grid
           container
-          direction="row"
-          justify="space-around"
-          alignItems="center"
+          direction="column"
+          justify="flex-start"
+          alignItems="flex-start"
         >
-          <Button
-            variant="contained"
-            disabled={!hasPrev}
-            onClick={() => {
-              this.switchPlaylistsViewed(prev);
-              window.scrollTo(0, 0);
-            }}
-            className={classes.directionButton}
-            color="primary"
+          <List
+            dense={false}
+            className={classes.list}
           >
-            <ChevronLeftIcon />
-            Previous
-          </Button>
-          <Button
-            variant="contained"
-            disabled={!hasNext}
-            onClick={() => {
-              this.switchPlaylistsViewed(next);
-              window.scrollTo(0, 0);
-            }}
-            className={classes.directionButton}
-            color="primary"
+            {playlists.map((list) => {
+              let image = '';
+              if (list.images.length <= 0) {
+                image = 'https://spotify.i.lithium.com/t5/image/serverpage/image-id/25294i2836BD1C1A31BDF2?v=1.0';
+              } else {
+                image = list.images[0].url;
+              }
+              return (
+                <ListItem
+                  key={list.id}
+                  divider
+                >
+                  <img
+                    alt="Album art"
+                    className={classes.img}
+                    src={image}
+                  />
+                  <ListItemText
+                    disableTypography
+                    primary={(
+                      <Typography
+                        className={classes.listText}
+                        noWrap
+                      >
+                        {list.name}
+                      </Typography>
+                    )}
+                    secondary={(
+                      <Typography
+                        className={classes.listSubText}
+                        noWrap
+                      >
+                        {`Created by: ${list.owner.display_name}`}
+                      </Typography>
+                    )}
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      onClick={() => {
+                        this.selectFallbackPlaylist(list.id);
+                        this.setState({
+                          notifs: [{
+                            message: 'Tracks added from fallback playlist',
+                            key: new Date().getTime(),
+                          }, ...notifs],
+                        });
+                      }}
+                    >
+                      <Add />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              );
+            })}
+          </List>
+          <Grid
+            container
+            direction="row"
+            justify="space-around"
+            alignItems="center"
           >
-            Next
-            <ChevronRightIcon />
+            <Button
+              variant="contained"
+              disabled={!hasPrev}
+              onClick={() => {
+                this.switchPlaylistsViewed(prev);
+                window.scrollTo(0, 0);
+              }}
+              className={classes.directionButton}
+              color="primary"
+            >
+              <ChevronLeftIcon />
+              Previous
           </Button>
+            <Button
+              variant="contained"
+              disabled={!hasNext}
+              onClick={() => {
+                this.switchPlaylistsViewed(next);
+                window.scrollTo(0, 0);
+              }}
+              className={classes.directionButton}
+              color="primary"
+            >
+              Next
+              <ChevronRightIcon />
+            </Button>
+          </Grid>
+          <NotificationBar queue={notifs} />
         </Grid>
-        <NotificationBar queue={notifs} />
-      </Grid>
+      </div>
     );
   }
 }
 
 export default compose(
   withSpotify,
-  withStyles(styles),
+  withStyles(styles, { withTheme: true }),
 )(UserPlaylists);

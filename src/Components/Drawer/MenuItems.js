@@ -36,7 +36,7 @@ const MenuItems = (props) => {
           <ListItemIcon className={classes.icons}><SettingsRounded /></ListItemIcon>
           <ListItemText primary="Settings" />
         </ListItem>
-      ) : null};
+      ) : null }
 
       <ListItem button key="leaveparty" component={Link} to="/">
         <ListItemIcon className={classes.icons}><ArrowBackRounded /></ListItemIcon>

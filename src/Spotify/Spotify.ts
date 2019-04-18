@@ -320,14 +320,32 @@ class Spotify {
         if(lastState && lastState.item && lastState.item.name !== currentState.item.name) {
           // this.notifyObservers('nowplaying');
         }
-        this.notifyObservers('nowplaying');
-
+        
         let timeLeft = currentState.item.duration_ms - currentState.progress_ms;
         // We want to check the currently playing track often in case the track
         // is manually skipped, fast fowarded or something similar
+        console.log('Timelieft', timeLeft);
         timeLeft = timeLeft < 1000 ? timeLeft : 1000;
+        if (timeLeft < 1000) {
+          this.nextTrack();
+        }
+        this.notifyObservers('nowplaying');
         setTimeout(this.nowPlayingListener, timeLeft);
+      }).catch((e) => {
+        console.error('Something went wrong when listening for playing changes', e);
+        setTimeout(this.nowPlayingListener, 2000);
       });
+  };
+
+  nextTrack = () => {
+    const newTrack = this.queue[0];
+    if (newTrack) {
+      const uris = this.queue.map(track => track.uri);
+      console.log('Pushing queue to spotify', uris);
+      this.client.play({
+        uris
+      });
+    }
   };
 
   cleanQueue = () => {
@@ -763,10 +781,15 @@ class Spotify {
       console.log('[Spotify][startParty] Starting party!');
       this.client.setRepeat('context');
       this.client.setShuffle(false);
-      this.client.play({
-        context_uri: this.party.playlistUri,
-        device_id: speaker
-      });
+
+      const newTrack = this.queue[0];
+      if (newTrack) {
+        const uris = this.queue.map(track => track.uri);
+        this.client.play({
+          uris,
+          device_id: speaker,
+        });
+      }
     } else {
       console.error("[Spotify][startParty] You can't start a party when you dont have one");
     }

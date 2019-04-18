@@ -3,7 +3,7 @@ import { compose } from 'recompose';
 import { withStyles, Grid, Typography } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
 
-const styles = theme => ({
+const styles = () => ({
   descriptionText: {
     marginBottom: '20px',
   },

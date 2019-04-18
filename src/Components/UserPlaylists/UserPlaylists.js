@@ -8,9 +8,12 @@ import {
   Typography,
   Button,
   List,
+  Grid,
 } from '@material-ui/core';
 import { compose } from 'recompose';
 import Add from '../../Constants/Icons/Add';
+import Left from '../../Constants/Icons/Left';
+import Right from '../../Constants/Icons/Right';
 import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
@@ -27,6 +30,9 @@ const styles = theme => ({
     maxHeight: `${5 * theme.spacing.unit}px`,
     width: 'auto',
   },
+  directionButton: {
+    color: theme.palette.secondary.main,
+  },
 });
 
 class UserPlaylists extends React.Component {
@@ -35,51 +41,53 @@ class UserPlaylists extends React.Component {
     this.state = {
       playlists: [],
       next: '',
+      prev: '',
       hasNext: false,
+      hasPrev: false,
     };
     this.getPlaylists();
   }
 
   getPlaylists = () => {
     const { spotify } = this.props;
-    const { playlists } = this.state;
 
     spotify.client.getUserPlaylists()
       .then((data) => {
         console.debug(data);
         if (data.next) {
           this.setState({
-            playlists: [...playlists, ...data.items],
+            playlists: data.items,
             next: data.next,
             hasNext: true,
           });
         } else {
           this.setState({
-            playlists: [...playlists, ...data.items],
+            playlists: data.items,
           });
         }
       });
   };
 
-  getMore = (url) => {
+  switchPlaylistsViewed = (url) => {
     const { spotify } = this.props;
-    const { playlists } = this.state;
 
     spotify.client.getGeneric(url)
       .then((data) => {
+        let next = false;
+        let prev = false;
         if (data.next) {
-          this.setState({
-            playlists: [...playlists, ...data.items],
-            next: data.next,
-            hasNext: true,
-          });
-        } else {
-          this.setState({
-            playlists: [...playlists, ...data.items],
-            hasNext: false,
-            next: '',
-          });
+          next = true;
         }
+        if (data.previous) {
+          prev = true;
+        }
+        this.setState({
+          playlists: data.items,
+          hasNext: next,
+          hasPrev: prev,
+          next: next ? data.next : '',
+          prev: prev ? data.previous : '',
+        });
       });
   };
 
@@ -90,23 +98,21 @@ class UserPlaylists extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { playlists, hasNext, next } = this.state;
-
-    const disabled = !hasNext;
+    const {
+      playlists,
+      hasNext,
+      next,
+      hasPrev,
+      prev,
+    } = this.state;
 
     return (
-      <div>
-        <Button
-          onClick={() => this.getPlaylists()}
-        >
-          Get playlists
-        </Button>
-        <Button
-          disabled={disabled}
-          onClick={() => this.getMore(next)}
-        >
-          Get more
-        </Button>
+      <Grid
+        container
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
+      >
         <List
           dense={false}
           className={classes.root}
@@ -160,7 +166,40 @@ class UserPlaylists extends React.Component {
             );
           })}
         </List>
-      </div>
+        <Grid
+          container
+          direction="row"
+          justify="space-around"
+          alignItems="center"
+        >
+          <Button
+            variant="contained"
+            disabled={!hasPrev}
+            onClick={() => {
+              this.switchPlaylistsViewed(prev);
+              window.scrollTo(0, 0);
+            }}
+            className={classes.directionButton}
+            color="primary"
+          >
+            <Left />
+            Previous
+          </Button>
+          <Button
+            variant="contained"
+            disabled={!hasNext}
+            onClick={() => {
+              this.switchPlaylistsViewed(next);
+              window.scrollTo(0, 0);
+            }}
+            className={classes.directionButton}
+            color="priamry"
+          >
+            Next
+            <Right />
+          </Button>
+        </Grid>
+      </Grid>
     );
   }
 }

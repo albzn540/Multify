@@ -91,6 +91,7 @@ const JoinParty = (props) => {
               onChange={e => setPartyCode(e.target.value)}
               variant="outlined"
               className={classes.textField}
+              autoComplete="off"
               InputLabelProps={{
                 classes: {
                   root: classes.cssLabel,

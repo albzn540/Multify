@@ -53,7 +53,6 @@ class UserPlaylists extends React.Component {
 
     spotify.client.getUserPlaylists()
       .then((data) => {
-        console.debug(data);
         if (data.next) {
           this.setState({
             playlists: data.items,

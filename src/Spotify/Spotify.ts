@@ -83,6 +83,7 @@ class Spotify {
 
     // Check for stored data
     const storedData = localStorage.getItem('spotify_data');
+    const lastParty = localStorage.getItem('party');
     const uuid = localStorage.getItem('uuid');
 
     if (storedData) {
@@ -102,6 +103,11 @@ class Spotify {
         console.log('[Spotify] Token has expired');
       }
     }
+
+    if(lastParty) {
+      this.party = JSON.parse(lastParty);
+    }
+
     //Anoymous user, use old uuid if there is one
     this.uuid = uuid || this.uuid;
     console.debug('[Spotify] User', this.uuid);
@@ -505,6 +511,7 @@ class Spotify {
     };
 
     localStorage.setItem('spotify_data', JSON.stringify(localStorageData));
+    localStorage.setItem('party', JSON.stringify(this.party));
     if (this.partyId) {
       localStorage.setItem('party_id', JSON.stringify(this.partyId));
     }

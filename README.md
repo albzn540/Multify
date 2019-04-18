@@ -13,9 +13,6 @@ After creating a room your friends can join with a given code. In the queue user
 ./Spotify -  Provides context for frontend SpotifyAPI functions so that they do not need to be passed as props
 
 ## Setup
-There are two other README:s covering the various stacks of this application.
-
-### Firebase and React README:S
 If you want to continue developing this project, follow these guides.  
 Set up **backend** [click here](./functions/README.md)  
 Set up **frontend** [click here](./REACT_README.md)  

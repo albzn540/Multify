@@ -2,7 +2,7 @@ import React from 'react';
 import { compose } from 'recompose';
 import { Button, withStyles, Typography } from '@material-ui/core';
 
-const styles = theme => ({
+const styles = () => ({
   button: {
     borderRadius: '50px',
     marginBottom: '10px',

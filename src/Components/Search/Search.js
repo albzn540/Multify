@@ -72,7 +72,6 @@ class Search extends React.Component {
     const { notifs } = this.state;
     const { spotify, partyId } = this.props;
     const droppedTrack = JSON.parse(e.dataTransfer.getData('track'));
-    console.debug('Track data:', droppedTrack);
     spotify.addTrack(droppedTrack, partyId);
     this.setState({
       notifs: [{

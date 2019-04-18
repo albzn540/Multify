@@ -8,6 +8,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { compose } from 'recompose';
+import isMobile from 'react-device-detect';
 import NotificationBar from '../NotificationBar';
 import Add from '../../Constants/Icons/Add';
 import { withSpotify } from '../../Spotify';
@@ -47,7 +48,7 @@ const Draggable = (props) => {
     <ListItem
       key={id}
       onDragStart={e => onDragStart(e, track)}
-      draggable="true"
+      draggable={!isMobile}
       divider
     >
       <ListItemText

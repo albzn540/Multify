@@ -5,7 +5,6 @@ import {
   List,
 } from '@material-ui/core';
 import { withSpotify } from '../../Spotify';
-// import SearchListItem from './SearchListItem';
 import Draggable from './Draggable';
 
 const styles = () => ({

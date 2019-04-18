@@ -88,7 +88,7 @@ const NowPlayingSmall = (props) => {
         <Typography
           color="primary"
         >
-          Nothing's playing
+          {'Nothing\'s playing'}
         </Typography>
       </div>
     )

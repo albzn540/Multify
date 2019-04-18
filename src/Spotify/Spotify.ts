@@ -86,7 +86,10 @@ class Spotify {
     const lastParty = localStorage.getItem('party');
     const uuid = localStorage.getItem('uuid');
 
-    if (storedData) {
+    if(lastParty) {
+      const party = JSON.parse(lastParty);
+      this.setParty(party.id);
+    } else if (storedData) {
       // Stored data exists, user has logged in before
       const spotifyData = JSON.parse(storedData);
       console.log('[Spotify] Stored data', spotifyData);
@@ -104,17 +107,9 @@ class Spotify {
       }
     }
 
-    if(lastParty) {
-      this.party = JSON.parse(lastParty);
-    }
-
     //Anoymous user, use old uuid if there is one
     this.uuid = uuid || this.uuid;
     console.debug('[Spotify] User', this.uuid);
-
-    this.client.getMyDevices().then(dev => {
-      console.log(dev);
-    })
   }
 
   handlePartyUpdate = async (doc: firebase.firestore.DocumentSnapshot) => {
@@ -511,7 +506,18 @@ class Spotify {
     };
 
     localStorage.setItem('spotify_data', JSON.stringify(localStorageData));
-    localStorage.setItem('party', JSON.stringify(this.party));
+    
+    if(this.party) {
+      localStorage.setItem('party', JSON.stringify({
+        code: this.party.code,
+        host: this.party.host,
+        spotifyId: this.party.spotifyId,
+        accessToken: this.party.accessToken,
+        playlistUri: this.party.playlistUri,
+        name: this.party.name,
+        id: this.partyId,
+      }));
+    }
     if (this.partyId) {
       localStorage.setItem('party_id', JSON.stringify(this.partyId));
     }
@@ -531,7 +537,9 @@ class Spotify {
       tokenExpiresIn = data.expires_in;
       if(!this.partyId)
         return;
-      fb.partyRef(this.partyId).update({ spotifyToken: data.access_token });
+      if(this.isHost()) {
+        fb.partyRef(this.partyId).update({ spotifyToken: data.access_token });
+      }
       console.info('[Spotify][refreshTokenCallback] New access token', data.access_token);
     });
 

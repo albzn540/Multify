@@ -74,6 +74,9 @@ class UserPlaylists extends React.Component {
       });
   };
 
+  /**
+   * Search next or previous 20 playlists of current user
+   */
   switchPlaylistsViewed = (url) => {
     const { spotify } = this.props;
 
@@ -97,6 +100,9 @@ class UserPlaylists extends React.Component {
       });
   };
 
+  /**
+   * Add all tracks from a chosen playlists to queue
+   */
   selectFallbackPlaylist = (id) => {
     const { spotify } = this.props;
     spotify.addFallbackTracks(id);
@@ -198,7 +204,7 @@ class UserPlaylists extends React.Component {
             >
               <ChevronLeftIcon />
               Previous
-          </Button>
+            </Button>
             <Button
               variant="contained"
               disabled={!hasNext}

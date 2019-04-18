@@ -203,7 +203,6 @@ class Search extends React.Component {
                   onDragOver={this.onDragOver}
                   onDrop={this.onDrop}
                 />
-                <Queue partyId={partyId} />
               </Grid>
               <Grid item md={6}>
                 {isLoading ? (

@@ -23,7 +23,7 @@ const styles = theme => ({
   },
   list: {
     width: '100%',
-    height: '50vh',
+    height: '45vh',
     overflow: 'auto',
   },
   listText: {

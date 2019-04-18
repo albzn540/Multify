@@ -20,6 +20,9 @@ const styles = theme => ({
     color: theme.palette.common.lightBlack,
     backgroundColor: theme.palette.common.green,
   },
+  queueWrapper: {
+    height: '70vh',
+  },
 });
 
 const PartyHome = (props) => {
@@ -38,7 +41,9 @@ const PartyHome = (props) => {
       >
         <Grid item xs={12} sm={8} md={6}>
           <NowPlaying />
-          <Queue partyId={partyId} />
+          <div className={classes.queueWrapper}>
+            <Queue partyId={partyId} />
+          </div>
         </Grid>
       </Grid>
 

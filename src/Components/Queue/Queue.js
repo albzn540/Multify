@@ -17,6 +17,7 @@ const styles = theme => ({
   },
   desktopRoot: {
     width: '100%',
+    height: '100%',
   },
   text: {
     color: theme.palette.common.white,

@@ -97,7 +97,7 @@ const DesktopDrawer = (props) => {
             <ListItemIcon className={classes.icons}><SettingsRounded /></ListItemIcon>
             <ListItemText primary="Settings" />
           </ListItem>
-        ) : null};
+        ) : null}
       </List>
     </Drawer>
   );

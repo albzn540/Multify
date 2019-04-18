@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Grid, Fab, withStyles } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import AddIcon from '@material-ui/icons/Add';
@@ -7,10 +7,7 @@ import NowPlaying from '../NowPlaying';
 import Queue from '../Queue';
 
 const styles = theme => ({
-  root: {
-    flexGrow: 1,
-    padding: theme.spacing.unit * 2,
-  },
+  root: {},
   toolbar: {
     ...theme.mixins.toolbar,
   },
@@ -34,7 +31,7 @@ const PartyHome = (props) => {
   const SearchLink = searchProps => <Link to={`/search/${partyId}`} {...searchProps} />;
 
   return (
-    <Fragment>
+    <div className={classes.root}>
       <Grid
         container
         justify="center"
@@ -53,7 +50,7 @@ const PartyHome = (props) => {
       >
         <AddIcon />
       </Fab>
-    </Fragment>
+    </div>
   );
 };
 

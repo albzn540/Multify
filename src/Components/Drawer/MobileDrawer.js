@@ -1,14 +1,10 @@
 import React from 'react';
 import { compose } from 'recompose';
 import {
-  Divider, List, ListItem, ListItemText, withStyles, SwipeableDrawer,
-  ListItemIcon,
+  Divider, withStyles, SwipeableDrawer, Typography,
 } from '@material-ui/core';
-import {
-  PlaylistPlayRounded, ShareRounded, SettingsRounded,
-} from '@material-ui/icons';
-import { Link } from 'react-router-dom';
-import { withSpotify } from '../../Spotify';
+import MenuItems from './MenuItems';
+import SpotifyLogo from '../../Constants/SpotifyLogo';
 
 const drawerWidth = 240;
 
@@ -21,7 +17,6 @@ const styles = theme => ({
   drawerHeader: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end',
     padding: '0 8px',
     ...theme.mixins.toolbar,
   },
@@ -43,15 +38,15 @@ const styles = theme => ({
       width: theme.spacing.unit * 9 + 1,
     },
   },
-  icons: {
+  logo: {
     marginLeft: 8,
-    marginRight: 8,
+    marginRight: 16,
   },
 });
 
 const MobileDrawer = (props) => {
   const {
-    classes, open, handleOpen, handleClose, partyId, spotify,
+    classes, open, handleOpen, handleClose, partyId,
   } = props;
 
   const handleDrawerClose = () => {
@@ -64,30 +59,16 @@ const MobileDrawer = (props) => {
       onClose={handleDrawerClose}
       onOpen={handleOpen}
     >
-      <div className={classes.drawerHeader} />
+      <div className={classes.drawerHeader}>
+        <SpotifyLogo className={classes.logo} />
+        <Typography variant="h5">Multify</Typography>
+      </div>
       <Divider />
-      <List>
-        <ListItem button key="queue" component={Link} to={`/party/${partyId}`}>
-          <ListItemIcon className={classes.icons}><PlaylistPlayRounded /></ListItemIcon>
-          <ListItemText primary="Queue" />
-        </ListItem>
-        <ListItem button key="share" component={Link} to={`/party/${partyId}/share`}>
-          <ListItemIcon className={classes.icons}><ShareRounded /></ListItemIcon>
-          <ListItemText primary="Share" />
-        </ListItem>
-
-        {spotify.isHost() ? (
-          <ListItem button key="settings" component={Link} to={`/party/${partyId}/settings`}>
-            <ListItemIcon className={classes.icons}><SettingsRounded /></ListItemIcon>
-            <ListItemText primary="Settings" />
-          </ListItem>
-        ) : null};
-      </List>
+      <MenuItems partyId={partyId} />
     </SwipeableDrawer>
   );
 };
 
 export default compose(
   withStyles(styles),
-  withSpotify,
 )(MobileDrawer);

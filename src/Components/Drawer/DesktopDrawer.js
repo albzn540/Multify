@@ -2,14 +2,11 @@ import React from 'react';
 import classNames from 'classnames';
 import { compose } from 'recompose';
 import {
-  Drawer, Divider, List, ListItem, ListItemText, IconButton, withStyles, ListItemIcon,
+  Drawer, Divider, IconButton, withStyles, Typography,
 } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { Link } from 'react-router-dom';
-import {
-  PlaylistPlayRounded, ShareRounded, SettingsRounded,
-} from '@material-ui/icons';
-import { withSpotify } from '../../Spotify';
+import MenuItems from './MenuItems';
+import SpotifyLogo from '../../Constants/SpotifyLogo';
 
 const drawerWidth = 240;
 
@@ -22,9 +19,19 @@ const styles = theme => ({
   drawerHeader: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end',
     padding: '0 8px',
     ...theme.mixins.toolbar,
+  },
+  closeDrawerHeader: {
+    display: 'flex',
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  multifyHeader: {
+    display: 'flex',
+    flexGrow: 1,
+    alignItems: 'center',
   },
   drawerOpen: {
     width: drawerWidth,
@@ -44,15 +51,15 @@ const styles = theme => ({
       width: theme.spacing.unit * 9 + 1,
     },
   },
-  icons: {
+  logo: {
+    marginRight: 16,
     marginLeft: 8,
-    marginRight: 8,
   },
 });
 
 const DesktopDrawer = (props) => {
   const {
-    classes, open, handleClose, partyId, spotify,
+    classes, open, handleClose, partyId,
   } = props;
 
   const handleDrawerClose = () => {
@@ -75,35 +82,22 @@ const DesktopDrawer = (props) => {
       }}
     >
       <div className={classes.drawerHeader}>
-        <IconButton onClick={handleDrawerClose}>
-          <ChevronLeftIcon />
-        </IconButton>
+        <div className={classes.multifyHeader}>
+          <SpotifyLogo className={classes.logo} />
+          <Typography variant="h5">Multify</Typography>
+        </div>
+        <div className={classes.closeDrawerHeader}>
+          <IconButton onClick={handleDrawerClose}>
+            <ChevronLeftIcon />
+          </IconButton>
+        </div>
       </div>
-
       <Divider />
-
-      <List>
-        <ListItem button key="queue" component={Link} to={`/party/${partyId}`}>
-          <ListItemIcon className={classes.icons}><PlaylistPlayRounded /></ListItemIcon>
-          <ListItemText primary="Queue" />
-        </ListItem>
-        <ListItem button key="share" component={Link} to={`/party/${partyId}/share`}>
-          <ListItemIcon className={classes.icons}><ShareRounded /></ListItemIcon>
-          <ListItemText primary="Share" />
-        </ListItem>
-
-        {spotify.isHost() ? (
-          <ListItem button key="settings" component={Link} to={`/party/${partyId}/settings`}>
-            <ListItemIcon className={classes.icons}><SettingsRounded /></ListItemIcon>
-            <ListItemText primary="Settings" />
-          </ListItem>
-        ) : null}
-      </List>
+      <MenuItems partyId={partyId} />
     </Drawer>
   );
 };
 
 export default compose(
   withStyles(styles),
-  withSpotify,
 )(DesktopDrawer);

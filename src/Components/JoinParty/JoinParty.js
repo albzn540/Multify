@@ -15,13 +15,14 @@ import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
   root: {
-    height: '100vh',
+    overflow: 'auto',
     backgroundColor: theme.palette.background.main,
   },
   logo: {
     color: theme.palette.common.green,
-    paddingBottom: '80px',
-    fontSize: '260px',
+    marginTop: theme.spacing.unit * 8,
+    marginBottom: '80px',
+    fontSize: 200,
   },
   textField: {
     margin: theme.spacing.unit,
@@ -115,9 +116,9 @@ const JoinParty = (props) => {
               type="submit"
             />
           </Grid>
-          <Grid item>
+          {/* <Grid item>
             <SpotifyButton
-              id="join-party-button"
+              id="back-to-home"
               value="Back to home"
               onClick={() => {
                 history.push({ pathname: '/' });
@@ -125,7 +126,7 @@ const JoinParty = (props) => {
             >
               <ChevronLeftIcon />
             </SpotifyButton>
-          </Grid>
+          </Grid> */}
         </form>
       </Grid>
       <NotificationBar queue={notifs} />

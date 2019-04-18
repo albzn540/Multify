@@ -3,13 +3,19 @@ In here you can read about the Multify react app and it's scripts.
 This app has been bootstrapped by create-react-app.
 
 # How to run
+## Firebase
+This app uses firebase as the primary hosting service, both for the backend and the frontend. To start the frontend, you must have a firebase project. Follow this link and create one: https://console.firebase.google.com/  
+
+## Spotify
+To interact with Spotify you have to make a Spotify app, follow this link and create a new app. https://developer.spotify.com/dashboard/applications
+
 ## Install dependencies
 `$ npm install`
 
 ## Environmental variables
-To get the app proparly working, copy .env.example and paste it as .env, after that you just add the required variables.
+To get the app proparly working, copy .env.example and paste it as .env, after that you just add the required variables. You can find the firebase variables in the firebase project [console](https://console.firebase.google.com/) and the spotify variables in Spotify developer [dashboard](https://developer.spotify.com/dashboard/applications).
 
-## Start react app
+## Start the react app
 `$ npm start`
 
 ## Available Scripts

@@ -293,7 +293,7 @@ class Spotify {
    * Notifies observables when appropriate action is called
    */
   notifyObservers = (action: string) => {
-    console.log(`[Spotify] Notifying "${action}"`)
+    console.log(`[Spotify] Notifying "${action}"`);
     observers.map(observer => {
       if (observer.action.some(obsAction => obsAction === action)) {
         observer.observerFunction();

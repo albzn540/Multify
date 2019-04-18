@@ -5,31 +5,29 @@ To enter the only currently existing party room use code: 12345
 
 # Multify
 Share the music queue with your friends! This app will access your Spotify account and setup a playlist to be used as a collaborative queue.
-After creating a room your friends can join with a given code. In the queue users can upvote or downvote tracks to determine the order that
-they will be played. It is also possible to search for new tracks and add them to the queue, all done through the Spotify API. There (will be) is 
-also a 'now playing' view to control the current song, play, pause, etc.
-
-## What has been done so far...
-Currently authorization with spotify works but the user must go one page back and enter a room with a party room code.
-Inside the party room one can switch between a view of the queue and the search bar. The search bar is fully functional and will add
-tracks to the firestore. The rest of the code is displayed through mock data. As for what has been done with the framework and other technologies,
-Almost all except the 'now playing' screen have been created as react components and the firebase and Spotify integration code have been implemented. Bundles of resources as constants also reside within the source folder.
-
-## What will be done later on...
-Obviously the 'now playing' component must be implemented. The voting system is not in place. All mock data should be replaced by dynamic data.
-Navigating from the create party needs to be smoother, i.e. not have to back out or switch url. There needs to be some way for the party room creator
-to get and share the party code. More admin priviliges for the party creator that are not accessible by users who join by code.
+After creating a room your friends can join with a given code. In the queue users can upvote or downvote tracks to determine the order that they will be played. It is also possible to search for new tracks and add them to the queue, all done through the Spotify API. There is also the options to add a users playlists to the queue in case it would take to long to add individual songs or if there simply are no more songs in the queue.
 
 ## Project structure
 ./functions - Contains firebase functions  
 ./src/Components - React components  
 ./src/Constants - Resources, images and icons, etc  
 ./Firebase -  Provides context for frontend Firebase functions so that they do not need to be passed as props  
-./Spotify -  Provides context for frontend SpotifyAPI functions so that they do not need to be passed as props  
+./Spotify -  Provides context for frontend SpotifyAPI functions so that they do not need to be passed as props
 
-See a more detailed tree structure here: [Detailed structure](./tree.txt)  
+## Setup
+There are two other README:s covering the various stacks of this application but here follows a detailed step by step instruction for the setup:
 
-### Other ReadMe:s
+1. Open two seperate CLI:s.
+  * Stand in the root directory of the project (path/to/Multify).
+2. Create a file called **.env**
+  * Copy over the contentsof **.env.exampl** to **.env** and fill in the blanks (or copy paste what we sent in the final submission in canvas).
+3. Type `npm start` in one of ther terminals.
+4. In the other terminal type `cd functions`
+  * Run `npm i -g firebase-tools`
+  * Run ...
+  * In **set_environmental_variables.sh** add the spotify id and secret (Which were provided in the final submission).
+
+### Other README:s
 [Read about setting up firebase](./functions/README.md)\
 [Read about setting up React](./REACT_README.md)
 

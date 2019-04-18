@@ -8,8 +8,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { isMobile } from 'react-device-detect';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { withSpotify } from '../../Spotify';
-import DesktopDrawer from '../DesktopDrawer';
-import MobileDrawer from '../MobileDrawer';
+import { DesktopDrawer, MobileDrawer } from '../Drawer';
 
 const drawerWidth = 240;
 

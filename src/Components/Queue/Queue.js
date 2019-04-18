@@ -13,6 +13,7 @@ import { withSpotify } from '../../Spotify';
 const styles = theme => ({
   mobileRoot: {
     width: '90vw',
+    height: '65vh',
   },
   desktopRoot: {
     width: '100%',
@@ -21,7 +22,7 @@ const styles = theme => ({
     color: theme.palette.common.white,
   },
   list: {
-    maxHeight: 600,
+    height: '100%',
     overflow: 'auto',
   },
 });

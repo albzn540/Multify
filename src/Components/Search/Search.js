@@ -122,13 +122,15 @@ class Search extends React.Component {
         }
       }, (err) => {
         console.error('[SearchList] Search error:', err);
-        this.setState({
-          isLoading: false,
-          notifs: [{
-            message: 'Could not search for tracks',
-            key: new Date().getTime(),
-          }, ...notifs],
-        });
+        if (searchQuery !== '') {
+          this.setState({
+            isLoading: false,
+            notifs: [{
+              message: 'Could not search for tracks',
+              key: new Date().getTime(),
+            }, ...notifs],
+          });
+        }
       });
   };
 

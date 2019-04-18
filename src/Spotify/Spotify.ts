@@ -1,7 +1,6 @@
 import SpotifyWebApi from 'spotify-web-api-js';
 import oauth2 from 'client-oauth2';
 import uuidv4 from 'uuid/v4';
-import { async } from 'q';
 
 declare class Firebase {
   db: firebase.firestore.Firestore;
@@ -705,6 +704,34 @@ class Spotify {
   }
 
   /**
+   * Adds track to queue without the "standard" like
+   * @param {any} track
+   */
+  addFallbackTrack = async (track: any) => {
+    if(!this.partyId) return;
+
+    const reducedTrack = {
+      id: track.id,
+      uri: track.uri,
+      artists: track.artists.map((artist: any) => artist.name),
+      name: track.name,
+      album: {
+        images: track.album.images,
+        name: track.album.name,
+      },
+      timeStamp: Date.now(),
+    };
+
+    return fb.partyQueueRef(this.partyId).doc(track.id).set(reducedTrack)
+      .then(() => {
+        console.log(`[Spotify][addFallbackTrack] "${track.name}" added`);
+      })
+      .catch((err: Error) => {
+        console.error('[Spotify][addFallbackTrack] Error adding track!', err);
+      });
+  };
+
+  /**
    * Votes on a track in the party queue
    * @param {string} trackId
    * @param {boolean | undefined} vote
@@ -750,11 +777,19 @@ class Spotify {
    */
   addFallbackTracks = (playlistId: string) => {
     this.client.getPlaylistTracks(playlistId).then(playlist => {
-      const trackUris = playlist.items.map(track => track.track.uri);
-      if(!this.partyId) {
+      if(!playlist.items) {
+        console.error('Something went wrong');
         return;
       }
-      fb.partyRef(this.partyId).update({ fallbackTracks: trackUris });
+      const promises = playlist.items.map(track => {
+        return this.addFallbackTrack(track.track);
+      });
+      const pushToSpotify = fb.functions.httpsCallable('pushQueueToSpotifyCallback');
+      return Promise.all(promises).then(async () => {
+        if(!this.party) return;
+        console.log('pushing', this.party.doc.ref);
+        return pushToSpotify({ partyId: this.partyId });
+      });
     })
   };
 

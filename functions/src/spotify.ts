@@ -241,6 +241,12 @@ export const pushQueueToSpotify = async (partyRef: FirebaseFirestore.DocumentRef
     return Promise.resolve('Tracks should have been added to Spotify playlist');
 };
 
+export const pushQueueToSpotifyCallback = functions.https
+  .onCall((data, context) => {
+    const partyRef = partiesRef.doc(data.partyId);
+    return pushQueueToSpotify(partyRef);
+});
+
 export const songLikedCallback = functions.firestore
   .document('parties/{partyId}/queue/{songId}/likes/{userId}')
   .onWrite(async (change, context) => {

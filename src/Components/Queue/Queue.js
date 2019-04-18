@@ -6,11 +6,17 @@ import {
   List,
   CircularProgress,
 } from '@material-ui/core';
+import { isMobile } from 'react-device-detect';
 import { QueueListItem } from '.';
 import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
-  root: {},
+  mobileRoot: {
+    width: '90vw',
+  },
+  desktopRoot: {
+    width: '100%',
+  },
   text: {
     color: theme.palette.common.white,
   },
@@ -39,7 +45,7 @@ const Queue = (props) => {
   }, []);
 
   return (
-    <div className={classes.root}>
+    <div className={isMobile ? classes.mobileRoot : classes.desktopRoot}>
       <Typography variant="h6" className={classes.text}>
         Queue
       </Typography>

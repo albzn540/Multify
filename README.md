@@ -13,19 +13,9 @@ After creating a room your friends can join with a given code. In the queue user
 ./Spotify -  Provides context for frontend SpotifyAPI functions so that they do not need to be passed as props
 
 ## Setup
-There are two other README:s covering the various stacks of this application but here follows a detailed step by step instruction for the setup:
+There are two other README:s covering the various stacks of this application.
 
-1. Open two seperate CLI:s.
-   * Stand in the root directory of the project (path/to/Multify).
-2. Create a file called **.env**
-   * Copy over the contentsof **.env.exampl** to **.env** and fill in the blanks (or copy paste what we sent in the final submission in canvas).
-3. Type `npm start` in one of ther terminals.
-4. In the other terminal type `cd functions`
-  * Run `npm i -g firebase-tools`
-  * Run ...
-  * In **set_environmental_variables.sh** add the spotify id and secret (Which were provided in the final submission).
-
-## Setup
+### Firebase and React README:S
 If you want to continue developing this project, follow these guides.  
 Set up **backend** [click here](./functions/README.md)  
 Set up **frontend** [click here](./REACT_README.md)  

@@ -44,6 +44,7 @@ const Queue = (props) => {
 
   useEffect(() => {
     // spotify.setParty(partyId);
+    update();
     const subscribeQueue = spotify.addObserver(update, ['queue']);
     return () => {
       subscribeQueue();

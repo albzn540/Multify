@@ -550,7 +550,7 @@ class Spotify {
     return createPartyFunc({
       name: partyname,
       spotifyToken: this.client.getAccessToken(),
-      refreshToken,
+      refreshTokenVar: refreshToken,
       spotifyId: this.spotifyUser.id
     });
   };

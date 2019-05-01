@@ -6,7 +6,8 @@ import PartyHome from '../PartyHome';
 import Search from '../Search';
 import Navigation from '../Navigation';
 import ShareParty from '../ShareParty';
-import Settings from '../Settings';
+import FallbackPlaylist from '../FallbackPlaylist';
+import StartParty from '../StartParty';
 
 const styles = theme => ({
   root: {
@@ -47,7 +48,8 @@ const Party = (props) => {
         <Route exact path={`${basePath}/:partyId`} component={PartyHome} />
         <Route path={`${basePath}/:partyId/search`} component={Search} />
         <Route path={`${basePath}/:partyId/share`} component={ShareParty} />
-        <Route path={`${basePath}/:partyId/settings`} component={Settings} />
+        <Route path={`${basePath}/:partyId/fallback-playlist`} component={FallbackPlaylist} />
+        <Route path={`${basePath}/:partyId/play`} component={StartParty} />
       </div>
     </main>
   );

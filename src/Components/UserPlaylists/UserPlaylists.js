@@ -19,12 +19,14 @@ import { withSpotify } from '../../Spotify';
 
 const styles = theme => ({
   root: {
-    width: '90vw',
+    width: '100%',
+    // height: '80vh',
+    // overflow: 'auto',
   },
   list: {
-    width: '100%',
-    height: '45vh',
+    height: '70vh',
     overflow: 'auto',
+    paddingBottom: theme.spacing.unit,
   },
   listText: {
     color: theme.palette.secondary.main,
@@ -52,7 +54,16 @@ class UserPlaylists extends React.Component {
       hasPrev: false,
       notifs: [],
     };
+  }
+
+  componentDidMount() {
+    const { spotify } = this.props;
     this.getPlaylists();
+    this.removeObserver = spotify.addObserver(this.getPlaylists, ['accesstoken']);
+  }
+
+  componentWillUnmount() {
+    this.removeObserver();
   }
 
   getPlaylists = () => {
@@ -108,90 +119,85 @@ class UserPlaylists extends React.Component {
     spotify.addFallbackTracks(id);
   };
 
+  renderPlaylists = () => {
+    const { classes } = this.props;
+    const { playlists, notifs } = this.state;
+
+    return playlists.map((list) => {
+      let image = '';
+      if (list.images.length <= 0) {
+        // Add a defualt image if no playlist image is present
+        image = 'https://spotify.i.lithium.com/t5/image/serverpage/image-id/25294i2836BD1C1A31BDF2?v=1.0';
+      } else {
+        image = list.images[0].url;
+      }
+      return (
+        <ListItem
+          key={list.id}
+          divider
+        >
+          <img
+            alt="Album art"
+            className={classes.img}
+            src={image}
+          />
+          <ListItemText
+            disableTypography
+            primary={(
+              <Typography
+                className={classes.listText}
+                noWrap
+              >
+                {list.name}
+              </Typography>
+            )}
+            secondary={(
+              <Typography
+                className={classes.listSubText}
+                noWrap
+              >
+                {`Created by: ${list.owner.display_name}`}
+              </Typography>
+            )}
+          />
+          <ListItemSecondaryAction>
+            <IconButton
+              onClick={() => {
+                this.selectFallbackPlaylist(list.id);
+                this.setState({
+                  notifs: [{
+                    message: 'Tracks added from fallback playlist',
+                    key: new Date().getTime(),
+                  }, ...notifs],
+                });
+              }}
+            >
+              <Add />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
+      );
+    });
+  }
+
   render() {
     const { classes } = this.props;
     const {
-      playlists,
-      hasNext,
-      next,
-      hasPrev,
-      prev,
       notifs,
+      next,
+      prev,
+      hasNext,
+      hasPrev,
     } = this.state;
 
     return (
       <div className={classes.root}>
-        <Grid
-          container
-          direction="column"
-          justify="flex-start"
-          alignItems="flex-start"
-        >
-          <List
-            dense={false}
-            className={classes.list}
-          >
-            {playlists.map((list) => {
-              let image = '';
-              if (list.images.length <= 0) {
-                image = 'https://spotify.i.lithium.com/t5/image/serverpage/image-id/25294i2836BD1C1A31BDF2?v=1.0';
-              } else {
-                image = list.images[0].url;
-              }
-              return (
-                <ListItem
-                  key={list.id}
-                  divider
-                >
-                  <img
-                    alt="Album art"
-                    className={classes.img}
-                    src={image}
-                  />
-                  <ListItemText
-                    disableTypography
-                    primary={(
-                      <Typography
-                        className={classes.listText}
-                        noWrap
-                      >
-                        {list.name}
-                      </Typography>
-                    )}
-                    secondary={(
-                      <Typography
-                        className={classes.listSubText}
-                        noWrap
-                      >
-                        {`Created by: ${list.owner.display_name}`}
-                      </Typography>
-                    )}
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton
-                      onClick={() => {
-                        this.selectFallbackPlaylist(list.id);
-                        this.setState({
-                          notifs: [{
-                            message: 'Tracks added from fallback playlist',
-                            key: new Date().getTime(),
-                          }, ...notifs],
-                        });
-                      }}
-                    >
-                      <Add />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              );
-            })}
+        <Grid container direction="column">
+          <List dense={false} className={classes.list}>
+            {this.renderPlaylists()}
           </List>
-          <Grid
-            container
-            direction="row"
-            justify="space-around"
-            alignItems="center"
-          >
+
+          <Grid container justify="space-around">
             <Button
               variant="contained"
               disabled={!hasPrev}
@@ -205,6 +211,7 @@ class UserPlaylists extends React.Component {
               <ChevronLeftIcon />
               Previous
             </Button>
+
             <Button
               variant="contained"
               disabled={!hasNext}
@@ -219,8 +226,8 @@ class UserPlaylists extends React.Component {
               <ChevronRightIcon />
             </Button>
           </Grid>
-          <NotificationBar queue={notifs} />
         </Grid>
+        <NotificationBar queue={notifs} />
       </div>
     );
   }

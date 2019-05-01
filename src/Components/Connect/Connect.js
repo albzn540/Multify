@@ -23,6 +23,7 @@ const Settings = (props) => {
 
   const [devices, setDevices] = useState([]);
   const [device, setDevice] = useState({ id: 0 });
+  let speakerTimeout;
 
   const handleSpeaker = () => {
     setDevice(spotify.currentlyPlaying.device);
@@ -33,15 +34,21 @@ const Settings = (props) => {
     spotify.setSpeaker(id);
   };
 
-  useEffect(() => {
+  const getSpeakersCallback = () => {
+    console.log('[Connect] Retrieveing speakers');
     spotify.client.getMyDevices().then((newDev) => {
       setDevices(newDev.devices);
     });
+    speakerTimeout = setTimeout(getSpeakersCallback, 3000);
+  };
 
+  useEffect(() => {
+    getSpeakersCallback();
     const speakerSub = spotify.addObserver(handleSpeaker, ['nowplaying']);
 
     return () => {
       speakerSub();
+      clearTimeout(speakerTimeout);
     };
   }, []);
 

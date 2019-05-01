@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { compose } from 'recompose';
 import {
   List, ListItem, ListItemText, withStyles, ListItemIcon,
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import {
-  PlaylistPlayRounded, ShareRounded, SettingsRounded, ArrowBackRounded,
+  PlaylistPlayRounded, ShareRounded, ArrowBackRounded,
+  PlayArrowRounded, PlaylistAddRounded,
 } from '@material-ui/icons';
 import { withSpotify } from '../../Spotify';
 
@@ -32,11 +33,18 @@ const MenuItems = (props) => {
       </ListItem>
 
       {spotify.isHost() ? (
-        <ListItem button key="settings" component={Link} to={`/party/${partyId}/settings`}>
-          <ListItemIcon className={classes.icons}><SettingsRounded /></ListItemIcon>
-          <ListItemText primary="Settings" />
-        </ListItem>
-      ) : null }
+        <Fragment>
+          <ListItem button key="startparty" component={Link} to={`/party/${partyId}/play`}>
+            <ListItemIcon className={classes.icons}><PlayArrowRounded /></ListItemIcon>
+            <ListItemText primary="Start Party" />
+          </ListItem>
+
+          <ListItem button key="fallback-playlist" component={Link} to={`/party/${partyId}/fallback-playlist`}>
+            <ListItemIcon className={classes.icons}><PlaylistAddRounded /></ListItemIcon>
+            <ListItemText primary="Fallback Playlist" />
+          </ListItem>
+        </Fragment>
+      ) : null}
 
       <ListItem button key="leaveparty" component={Link} to="/">
         <ListItemIcon className={classes.icons}><ArrowBackRounded /></ListItemIcon>

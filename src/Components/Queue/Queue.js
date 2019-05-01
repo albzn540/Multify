@@ -30,7 +30,7 @@ const styles = theme => ({
 
 const Queue = (props) => {
   const {
-    classes, spotify, partyId,
+    classes, spotify,
   } = props;
 
   const [tracks, setTracks] = useState([]);
@@ -43,7 +43,7 @@ const Queue = (props) => {
   };
 
   useEffect(() => {
-    spotify.setParty(partyId);
+    // spotify.setParty(partyId);
     const subscribeQueue = spotify.addObserver(update, ['queue']);
     return () => {
       subscribeQueue();

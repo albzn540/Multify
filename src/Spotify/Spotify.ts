@@ -31,7 +31,7 @@ const config = {
 };
 
 if (process.env.NODE_ENV === 'development') {
-  console.log('[Spotify] Running in dev mode, setting spotify redirect uri to localhost:3000');
+  //console.log('[Spotify] Running in dev mode, setting spotify redirect uri to localhost:3000');
   config.redirectUri = 'http://localhost:3000/login/';
   // config.redirectUri = 'http://192.168.43.45:3000/login/';
 }
@@ -40,6 +40,7 @@ if (process.env.NODE_ENV === 'development') {
 const authClient = new oauth2(config);
 let fb: Firebase;
 let refreshToken: null | string;
+let refreshTokenTimeout: undefined | NodeJS.Timeout;
 let tokenExpiresIn: number;
 let observers: { observerFunction: any, action: string[] }[];
 let firestoreSubscriptions: any[] = [];
@@ -47,6 +48,7 @@ let speaker: string | undefined;
 
 /*
 * Observable actions:
+*   accesstoken
 *   queue
 *   nowplaying
 *   party
@@ -61,6 +63,7 @@ class Spotify {
     code: string,
     name: string,
     accessToken: string,
+    refreshToken: string,
     doc: firebase.firestore.DocumentSnapshot,
     host: string,
     spotifyId: string
@@ -82,7 +85,6 @@ class Spotify {
     this.partyId = null;
 
     // Check for stored data
-    const storedData = localStorage.getItem('spotify_data');
     const lastParty = localStorage.getItem('party');
     const uuid = localStorage.getItem('uuid');
     //Anoymous user, use old uuid if there is one
@@ -91,24 +93,8 @@ class Spotify {
 
     if (lastParty) {
       const party = JSON.parse(lastParty);
+      //console.log('[Spotify] Lastparty:', party.name);
       this.setParty(party.id);
-    } 
-    if (storedData) {
-      // Stored data exists, user has logged in before
-      const spotifyData = JSON.parse(storedData);
-      console.log('[Spotify] Stored data', spotifyData);
-      const currentTime = Math.round(Date.now() / 1000) + 30; // add 30s buff time
-      tokenExpiresIn = spotifyData.expires_at - currentTime;
-      if (tokenExpiresIn >= 0) {
-        // token has not yet expired
-        console.info('[Spotify] Token expires in', tokenExpiresIn);
-        refreshToken = spotifyData.refresh_token;
-        this.refreshTokenCallback();
-        this.client.setAccessToken(spotifyData.access_token);
-        this.getNewSpotifyUser();
-      } else {
-        console.log('[Spotify] Token has expired');
-      }
     }
   }
 
@@ -121,6 +107,7 @@ class Spotify {
         code: partyData.code,
         name: partyData.name,
         accessToken: partyData.spotifyToken,
+        refreshToken: partyData.refreshToken,
         host: partyData.host,
         spotifyId: partyData.spotifyId,
         playlistUri: partyData.playlistUri,
@@ -215,8 +202,8 @@ class Spotify {
       processedTracks.sort(this.compareTrack); // sort by likes and timestamps
     
     this.queue = processedTracks;
-    console.log('[Spotify] New tracks', processedTracks);
-    console.log('[Spotify] Notifying observers - queue');
+    //console.log('[Spotify] New tracks', processedTracks);
+    //console.log('[Spotify] Notifying observers - queue');
     this.notifyObservers('queue');
   }
 
@@ -226,7 +213,7 @@ class Spotify {
    * current subscriptions first.
    */
   subscribeFirestore = () => {
-    console.log('[Spotify] Setting up firestore listeners');
+    //console.log('[Spotify] Setting up firestore listeners');
     if (!this.partyId) {
       console.error('No party id');
       return;
@@ -247,7 +234,7 @@ class Spotify {
    * functions updating the internal states of the Spotify instance.
    */
   setParty = (id: string) => {
-    console.log('[Spotify][setParty]', id);
+    //console.log('[Spotify][setParty]', id);
     this.partyId = id;
     this.getParty(id);
     this.nowPlayingListener();
@@ -294,7 +281,7 @@ class Spotify {
    * Notifies observables when appropriate action is called
    */
   notifyObservers = (action: string) => {
-    console.log(`[Spotify] Notifying "${action}"`);
+    //console.log(`[Spotify] Notifying "${action}"`);
     observers.map(observer => {
       if (observer.action.some(obsAction => obsAction === action)) {
         observer.observerFunction();
@@ -325,7 +312,6 @@ class Spotify {
         let timeLeft = currentState.item.duration_ms - currentState.progress_ms;
         // We want to check the currently playing track often in case the track
         // is manually skipped, fast fowarded or something similar
-        console.log('Timelieft', timeLeft);
         timeLeft = timeLeft < 1000 ? timeLeft : 1000;
         if (timeLeft < 1000) {
           this.nextTrack();
@@ -342,7 +328,7 @@ class Spotify {
     const newTrack = this.queue[0];
     if (newTrack) {
       const uris = this.queue.map(track => track.uri);
-      console.log('Pushing queue to spotify', uris);
+      //console.log('Pushing queue to spotify', uris);
       this.client.play({
         uris
       });
@@ -385,7 +371,7 @@ class Spotify {
     return this.client.getMe().then(user => {
       this.spotifyUser = user;
       this.uuid = user.id;
-    }).catch(err => console.log("[Spotify] Couldn't fetch Spotify user"));
+    }).catch(err => console.error("[Spotify] Couldn't fetch Spotify user"));
   }
 
   /** 
@@ -401,7 +387,7 @@ class Spotify {
    * @param {string} url - Window URL
   */
   authorizeWithSpotify = async (url: string = '') => {
-    console.log('[Spotify][authorizeWithSpotify]');
+    //console.log('[Spotify][authorizeWithSpotify]');
 
     if (this.spotifyUser) {
       return Promise.resolve('Already authenticated');
@@ -416,12 +402,13 @@ class Spotify {
     // Get firebase function
     const authenticate = fb.functions.httpsCallable('authenticateSpotifyUser');
     return authenticate({ url }).then(async response => {
-      console.log(url);
-      console.log('[Spotify][authorizeWithSpotify] Authorized! Now authenticating...');
+      //console.log(url);
+      //console.log('[Spotify][authorizeWithSpotify] Authorized! Now authenticating...');
       const { data: { access_token, refresh_token, expires_in } } = response;
       tokenExpiresIn = expires_in;
       refreshToken = refresh_token;
       this.client.setAccessToken(access_token);
+      this.notifyObservers('accesstoken');
       await this.getNewSpotifyUser();
       this.saveToLocalStorage();
     }).catch(err => console.error(err));
@@ -439,11 +426,11 @@ class Spotify {
 
     if (!this.spotifyUser) {
       // Log in spotify user to retrieve access token
-      console.log('[Spotify][loginUser] Retrieve accesstoken...', this.spotifyUser);
+      //console.log('[Spotify][loginUser] Retrieve accesstoken...', this.spotifyUser);
       await this.authorizeWithSpotify(url).catch(err => {
         return Promise.resolve(err);
       });
-      console.log('[Spotify][loginUser] Retrieved accesstoken!', this.client.getAccessToken());
+      //console.log('[Spotify][loginUser] Retrieved accesstoken!', this.client.getAccessToken());
     }
 
     if (fb.currentUser()) {
@@ -472,7 +459,7 @@ class Spotify {
     }).catch(async (error) => {
       // User does not exist
       console.error(error.message);
-      console.log('[Spotify][loginUser] Creating new user');
+      //console.log('[Spotify][loginUser] Creating new user');
       return fb.auth.createUserWithEmailAndPassword(email, id).then(userCredentials => {
         // Save displayname and such
         const user = userCredentials.user;
@@ -499,14 +486,6 @@ class Spotify {
    * Save data to local storage
    */
   saveToLocalStorage = () => {
-    const localStorageData = {
-      access_token: this.client.getAccessToken(),
-      refresh_token: refreshToken,
-      expires_at: Math.round(Date.now() / 1000 + tokenExpiresIn),
-    };
-
-    localStorage.setItem('spotify_data', JSON.stringify(localStorageData));
-    
     if(this.party) {
       localStorage.setItem('party', JSON.stringify({
         code: this.party.code,
@@ -516,6 +495,7 @@ class Spotify {
         playlistUri: this.party.playlistUri,
         name: this.party.name,
         id: this.partyId,
+        refreshToken,
       }));
     }
     if (this.partyId) {
@@ -530,7 +510,7 @@ class Spotify {
    * before the new token runs out of time.
    */
   refreshTokenCallback = () => {
-    console.log('[Spotify][refreshTokenCallback]');
+    //console.log('[Spotify][refreshTokenCallback]');
     const refreshFunction = fb.functions.httpsCallable('refreshToken');
     refreshFunction({ refreshToken }).then(res => {
       const { data } = res;
@@ -543,7 +523,13 @@ class Spotify {
       console.info('[Spotify][refreshTokenCallback] New access token', data.access_token);
     });
 
-    setTimeout(this.refreshTokenCallback, tokenExpiresIn * 1000 - 3000);
+    let timeout = tokenExpiresIn * 1000 - 3000;
+    timeout = timeout > 0 ? timeout : 2000;
+    //console.log('Setting refreshToken callback', timeout)
+    if(refreshTokenTimeout) {
+      clearTimeout(refreshTokenTimeout);
+    }
+    refreshTokenTimeout = setTimeout(this.refreshTokenCallback, timeout);
   };
 
   /**
@@ -564,6 +550,7 @@ class Spotify {
     return createPartyFunc({
       name: partyname,
       spotifyToken: this.client.getAccessToken(),
+      refreshToken,
       spotifyId: this.spotifyUser.id
     });
   };
@@ -585,13 +572,16 @@ class Spotify {
         this.party = {
           name: party.name,
           accessToken: party.spotifyToken,
+          refreshToken: party.refreshToken,
           code: party.code,
           doc,
           playlistUri: party.playlistUri,
           spotifyId: party.spotifyId,
           host: party.host
         };
+        refreshToken = this.party.refreshToken;
         this.client.setAccessToken(this.party.accessToken);
+        this.notifyObservers('accesstoken');
         this.saveToLocalStorage();
         this.notifyObservers('party');
       });
@@ -612,20 +602,24 @@ class Spotify {
     return fb.partyRef(id).get().then(partyDoc => {
       const party = partyDoc.data();
       if (party) {
-        console.log('Retrieved party', party);
+        //console.log('Retrieved party', party);
         this.party = {
           name: party.name,
           accessToken: party.spotifyToken,
+          refreshToken: party.refreshToken,
           code: party.code,
           doc: partyDoc,
           playlistUri: party.playlistUri,
           host: party.host,
           spotifyId: party.spotifyId,
         };
-        if(party.spotifyId === this.uuid) {
-          this.refreshTokenCallback();
-        }
+
+        refreshToken = party.refreshToken;
+
+        // refresh the access token
+        this.refreshTokenCallback();
         this.client.setAccessToken(party.spotifyToken);
+        this.notifyObservers('accesstoken');
         this.notifyObservers('party');
         this.saveToLocalStorage();
         return Promise.resolve(this.party);
@@ -729,7 +723,7 @@ class Spotify {
     } else {
       trackRef.set(reducedTrack)
         .then(() => {
-          console.log(`[Spotify][addTrack] "${track.name}" added by ${this.uuid}`);
+          //console.log(`[Spotify][addTrack] "${track.name}" added by ${this.uuid}`);
         })
         .then(() => {
           trackRef.collection('likes').doc(this.uuid).set({});
@@ -761,7 +755,7 @@ class Spotify {
 
     return fb.partyQueueRef(this.partyId).doc(track.id).set(reducedTrack)
       .then(() => {
-        console.log(`[Spotify][addFallbackTrack] "${track.name}" added`);
+        //console.log(`[Spotify][addFallbackTrack] "${track.name}" added`);
       })
       .catch((err: Error) => {
         console.error('[Spotify][addFallbackTrack] Error adding track!', err);
@@ -789,7 +783,7 @@ class Spotify {
     } else if (vote === false) {
       dislikeRef.doc(this.uuid).set({});
     }
-    console.log(`${this.uuid} voted ${vote} on track "${trackId}"`);
+    //console.log(`${this.uuid} voted ${vote} on track "${trackId}"`);
   }
 
   /**
@@ -797,7 +791,7 @@ class Spotify {
    */
   startParty = () => {
     if(this.party) {
-      console.log('[Spotify][startParty] Starting party!');
+      //console.log('[Spotify][startParty] Starting party!');
       this.client.setRepeat('context');
       this.client.setShuffle(false);
 
@@ -829,7 +823,7 @@ class Spotify {
       const pushToSpotify = fb.functions.httpsCallable('pushQueueToSpotifyCallback');
       return Promise.all(promises).then(async () => {
         if(!this.party) return;
-        console.log('pushing', this.party.doc.ref);
+        //console.log('pushing', this.party.doc.ref);
         return pushToSpotify({ partyId: this.partyId });
       });
     })

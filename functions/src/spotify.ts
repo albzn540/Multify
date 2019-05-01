@@ -122,7 +122,7 @@ const partyCodeGenerator = async () => {
 }
 
 export const createParty = functions.https.onCall(async (data, context) => {
-  const { name, spotifyToken, spotifyId } = data;
+  const { name, spotifyToken, spotifyId, refreshTokenVar } = data;
   const promises = [];
   
   if (!name) {
@@ -157,6 +157,7 @@ export const createParty = functions.https.onCall(async (data, context) => {
       code,
       name,
       spotifyToken,
+      refreshToken: refreshTokenVar, 
       spotifyId,
       playlistId: spotifyRes.body.id,
       playlistUri: spotifyRes.body.uri,
